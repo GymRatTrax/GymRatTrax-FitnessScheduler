@@ -1,5 +1,7 @@
 package com.gymrattrax.scheduler.activity;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -62,8 +64,8 @@ public class ProfileActivity extends ActionBarActivity {
         TextView textViewDate = (TextView) findViewById(R.id.textViewDate);
         editing = false;
 
-        DatabaseHelper dbh = new DatabaseHelper(this);
-        String dateFormat = dbh.getProfileInfo(DatabaseContract.ProfileTable.KEY_DATE_FORMAT);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String dateFormat = sharedPref.getString(SettingsActivity.PREF_DATE_FORMAT, "MM/dd/yyyy");
         textViewDate.setText("Birth date (" + dateFormat.toUpperCase() + ")");
 
         lockInput();
@@ -207,7 +209,9 @@ public class ProfileActivity extends ActionBarActivity {
         dbh.setProfileInfo(DatabaseContract.ProfileTable.KEY_HEIGHT_INCHES, heightEditText.getText().toString());
 
         String date = birthDateEditText.getText().toString();
-        SimpleDateFormat inputFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String dateFormat = sharedPref.getString(SettingsActivity.PREF_DATE_FORMAT, "MM/dd/yyyy");
+        SimpleDateFormat inputFormat = new SimpleDateFormat(dateFormat, Locale.US);
         Date d = null;
         try {
             d = inputFormat.parse(date);
@@ -337,29 +341,9 @@ public class ProfileActivity extends ActionBarActivity {
         //Test birth date
         testVar = birthDateEditText.getText().toString();
         //even though MM/DD/YYYY is stated, M/D/YYYY is allowed
-        if (testVar.trim().isEmpty())
-            return "Date is required.";
-        else if (testVar.trim().length() < 8)
-            return "Date is in incorrect format";
-        if (!testVar.equals(testVar.trim())) {
-            testVar = testVar.trim();
-            birthDateEditText.setText(testVar);
-        }
-        if (!testVar.equals(testVar.replace('-','/'))) {
-            testVar = testVar.replace('-','/');
-            birthDateEditText.setText(testVar);
-        }
-        if (testVar.charAt(1) == '/') {
-            testVar = "0" + testVar;
-            birthDateEditText.setText(testVar);
-        }
-        if (testVar.charAt(4) == '/') {
-            testVar = testVar.substring(0, 3) + "0" + testVar.substring(3);
-            birthDateEditText.setText(testVar);
-        }
-        if (!(testVar.length() == 10))
-            return "Date is in incorrect format.";
-        SimpleDateFormat inputFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String dateFormat = sharedPref.getString(SettingsActivity.PREF_DATE_FORMAT, "MM/dd/yyyy");
+        SimpleDateFormat inputFormat = new SimpleDateFormat(dateFormat, Locale.US);
         Date testDate;
         try {
             testDate = inputFormat.parse(testVar);

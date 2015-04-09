@@ -3,6 +3,8 @@ package com.gymrattrax.scheduler.activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -17,7 +19,6 @@ import android.widget.Toast;
 
 import com.gymrattrax.scheduler.data.DatabaseContract;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.ProfileItem;
 import com.gymrattrax.scheduler.R;
 
 import java.text.ParseException;
@@ -38,17 +39,13 @@ public class ProfileSetupActivity extends ActionBarActivity {
     private RadioButton modExercise;
     private RadioButton heavyExercise;
     private Spinner profileSpinner;
-    private Button doneButton;
-    private boolean editing;
-    private ProfileItem profileItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        profileItem = new ProfileItem(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_setup);
 
-        doneButton = (Button) findViewById(R.id.DoneProfileButton);
+        Button doneButton = (Button) findViewById(R.id.DoneProfileButton);
         nameEditText = (EditText) findViewById(R.id.profile_name);
         birthDateEditText = (EditText) findViewById(R.id.birth_date);
         weightEditText = (EditText) findViewById(R.id.profile_weight);
@@ -60,10 +57,9 @@ public class ProfileSetupActivity extends ActionBarActivity {
         heavyExercise = (RadioButton) findViewById(R.id.heavy_exercise);
         profileSpinner = (Spinner) findViewById(R.id.profile_spinner);
         TextView textViewDate = (TextView) findViewById(R.id.textViewDate);
-        editing = false;
 
-        DatabaseHelper dbh = new DatabaseHelper(this);
-        String dateFormat = dbh.getProfileInfo(DatabaseContract.ProfileTable.KEY_DATE_FORMAT);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String dateFormat = sharedPref.getString(SettingsActivity.PREF_DATE_FORMAT, "MM/dd/yyyy");
         textViewDate.setText("Birth date (" + dateFormat.toUpperCase() + ")");
 
         doneButton.setOnClickListener(new Button.OnClickListener() {
@@ -88,8 +84,7 @@ public class ProfileSetupActivity extends ActionBarActivity {
                     });
                     finish.show();
                     //after profileItem is set up, return to HomeScreenActivity or start tutorial
-                }
-                else {
+                } else {
                     Toast toast = Toast.makeText(getApplicationContext(), errors,
                             Toast.LENGTH_SHORT);
                     toast.show();
@@ -127,7 +122,9 @@ public class ProfileSetupActivity extends ActionBarActivity {
         dbh.setProfileInfo(DatabaseContract.ProfileTable.KEY_HEIGHT_INCHES, heightEditText.getText().toString());
 
         String date = birthDateEditText.getText().toString();
-        SimpleDateFormat inputFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String dateFormat = sharedPref.getString(SettingsActivity.PREF_DATE_FORMAT, "MM/dd/yyyy");
+        SimpleDateFormat inputFormat = new SimpleDateFormat(dateFormat, Locale.US);
         Date d = null;
         try {
             d = inputFormat.parse(date);
@@ -172,12 +169,10 @@ public class ProfileSetupActivity extends ActionBarActivity {
                 break;
         }
 
-        profileItem = new ProfileItem(this);
     }
 
     /**
      * Handle radio button clicks
-     * @param view
      */
     public void onRadioButtonClicked(View view) {
         // Is the button now checked?
@@ -210,30 +205,9 @@ public class ProfileSetupActivity extends ActionBarActivity {
         //Name and body fat are optional, and sex forces input.
         //Test birth date
         testVar = birthDateEditText.getText().toString();
-        //even though MM/DD/YYYY is stated, M/D/YYYY is allowed
-        if (testVar.trim().isEmpty())
-            return "Date is required.";
-        else if (testVar.trim().length() < 8)
-            return "Date is in incorrect format";
-        if (!testVar.equals(testVar.trim())) {
-            testVar = testVar.trim();
-            birthDateEditText.setText(testVar);
-        }
-        if (!testVar.equals(testVar.replace('-','/'))) {
-            testVar = testVar.replace('-','/');
-            birthDateEditText.setText(testVar);
-        }
-        if (testVar.charAt(1) == '/') {
-            testVar = "0" + testVar;
-            birthDateEditText.setText(testVar);
-        }
-        if (testVar.charAt(4) == '/') {
-            testVar = testVar.substring(0, 3) + "0" + testVar.substring(3);
-            birthDateEditText.setText(testVar);
-        }
-        if (!(testVar.length() == 10))
-            return "Date is in incorrect format.";
-        SimpleDateFormat inputFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String dateFormat = sharedPref.getString(SettingsActivity.PREF_DATE_FORMAT, "MM/dd/yyyy");
+        SimpleDateFormat inputFormat = new SimpleDateFormat(dateFormat, Locale.US);
         Date testDate;
         try {
             testDate = inputFormat.parse(testVar);
