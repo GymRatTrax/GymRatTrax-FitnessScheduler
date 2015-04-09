@@ -34,6 +34,7 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
     WorkoutItem w;
     Button completeWorkout;
     int exertionLvl;
+    double userWeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +50,10 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
         Bundle b = getIntent().getExtras();
         ID = b.getInt("ID");
 
-        DatabaseHelper dbh = new DatabaseHelper(this);
+        ProfileItem user = new ProfileItem(StrengthWorkoutActivity.this);
+        userWeight = user.getWeight();
 
+        DatabaseHelper dbh = new DatabaseHelper(this);
         w = dbh.getWorkoutById(ID);
         title.setText(w.getName().toString());
         sets = ((StrengthWorkoutItem)w).getSetsScheduled();
@@ -85,16 +88,21 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
                                 exertBuild.setMessage("Please select an Exertion Level.");
 
                                 exertBuild.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.cancel();
-                                            }
-                                        });
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                });
                                 exertBuild.show();
                             }
 
+                            else {
                                 updateCompletedWorkout();
-
+                                final AlertDialog.Builder finish = new AlertDialog.Builder(StrengthWorkoutActivity.this);
+                                finish.setTitle("COMPLETE");
+                                finish.setMessage("WORKOUT LOGGED!");
+                                finish.show();
+                            }
                         }
                     });
 
@@ -108,37 +116,37 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
 
                 }
 
-                    if (exertionLvl == 0){
-                        final AlertDialog.Builder exertBuild = new AlertDialog.Builder(StrengthWorkoutActivity.this);
-                        exertBuild.setTitle("Error");
-                        exertBuild.setMessage("Please select an Exertion Level.");
+                else if (exertionLvl == 0){
+                    final AlertDialog.Builder exertBuild = new AlertDialog.Builder(StrengthWorkoutActivity.this);
+                    exertBuild.setTitle("Error");
+                    exertBuild.setMessage("Please select an Exertion Level.");
 
-                        exertBuild.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        });
-                        exertBuild.show();
+                    exertBuild.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    exertBuild.show();
                 }
                 else{
-                        updateCompletedWorkout();
-                        final AlertDialog.Builder finish = new AlertDialog.Builder(StrengthWorkoutActivity.this);
-                        finish.setTitle("COMPLETE");
-                        finish.setMessage("WORKOUT LOGGED!");
+                    updateCompletedWorkout();
+                    final AlertDialog.Builder finish = new AlertDialog.Builder(StrengthWorkoutActivity.this);
+                    finish.setTitle("COMPLETE");
+                    finish.setMessage("WORKOUT LOGGED!");
 
-                        finish.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                                Intent intent = new Intent(StrengthWorkoutActivity.this, DailyWorkoutActivity.class);
-                                startActivity(intent);
-                            }
+                    finish.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            Intent intent = new Intent(StrengthWorkoutActivity.this, DailyWorkoutActivity.class);
+                            startActivity(intent);
+                        }
 
-                        });
-                        finish.show();
+                    });
+                    finish.show();
 
-                    }
+                }
 
 
             }
@@ -291,6 +299,7 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
             }
         }
     }
+
     public void onRadioButtonClicked(View view) {
         // Is the button now checked?
         boolean checked = ((RadioButton) view).isChecked();
@@ -300,15 +309,15 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
             case R.id.easy_strength:
                 if (checked)
                     exertionLvl = 1;
-                    break;
+                break;
             case R.id.moderate_strength:
                 if (checked)
                     exertionLvl = 2;
-                    break;
+                break;
             case R.id.hard_strength:
                 if (checked)
                     exertionLvl = 3;
-                    break;
+                break;
         }
     }
 
@@ -317,13 +326,14 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
         //calculate calories (exertion lvl, time)
         //set
         WorkoutItem w = dbh.getWorkoutById(ID);
-        ProfileItem p = new ProfileItem(StrengthWorkoutActivity.this);
 
+        double weights[] = dbh.getLatestWeight();
+        userWeight = weights[weights.length - 1];
         w.setExertionLevel(exertionLvl);
         double mets = w.calculateMETs();
         double time = w.getTimeSpent();
 
-        double caloriesBurned = mets * weight * time;
+        double caloriesBurned = mets * userWeight * time;
         w.setCaloriesBurned(caloriesBurned);
         dbh.completeWorkout(w);
     }
