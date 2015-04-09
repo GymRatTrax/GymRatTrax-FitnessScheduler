@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-//TODO: Rename to DatabaseHelper and put in com.gymrattrax.scheduler.data
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHelper";
     public DatabaseHelper(Context context) {
