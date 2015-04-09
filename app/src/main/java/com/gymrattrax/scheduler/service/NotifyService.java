@@ -143,7 +143,6 @@ public class NotifyService extends Service {
              * startActivity(intent);
              */
 
-
         } else {
             mBuilder.setContentTitle("Time to work out!");
             mBuilder.setContentText("Let's go!");
