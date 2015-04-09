@@ -1,0 +1,228 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="fill_parent"
+    android:layout_height="fill_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".HomeScreen"
+    android:background="@color/primary"
+    android:id="@+id/Homescreen"
+    android:orientation="vertical"
+
+    android:weightSum="1">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/gym_rat_trax_version_num"
+        android:id="@+id/versionNum"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.08" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="109dp"
+        android:id="@+id/home_rat"
+        android:src="@drawable/gymrat"
+        android:baselineAlignBottom="false"
+        android:cropToPadding="false"
+        android:clickable="false"
+        android:layout_gravity="center"
+        android:onClick="@anim/anim_rotate"
+        android:paddingBottom="10dp" />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context=".HomeScreen"
+        android:background="@color/primary"
+        android:id="@+id/Row1"
+        android:orientation="horizontal"
+
+        android:weightSum="1"
+        android:paddingTop="15dp">
+        <Button
+            android:layout_width="155dp"
+            android:layout_height="wrap_content"
+            android:text="BEGIN \nWORKOUT!"
+            android:id="@+id/BeginWorkoutButton"
+            android:layout_gravity="center_horizontal"
+            android:clickable="true"
+            android:layout_below="@+id/add_workout_strength"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp"
+            android:textStyle="bold"
+            android:textSize="25sp"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:background="@drawable/button_shape_press"
+            android:shadowColor="@color/shadow"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowRadius="5"
+            android:singleLine="false"
+            android:layout_weight="0.31"
+            android:layout_marginRight="2dp"
+            android:longClickable="false" />
+
+        <Button
+            android:layout_width="155dp"
+            android:layout_height="wrap_content"
+            android:text="EDIT\nSCHEDULE"
+            android:id="@+id/EditScheduleButton"
+            android:layout_gravity="center_horizontal"
+            android:clickable="true"
+            android:layout_below="@+id/add_workout_strength"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:textStyle="bold"
+            android:textSize="25sp"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:background="@drawable/button_shp_rvrs_press"
+            android:shadowColor="@color/shadow"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="5"
+            android:layout_weight="0.42" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        tools:context=".HomeScreen"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
+        android:id="@+id/Row2"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <Button
+            android:layout_width="155dp"
+            android:layout_height="wrap_content"
+            android:text="VIEW \nPROFILE"
+            android:id="@+id/ViewProfileButton"
+            android:clickable="true"
+            android:layout_below="@+id/add_workout_strength"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:textStyle="bold"
+            android:textSize="25sp"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:background="@drawable/button_shape_press"
+            android:shadowColor="@color/shadow"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="5"
+            android:layout_weight="0.30"
+            android:layout_marginRight="2dp" />
+
+        <Button
+            android:layout_width="155dp"
+            android:layout_height="wrap_content"
+            android:text="VIEW \nPROGRESS"
+            android:id="@+id/ViewProgressButton"
+            android:clickable="true"
+            android:layout_below="@+id/add_workout_strength"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp"
+            android:textStyle="bold"
+            android:textSize="25sp"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:background="@drawable/button_shp_rvrs_press"
+            android:shadowColor="@color/shadow"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="5"
+            android:onClick="loadProgress"
+            android:layout_weight="0.38" />
+    </LinearLayout>
+
+    <LinearLayout
+        tools:context=".HomeScreen"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
+        android:id="@+id/Row3"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <Button
+            android:layout_width="155dp"
+            android:layout_height="wrap_content"
+            android:text="CALORIE\nNEGATION"
+            android:id="@+id/CalorieNegationButton"
+            android:clickable="true"
+            android:layout_below="@+id/add_workout_strength"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp"
+            android:textStyle="bold"
+            android:textSize="25sp"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:background="@drawable/button_shape_press"
+            android:shadowColor="@color/shadow"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="5"
+            android:onClick="loadCalorieNegation"
+            android:layout_weight="0.43"
+            android:layout_marginRight="2dp" />
+
+        <Button
+            android:layout_width="167dp"
+            android:layout_height="wrap_content"
+            android:text="EDIT\nSETTINGS"
+            android:id="@+id/EditSettingsButton"
+            android:clickable="true"
+            android:layout_below="@+id/add_workout_strength"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:textStyle="bold"
+            android:textSize="25sp"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:background="@drawable/button_shp_rvrs_press"
+            android:shadowColor="@color/shadow"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="5"
+            android:onClick="loadSettings" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="34dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Upcoming Workouts"
+        android:id="@+id/daily_workout_title"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:textSize="20dp"
+        android:textStyle="bold" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/daily_workout_scroll"
+        android:fillViewport="false"
+        android:layout_weight="2.91">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="match_parent"
+            android:id="@+id/daily_workout_layout">
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>

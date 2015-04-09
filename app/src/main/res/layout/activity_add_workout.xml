@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary"
+    android:baselineAligned="true"
+    android:weightSum="1"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/select_strength_to_add"
+        android:id="@+id/strength_title"
+        android:layout_gravity="center_horizontal" />
+
+    <ListView
+        android:layout_width="match_parent"
+        android:background="@color/primary100"
+        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:numColumns="auto_fit"
+        android:choiceMode="singleChoice"
+        android:id="@+id/add_workouts_list"
+        android:dividerHeight="3dip"
+        android:divider="@color/primary"/>
+
+</LinearLayout>

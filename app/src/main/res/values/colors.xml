@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="background">#FFE0B2</color>
+    <color name="shadow">#A8A8A8</color>
+
+    <!-- Material design colors:
+    http://www.google.com/design/spec/style/color.html#color-color-palette -->
+    <color name="primary">#FF9800</color>
+
+    <color name="primary50">#FFF3E0</color>
+    <color name="primary100">#FFE0B2</color>
+    <color name="primary200">#FFCC80</color>
+    <color name="primary300">#FFB74D</color>
+    <color name="primary400">#FFA726</color>
+    <color name="primary500">#FF9800</color>
+    <color name="primary600">#FB8C00</color>
+    <color name="primary700">#F57C00</color>
+    <color name="primary800">#EF6C00</color>
+    <color name="primary900">#E65100</color>
+
+    <color name="primaryA100">#FFD180</color>
+    <color name="primaryA200">#FFAB40</color>
+    <color name="primaryA400">#FF9100</color>
+    <color name="primaryA700">#FF6D00</color>
+
+    <color name="secondary">#FFEB3B</color>
+
+    <color name="secondary50">#FFFDE7</color>
+    <color name="secondary100">#FFF9C4</color>
+    <color name="secondary200">#FFF59D</color>
+    <color name="secondary300">#FFF176</color>
+    <color name="secondary400">#FFEE58</color>
+    <color name="secondary500">#FFEB3B</color>
+    <color name="secondary600">#FDD835</color>
+    <color name="secondary700">#FBC02D</color>
+    <color name="secondary800">#F9A825</color>
+    <color name="secondary900">#F57F17</color>
+
+    <color name="secondaryA100">#FFFF8D</color>
+    <color name="secondaryA200">#FFFF00</color>
+    <color name="secondaryA400">#FFEA00</color>
+    <color name="secondaryA700">#FFD600</color>
+
+
+
+
+</resources>

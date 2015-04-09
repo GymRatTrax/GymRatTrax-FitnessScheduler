@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="spinnerSexSelection">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+    <string-array name="debug_array">
+        <item>Profile</item>
+        <item>Weight</item>
+        <item>Workout</item>
+    </string-array>
+
+    <string-array name="graphs_array">
+        <item>Weekly Weight</item>
+        <item>Weekly Calories</item>
+    </string-array>
+
+    <string-array name="date_format_array">
+        <item>MM/dd/yyyy</item>
+        <item>dd/MM/yyyy</item>
+    </string-array>
+</resources>

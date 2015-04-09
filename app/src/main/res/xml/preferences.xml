@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+    <ListPreference
+        android:key="pref_date_format"
+        android:title="Date format"
+        android:summary="Standard date format displayed"
+        android:dialogTitle="Select preferred date format"
+        android:entries="@array/date_format_array"
+        android:entryValues="@array/date_format_array"
+        android:defaultValue="MM/dd/yyyy" />
+    <PreferenceScreen
+        android:key="@string/settings_notify_button"
+        android:title="@string/settings_notify"
+        android:persistent="true">
+        <SwitchPreference
+            android:key="pref_notify_enabled_all"
+            android:title="Enable notifications"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:dependency="pref_notify_enabled_all"
+            android:key="pref_notify_ongoing"
+            android:title="Persistent notifications"
+            android:summary="Notification will not be dismissed until activity is actually logged."
+            android:defaultValue="false" />
+        <PreferenceCategory
+            android:title="@string/pref_notify_default"
+            android:key="pref_key_notify_default">
+            <SwitchPreference
+                android:key="pref_notify_enabled"
+                android:dependency="pref_notify_enabled_all"
+                android:title="Enable notifications by default"
+                android:defaultValue="true" />
+            <CheckBoxPreference
+                android:dependency="pref_notify_enabled"
+                android:key="pref_notify_vibrate"
+                android:title="Enable vibration by default"
+                android:defaultValue="true" />
+            <EditTextPreference
+                android:dependency="pref_notify_enabled"
+                android:key="pref_notify_advance"
+                android:title="Advance notification default"
+                android:summary="Number of minutes in advance to display the notification before the actual scheduled time."
+                android:defaultValue="0" />
+            <RingtonePreference
+                android:dependency="pref_notify_enabled"
+                android:key="pref_notify_tone"
+                android:title="Notification ringtone default"
+                android:ringtoneType="notification"
+                android:defaultValue="content://settings/system/notification_sound" />
+        </PreferenceCategory>
+        <PreferenceCategory
+            android:title="@string/pref_notify_weigh"
+            android:key="pref_key_notify_weigh">
+            <SwitchPreference
+                android:key="pref_notify_weigh_enabled"
+                android:dependency="pref_notify_enabled_all"
+                android:title="Enable weigh-in notification"
+                android:defaultValue="true" />
+            <com.gymrattrax.scheduler.model.TimePreference
+                android:dependency="pref_notify_weigh_enabled"
+                android:key="pref_notify_weigh_time"
+                android:title="Time of day for notification"/>
+            <CheckBoxPreference
+                android:dependency="pref_notify_weigh_enabled"
+                android:disableDependentsState="true"
+                android:key="pref_notify_weigh_inherit"
+                android:title="Inherit default settings"
+                android:defaultValue="true" />
+            <CheckBoxPreference
+                android:dependency="pref_notify_weigh_inherit"
+                android:key="pref_notify_weigh_vibrate"
+                android:title="Enable vibration"
+                android:defaultValue="true" />
+            <RingtonePreference
+                android:dependency="pref_notify_weigh_inherit"
+                android:key="pref_notify_weigh_tone"
+                android:title="Notification ringtone"
+                android:ringtoneType="notification"
+                android:defaultValue="content://settings/system/notification_sound" />
+        </PreferenceCategory>
+    </PreferenceScreen>
+</PreferenceScreen>

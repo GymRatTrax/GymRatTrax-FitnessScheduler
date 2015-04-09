@@ -1,0 +1,100 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:background="@color/primary"
+    tools:context="com.gymrattrax.scheduler.activity.CardioWorkoutActivity"
+    android:clickable="false"
+    android:weightSum="1"
+    android:orientation="vertical"
+    android:id="@+id/cardio_main_layout">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="cardio_title"
+        android:id="@+id/cardio_title"
+        android:layout_gravity="center_horizontal" />
+
+    <Chronometer
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/chronometer"
+        android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="scheduled_time"
+        android:id="@+id/scheduled_time"
+        android:layout_gravity="center_horizontal"
+        android:textAlignment="center" />
+
+    <Button
+        android:layout_width="128dp"
+        android:layout_height="43dp"
+        android:text="START"
+        android:id="@+id/start_cardio"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/button_shp_rvrs_press" />
+
+    <Button
+        android:layout_width="128dp"
+        android:layout_height="43dp"
+        android:text="STOP"
+        android:id="@+id/stop_cardio"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/button_shp_rvrs_press" />
+
+    <Button
+        android:layout_width="128dp"
+        android:layout_height="45dp"
+        android:text="COMPLETE"
+        android:id="@+id/complete_cardio"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/button_shape_press" />
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Easy"
+            android:id="@+id/easy_cardio"
+            android:layout_weight="0.08"
+            android:onClick="onRadioButtonClicked"
+            android:checked="false"
+            android:layout_gravity="center_horizontal"/>
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Moderate"
+            android:id="@+id/moderate_cardio"
+            android:layout_weight="0.08"
+            android:onClick="onRadioButtonClicked"
+            android:checked="false"
+            android:layout_gravity="center_horizontal"
+            />
+
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hard"
+            android:id="@+id/hard_cardio"
+            android:layout_weight="0.08"
+            android:onClick="onRadioButtonClicked"
+            android:checked="false"
+            android:layout_gravity="center_horizontal"/>
+
+    </RadioGroup>
+
+</LinearLayout>

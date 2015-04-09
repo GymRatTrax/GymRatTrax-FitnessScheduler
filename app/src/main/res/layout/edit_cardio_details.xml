@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary"
+    android:baselineAligned="true"
+    android:weightSum="1">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/change_cardio_goal"
+        android:id="@+id/cardio_title"
+        android:layout_gravity="center_horizontal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/current"
+        android:id="@+id/current"
+        android:layout_gravity="start" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/select_cardio_time"
+        android:id="@+id/cardio_set_time"
+        android:layout_gravity="center_horizontal" />
+
+    <EditText
+        android:layout_width="175dp"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:layout_marginBottom="40dp"
+        android:id="@+id/editText4"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/select_cardio_distance"
+        android:id="@+id/cardio_set_distance"
+        android:layout_gravity="center_horizontal" />
+
+    <EditText
+        android:layout_width="175dp"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:layout_marginBottom="40dp"
+        android:ems="10"
+        android:id="@+id/editText5"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/next"
+        android:id="@+id/next"
+        android:clickable="true"
+        android:textStyle="bold"
+        android:textSize="25sp"
+        android:background="@drawable/button_shp_rvrs_press"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="5dp" />
+
+</LinearLayout>

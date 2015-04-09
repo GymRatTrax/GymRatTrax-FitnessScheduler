@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.gymrattrax.scheduler" >
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:screenOrientation="portrait"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".activity.HomeScreenActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.DailyWorkoutActivity"
+            android:label="@string/title_activity_daily_workout"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activity.CalorieNegationActivity"
+            android:label="@string/title_activity_calorie_negation"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activity.ProfileActivity"
+            android:label="@string/title_activity_fitness_profile"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activity.ScheduleActivity"
+            android:label="@string/title_activity_schedule" >
+        </activity>
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:screenOrientation="portrait"
+            android:theme="@style/NewTheme"
+            android:parentActivityName=".activity.HomeScreenActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.HomeScreenActivity" />
+        </activity>
+        <activity
+            android:name=".activity.ProgressActivity"
+            android:label="@string/title_activity_view_progress"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name=".activity.CardioWorkoutActivity"
+            android:label="@string/title_activity_cardio_workout"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activity.ViewScheduleActivity"
+            android:label="@string/title_activity_view_schedule"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activity.StrengthWorkoutActivity"
+            android:label="@string/title_activity_strength_workout" >
+        </activity>
+        <activity
+            android:name=".activity.DatabaseDebugActivity"
+            android:label="Debug" >
+        </activity>
+        <activity
+            android:name=".activity.CurrentScheduleActivity"
+            android:label="Current Schedule"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activity.ProfileSetupActivity"
+            android:label="@string/title_activity_profile_setup" >
+        </activity>
+        <activity
+            android:name=".activity.AddWorkoutActivity"
+            android:label="@string/add_workout_activity" >
+        </activity>
+        <activity
+            android:name="com.gymrattrax.scheduler.activity.AddStrengthWorkoutActivity"
+            android:label="@string/add_workout_activity_add_strength" >
+        </activity>
+        <activity
+            android:name=".activity.SelectDateActivity"
+            android:label="@string/select_date_time_activity" >
+        </activity>
+        <activity
+            android:name=".activity.SelectTimeActivity"
+            android:label="@string/add_workout_activity_add_cardio" >
+        </activity>
+
+        <receiver android:name=".receiver.NotifyReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+        <service android:name=".service.NotifyService" />
+
+    </application>
+
+</manifest>

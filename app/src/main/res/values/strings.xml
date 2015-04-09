@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Name of Application -->
+    <string name="app_name">GymRatTrax</string>
+    <!-- Basic String Text -->
+    <string name="workout_today">Today\'s Scheduled Workout</string>
+    <!-- Name of Application -->
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_cardio_exercise">Cardio Exercise</string>
+    <string name="title_activity_strength_exercise">Strength Exercise</string>
+    <string name="title_activity_daily_workout">Daily Workout</string>
+    <string name="title_activity_calorie_negation">Calorie Negation</string>
+    <string name="title_activity_fitness_profile">Fitness Profile</string>
+    <string name="title_activity_schedule">View Schedule</string>
+
+    <string name="title_activity_settings">Settings</string>
+    <string name="schedule_activity_add_event">Add Event</string>
+    <string name="schedule_activity_back">BACK</string>
+    <string name="title_activity_view_progress">View Progress</string>
+    <string name="place_holder_text_for_scroll_view">        \nTHIS TEXT IS A PLACE HOLDER \nthis text is a place holder \nREDLOH ECALP A SI TXET SIHT
+        \nredloh ecalp a si txet siht
+        \nTHIS TEXT IS A PLACE HOLDER \nthis text is a place holder \nREDLOH ECALP A SI TXET SIHT
+        \nredloh ecalp a si txet siht
+        \nTHIS TEXT IS A PLACE HOLDER \nthis text is a place holder \nREDLOH ECALP A SI TXET SIHT
+        \nredloh ecalp a si txet siht
+        \nTHIS TEXT IS A PLACE HOLDER \nthis text is a place holder \nREDLOH ECALP A SI TXET SIHT
+        \nredloh ecalp a si txet siht
+        \nTHIS TEXT IS A PLACE HOLDER \nthis text is a place holder \nREDLOH ECALP A SI TXET SIHT
+        \nredloh ecalp a si txet siht
+        \nTHIS TEXT IS A PLACE HOLDER \nthis text is a place holder \nREDLOH ECALP A SI TXET SIHT
+        \nredloh ecalp a si txet siht
+        \nTHIS TEXT IS A PLACE HOLDER \nthis text is a place holder \nREDLOH ECALP A SI TXET SIHT
+        \nredloh ecalp a si txet siht
+        \nTHIS TEXT IS A PLACE HOLDER \nthis text is a place holder \nREDLOH ECALP A SI TXET SIHT
+        \nredloh ecalp a si txet siht
+        \nTHIS TEXT IS A PLACE HOLDER \nthis text is a place holder \nREDLOH ECALP A SI TXET SIHT
+        \nredloh ecalp a si txet siht
+        \nTHIS TEXT IS A PLACE HOLDER \nthis text is a place holder \nREDLOH ECALP A SI TXET SIHT
+        \nredloh ecalp a si txet siht</string>
+    <string name="gym_rat_trax_version_num">GymRatTrax Version 0.1</string>
+    <string name="title_activity_cardio_workout">Cardio Workout</string>
+    <string name="title_activity_view_schedule">View Schedule Activity</string>
+    <string name="title_activity_strength_workout">Strength Workout Activity</string>
+    <string name="hello_world">hello_world</string>
+    <string name="title_activity_profile_setup">Profile Setup</string>
+    <string name="schedule_activity_add_workout">Add Workout</string>
+    <string name="schedule_add_workout_button">Edit Workout</string>
+    <string name="schedule_back_button">Back</string>
+    <string name="schedule_activity_view_google_calendar">View Google Calendar</string>
+    <string name="UpcomingWorkouts">Scheduled Workouts</string>
+    <string name="select_workout_type">Select a workout type:</string>
+    <string name="add_workout_activity_add_strength">AddStrength</string>
+    <string name="title_activity_add_workout">Add A Workout</string>
+    <string name="choose_an_exercise">Choose an exercise</string>
+    <string name="strength_workout_activity_add_exercise">Add exercise</string>
+    <string name="Select_Exercise">Select Exercise</string>
+    <string name="strength_title">Strength</string>
+    <string name="Sets">Sets</string>
+    <string name="Reps">Reps</string>
+    <string name="Cardio">Cardio</string>
+    <string name="add_workout_activity_add_cardio">AddCardio</string>
+    <string name="Strength">Strength</string>
+    <string name="Schedule">Schedule</string>
+    <string name="select_strength_to_add">Select An Exercise</string>
+    <string name="EnterSets">Enter Sets</string>
+    <string name="enterweight">Enter Weight</string>
+    <string name="enterreps">Enter Reps</string>
+    <string name="add_strength_workout_button">add to schedule</string>
+    <string name="Esets">Enter Sets</string>
+    <string name="SetExDetails">Set Exercise Details</string>
+    <string name="add_workout_activity">AddWorkout</string>
+    <string name="next">next</string>
+    <string name="select_date_time_string">Select a Date</string>
+    <string name="select_date_time_activity">SelectDateTime</string>
+    <string name="SetTime">Select Time</string>
+    <string name="home">Return Home</string>
+    <string name="finished">Done</string>
+    <string name="CurrentTime">Time Selected: </string>
+    <string name="select_cardio_to_add">Set Cardio Exercise Goal</string>
+    <string name="select_cardio_time">Set Time:</string>
+    <string name="select_cardio_distance">Set Distance:</string>
+    <string name="edit_workout_activity">Edit Workout</string>
+    <string name="Edit">Edit</string>
+    <string name="AddAWorkout">Add a Workout</string>
+    <string name="new_workout">New Workout</string>
+    <string name="edit_strength_workout_activity">Edit Strength</string>
+    <string name="edit_cardio_workout_activity">Edit Cardio</string>
+    <string name="CurrEx">Current Exercise:</string>
+    <string name="set_exercise_details">Set Exercise Details</string>
+    <string name="current">Current Goal:</string>
+    <string name="change_cardio_goal">Change Cardio Exercise Goal</string>
+    <string name="set_ex_goal">Set Strength Exercise Goal</string>
+    <string name="ex_name">Exercise:</string>
+    <string name="select_time_activity">Select Time</string>
+    <string name="Done">Done</string>
+    <string name="settings_notify">Notifications</string>
+    <string name="settings_notify_button">button_notify_category_key</string>
+    <string name="pref_notify_default">Default values for new notifications</string>
+    <string name="pref_notify_weigh">Weigh-in notification</string>
+    <string name="set">Set</string>
+    <string name="cancel">Cancel</string>
+</resources>

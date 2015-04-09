@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/add_workout_strength"
+        android:title="Strength"/>
+
+    <item
+        android:id="@+id/cardio_title"
+        android:title="Cardio"/>
+
+</menu>

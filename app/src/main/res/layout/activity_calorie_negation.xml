@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/primary"
+    android:weightSum="1">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="34dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Enter a Number of Calories to Negate"
+        android:id="@+id/textView9"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:textSize="20dp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberSigned"
+        android:ems="10"
+        android:id="@+id/negate_calories"
+        android:gravity="center"
+        android:backgroundTint="#000000"
+        android:textAlignment="center"
+        android:layout_gravity="center" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SUGGEST WORKOUTS"
+        android:id="@+id/negate_cal_button"
+        android:clickable="true"
+        android:layout_below="@+id/add_workout_strength"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:textStyle="bold"
+        android:textSize="25sp"
+        android:background="@drawable/button_shape_press"
+        android:shadowColor="#A8A8A8"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:onClick="SuggestWorkout"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:id="@+id/scrollView2"
+        android:layout_gravity="center_horizontal"
+        android:fillViewport="false"
+        android:layout_weight="1.68">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="match_parent"
+            android:id="@+id/suggestions_layout">
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>
