@@ -23,7 +23,6 @@ import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
-//TODO: Rename to com.gymrattrax.scheduler.services.NotifyService
 /**
  * Receive Alarm and create the notification itself.
  */
