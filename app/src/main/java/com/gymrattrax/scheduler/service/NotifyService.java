@@ -30,6 +30,7 @@ public class NotifyService extends Service {
     private static final String TAG ="NotifyService";
 
     private WorkoutItem workoutItem;
+
     /**
      * Class for clients to access
      */
@@ -78,7 +79,7 @@ public class NotifyService extends Service {
      */
     private void showNotification() {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(R.drawable.ic_stat_name)
                 .setAutoCancel(true)
                 .setOngoing(false);
 
