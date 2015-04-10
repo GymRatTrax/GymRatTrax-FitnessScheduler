@@ -221,7 +221,7 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
             main.setOrientation(LinearLayout.HORIZONTAL);
             stack.setOrientation(LinearLayout.VERTICAL);
 
-            viewSet.setText("Set: " + (i + 1));
+            viewSet.setText("Set: " + (i + 1) + "\n");
 
             ViewGroup.LayoutParams stackParams = new LinearLayout.LayoutParams(600,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -328,7 +328,7 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
         WorkoutItem w = dbh.getWorkoutById(ID);
 
         double weights[] = dbh.getLatestWeight();
-        userWeight = weights[weights.length - 1];
+        userWeight = weights[0];
         w.setExertionLevel(exertionLvl);
         double mets = w.calculateMETs();
         double time = w.getTimeSpent();

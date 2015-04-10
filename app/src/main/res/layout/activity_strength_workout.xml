@@ -3,7 +3,8 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primary"
-    android:baselineAligned="true">
+    android:baselineAligned="true"
+    android:weightSum="1">
 
     <TextView
         android:layout_width="wrap_content"
@@ -13,6 +14,35 @@
         android:id="@+id/strength_title"
         android:layout_gravity="center_horizontal" />
 
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Tutorial: "
+                android:id="@+id/textView"
+                android:layout_column="32"
+                android:layout_gravity="center" />
+
+            <ImageButton
+                android:layout_width="40dp"
+                android:layout_height="39dp"
+                android:id="@+id/imageButton"
+                android:layout_gravity="right"
+                android:background="@drawable/youtube"
+                android:layout_row="0"
+                android:layout_column="33" />
+        </TableRow>
+    </TableLayout>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -20,6 +50,7 @@
         android:text="Sets"
         android:id="@+id/strength_sets"
         android:layout_gravity="center_horizontal"/>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -94,5 +125,6 @@
         android:id="@+id/complete_strength"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/button_shape_press" />
+
 
 </LinearLayout>
