@@ -28,7 +28,3 @@ proguard/
 
 # Other
 .idea/workspace.xml
-
-# Prevent conflict from Windows/Mac usages
-.idea/gradle.xml
-.idea/libraries/support_annotations_21_0_3.xml
