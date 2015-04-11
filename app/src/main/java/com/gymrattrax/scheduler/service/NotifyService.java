@@ -1,5 +1,6 @@
 package com.gymrattrax.scheduler.service;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -9,14 +10,18 @@ import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.gymrattrax.scheduler.R;
+import com.gymrattrax.scheduler.activity.CardioWorkoutActivity;
 import com.gymrattrax.scheduler.activity.DailyWorkoutActivity;
 import com.gymrattrax.scheduler.activity.SettingsActivity;
+import com.gymrattrax.scheduler.activity.StrengthWorkoutActivity;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.CardioWorkoutItem;
 import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
@@ -81,7 +86,12 @@ public class NotifyService extends Service {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_stat_name)
                 .setAutoCancel(true)
-                .setOngoing(false);
+                .setOngoing(false)
+                .setPriority(Notification.PRIORITY_MAX)
+                .setColor(getResources().getColor(R.color.primary));
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            mBuilder.setCategory(Notification.CATEGORY_EVENT);
 
         Intent intent = new Intent(this, DailyWorkoutActivity.class);
         if (workoutItem != null) {
@@ -90,6 +100,7 @@ public class NotifyService extends Service {
                 case CARDIO:
                     mBuilder.setContentText(String.valueOf(((CardioWorkoutItem)workoutItem).
                             getDistance()) + " miles");
+                    intent = new Intent(this, CardioWorkoutActivity.class);
                     break;
                 case STRENGTH:
                     mBuilder.setContentText(String.valueOf(((StrengthWorkoutItem)workoutItem).
@@ -98,6 +109,7 @@ public class NotifyService extends Service {
                             " reps with " +
                             String.valueOf(((StrengthWorkoutItem)workoutItem).getWeightUsed()) +
                             " lb weights");
+                    intent = new Intent(this, StrengthWorkoutActivity.class);
                     break;
                 default:
                     mBuilder.setContentText(((int)(workoutItem.getTimeScheduled() * 60) -
@@ -135,14 +147,9 @@ public class NotifyService extends Service {
                 mBuilder.setOngoing(true);
                 mBuilder.setAutoCancel(false);
             }
-            intent = new Intent(this, DailyWorkoutActivity.class);
-            //TODO: add workout ID to Bundle. for example...
-            /**
-             * Bundle b = new Bundle();
-             * b.putInt("ID", ID);
-             * intent.putExtras(b);
-             * startActivity(intent);
-             */
+            Bundle b = new Bundle();
+            b.putInt("ID", workoutItem.getID());
+            intent.putExtras(b);
 
         } else {
             mBuilder.setContentTitle("Time to work out!");

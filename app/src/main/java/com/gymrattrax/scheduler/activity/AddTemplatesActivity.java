@@ -31,9 +31,9 @@ import com.gymrattrax.scheduler.model.WorkoutItem;
 import java.util.Calendar;
 import java.util.Date;
 
-public class CalorieNegationActivity extends ActionBarActivity {
+public class AddTemplatesActivity extends ActionBarActivity {
 
-    private static final String TAG = "CalorieNegationActivity";
+    private static final String TAG = "AddTemplatesActivity";
     Button SuggestWorkoutButton;
     EditText NegateEditText;
     LinearLayout linearContainer;
@@ -46,14 +46,14 @@ public class CalorieNegationActivity extends ActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_calorie_negation);
+        setContentView(R.layout.activity_add_templates);
 
         SuggestWorkoutButton = (Button) findViewById(R.id.negate_cal_button);
         NegateEditText = (EditText) findViewById(R.id.negate_calories);
         linearContainer = (LinearLayout) findViewById(R.id.suggestions_layout);
         buttons = new Button[5];
         for (int i = 0; i < buttons.length; i++) {
-            buttons[i] = new Button(CalorieNegationActivity.this);
+            buttons[i] = new Button(AddTemplatesActivity.this);
         }
         times = new double[5];
         exName = new ExerciseName[5];
@@ -85,7 +85,7 @@ public class CalorieNegationActivity extends ActionBarActivity {
                     }
                 }
                 linearContainer.removeAllViewsInLayout();
-                TableLayout a = new TableLayout(CalorieNegationActivity.this);
+                TableLayout a = new TableLayout(AddTemplatesActivity.this);
                 a.removeAllViews();
 
                 int caloriesToNegate;
@@ -116,11 +116,10 @@ public class CalorieNegationActivity extends ActionBarActivity {
                     t.show();
                     return;
                 }
-                ProfileItem p = new ProfileItem(CalorieNegationActivity.this);
+                ProfileItem p = new ProfileItem(AddTemplatesActivity.this);
 
                 double BMR = p.getBMR();
 
-                //TODO: Resolve above comment
                 /*
                 NOTE: Also, now that I understand more of how we determine METs values, I feel like
                 there is a more efficient and more accurate way to do it. Until I figure that out
@@ -143,11 +142,11 @@ public class CalorieNegationActivity extends ActionBarActivity {
                     int seconds = secondsTotal % 60;
                     int minutes = (secondsTotal - seconds) / 60;
                     times[i] = minutesDbl;
-                    TableRow row = new TableRow(CalorieNegationActivity.this);
-                    LinearLayout main = new LinearLayout(CalorieNegationActivity.this);
-                    LinearLayout stack = new LinearLayout(CalorieNegationActivity.this);
-                    TextView viewTitle = new TextView(CalorieNegationActivity.this);
-                    TextView viewTime = new TextView(CalorieNegationActivity.this);
+                    TableRow row = new TableRow(AddTemplatesActivity.this);
+                    LinearLayout main = new LinearLayout(AddTemplatesActivity.this);
+                    LinearLayout stack = new LinearLayout(AddTemplatesActivity.this);
+                    TextView viewTitle = new TextView(AddTemplatesActivity.this);
+                    TextView viewTime = new TextView(AddTemplatesActivity.this);
                     row.setId(1000 + i);
                     main.setId(2000 + i);
                     stack.setId(3000 + i);
@@ -188,9 +187,6 @@ public class CalorieNegationActivity extends ActionBarActivity {
                     }
                     viewTime.setText(time);
 
-//                    LayoutParams mainParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-//                            LayoutParams.WRAP_CONTENT);
-//                    main.setLayoutParams(mainParams);
                     LayoutParams stackParams = new LinearLayout.LayoutParams(600,
                             LayoutParams.WRAP_CONTENT);
                     stack.setLayoutParams(stackParams);
@@ -315,7 +311,7 @@ public class CalorieNegationActivity extends ActionBarActivity {
         Toast toast = Toast.makeText(getApplicationContext(),
                 "Workout successfully added to current schedule.", Toast.LENGTH_SHORT);
         toast.show();
-        Intent intent = new Intent (CalorieNegationActivity.this, HomeScreenActivity.class);
+        Intent intent = new Intent (AddTemplatesActivity.this, HomeScreenActivity.class);
         startActivity(intent);
     }
 
