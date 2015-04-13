@@ -19,15 +19,14 @@ import com.gymrattrax.scheduler.model.WorkoutItem;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class ScheduleActivity extends ActionBarActivity implements ListViewAdapterEdit.custButtonListener {
 
     private ArrayList<String> workoutItems = new ArrayList<>();
-    private String newDetails;
     private String name;
 
-    final DatabaseHelper dbh = new DatabaseHelper(this);
     WorkoutItem[] workouts = new WorkoutItem[100];
 
     @Override
@@ -138,8 +137,13 @@ public class ScheduleActivity extends ActionBarActivity implements ListViewAdapt
     }
 
     public String[] getWorkoutsString() {
+        DatabaseHelper dbh = new DatabaseHelper(this);
         int i = 0;
-        workouts = dbh.getWorkoutsForToday();
+        Calendar cal = Calendar.getInstance();
+        Date start = cal.getTime();
+        cal.set(2020, 3, 14);
+        Date end = cal.getTime();
+        workouts = dbh.getWorkoutsInRange(start, end);
         String[] workoutsString = new String[workouts.length];
 
         for (final WorkoutItem w : workouts) {

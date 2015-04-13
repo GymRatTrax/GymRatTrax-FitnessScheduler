@@ -85,6 +85,7 @@ public class SelectDateActivity extends ActionBarActivity {
                 } else {
                     reps = d[3] + " reps ";
                 }
+                exName.setText(name);
                 exDetails.setText(weight + sets + reps);
             }
         }

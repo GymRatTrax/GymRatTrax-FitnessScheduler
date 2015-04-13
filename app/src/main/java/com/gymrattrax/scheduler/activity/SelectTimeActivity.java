@@ -14,6 +14,8 @@ import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.CardioWorkoutItem;
 import com.gymrattrax.scheduler.model.ExerciseName;
 import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
+import com.gymrattrax.scheduler.receiver.NotifyReceiver;
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -75,9 +77,9 @@ public class SelectTimeActivity extends ActionBarActivity {
                 time = d[2] + " minutes";
             }
             String date = d[3];
-//            exName.setText(name + " ");
-//            exDetails.setText(distance + " in " + time);
-//            exDate.setText("on " + date);
+            exName.setText(name + " ");
+            exDetails.setText(distance + " in " + time);
+            exDate.setText("on " + date);
         } else
         // Display strength details
         {
@@ -211,13 +213,13 @@ public class SelectTimeActivity extends ActionBarActivity {
         DatabaseHelper dbh = new DatabaseHelper(SelectTimeActivity.this);
         StrengthWorkoutItem sItem = new StrengthWorkoutItem();
 
-        // Set Strength date
-        String dateString = details[5];
+        // Set Strength date and time
+        String dateString = details[4];
         String[] dateArray = dateString.split("/", 3);
         int month = Integer.parseInt(dateArray[0]);
         int day = Integer.parseInt(dateArray[1]);
         int year = Integer.parseInt(dateArray[2]);
-        String[] timeArr = details[6].split(":", 2);
+        String[] timeArr = details[5].split(":", 2);
         int hour = Integer.parseInt(timeArr[0]);
         int minute = Integer.parseInt(timeArr[1]);
 
@@ -225,6 +227,8 @@ public class SelectTimeActivity extends ActionBarActivity {
         cal.set(year, month, day, hour, minute);
         Date d = cal.getTime();
         sItem.setDateScheduled(d);
+
+        sItem.setNotificationDefault(true);
 
         // Set Strength name
         ExerciseName exName = ExerciseName.fromString(name);
@@ -238,8 +242,10 @@ public class SelectTimeActivity extends ActionBarActivity {
         sItem.setRepsScheduled(reps);
         sItem.setSetsScheduled(sets);
 
+        NotifyReceiver.cancelNotifications(this);
         dbh.addWorkout(sItem);
 //        Toast.makeText(this, "Strength workout added to schedule", Toast.LENGTH_SHORT).show();
         dbh.close();
+        NotifyReceiver.setNotifications(this);
     }
 }
