@@ -22,5 +22,9 @@
     <item name="strength_sets" type="id">strreps</item>
     <item name="edit_workout_cardio" type="id">Edit Workout</item>
     <item name="TimeSelected" type="id">Time</item>
+    <item name="ex_name" type="id">ExerciseName</item>
+    <item name="ex_details" type="id">ExerciseDetails</item>
+    <item name="notifications_text" type="id">NotifText</item>
+    <item name="ex_date" type="id">ExerciseDate</item>
 
 </resources>

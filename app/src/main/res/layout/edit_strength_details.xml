@@ -9,81 +9,111 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:textStyle="bold"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/strength_details"
-        android:text="@string/CurrEx"/>
+        android:text="@string/set_goal"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="20dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/exercise_name"
+        android:layout_margin="5dp"
+        android:textStyle="bold"
+        android:id="@+id/ex_name" />
 
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/Esets"
-        android:id="@+id/entersets"
-        android:layout_gravity="center_horizontal" />
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="350dp"
+        android:layout_height="0dp"
+        android:background="@color/primary100"
+        android:baselineAligned="true"
+        android:weightSum="1"
+        android:layout_weight="0.94"
+        android:layout_gravity="center_horizontal">
 
-    <EditText
-        android:layout_width="175dp"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:ems="10"
-        android:id="@+id/editText"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/enterweight"
+            android:layout_margin="10dp"
+            android:id="@+id/textView3"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="20dp"
+        <EditText
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
 
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/enterreps"
-        android:id="@+id/textView2"
-        android:layout_gravity="center_horizontal" />
+            android:ems="10"
+            android:id="@+id/editText"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:layout_below="@+id/textView3"
+            android:layout_centerHorizontal="true" />
 
-    <EditText
-        android:layout_width="175dp"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:ems="10"
-        android:id="@+id/editText2"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/Esets"
+            android:layout_margin="10dp"
+            android:id="@+id/entersets"
+            android:layout_gravity="center_horizontal"
+            android:layout_below="@+id/editText"
+            android:layout_centerHorizontal="true" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="20dp"
+        <EditText
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:layout_margin="10dp"
+            android:id="@+id/editText2"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:layout_below="@+id/entersets"
+            android:layout_centerHorizontal="true" />
 
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/enterweight"
-        android:id="@+id/textView3"
-        android:layout_gravity="center_horizontal" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/enterreps"
+            android:id="@+id/textView2"
+            android:layout_margin="10dp"
+            android:layout_below="@+id/editText2"
+            android:layout_centerHorizontal="true" />
 
-    <EditText
-        android:layout_width="175dp"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:ems="10"
-        android:id="@+id/editText3"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center" />
+        <EditText
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:layout_margin="10dp"
+            android:id="@+id/editText3"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:layout_below="@+id/textView2"
+            android:layout_centerHorizontal="true" />
+
+    </RelativeLayout>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="140dp"
+        android:layout_margin="20dp"
         android:text="@string/next"
         android:id="@+id/next"
         android:clickable="true"
         android:textStyle="bold"
         android:textSize="25sp"
         android:background="@drawable/button_shp_rvrs_press"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="5dp" />
+        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>

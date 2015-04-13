@@ -2,12 +2,10 @@ package com.gymrattrax.scheduler.activity;
 
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
-
 import com.gymrattrax.scheduler.model.ExerciseName;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterAdd;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterEdit.custButtonListener;
 import com.gymrattrax.scheduler.R;
-
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,7 +13,6 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 
 public class AddWorkoutActivity extends ActionBarActivity implements custButtonListener, ListViewAdapterAdd.custButtonListener {
     private ArrayList<String> workoutItems = new ArrayList<>();
@@ -26,7 +23,6 @@ public class AddWorkoutActivity extends ActionBarActivity implements custButtonL
         setContentView(R.layout.activity_add_workout);
 
         displayAllWorkouts();
-
     }
 
     private void displayAllWorkouts() {
@@ -48,14 +44,19 @@ public class AddWorkoutActivity extends ActionBarActivity implements custButtonL
         });
     }
 
-    private void displayCardioDetails() {
-        Intent intent = new Intent(AddWorkoutActivity.this, AddStrengthWorkoutActivity.class);
+    private void displayCardioDetails(String s) {
+        Intent intent = new Intent(AddWorkoutActivity.this, AddCardioWorkoutActivity.class);
+        Bundle extras = new Bundle();
+        extras.putString("details", s);
+        intent.putExtras(extras);
         startActivity(intent);
     }
 
     private void displayStrengthDetails(String s) {
         Intent intent = new Intent(AddWorkoutActivity.this, AddStrengthWorkoutActivity.class);
-//        ExerciseName details = ExerciseName.fromString(s);
+        Bundle extras = new Bundle();
+        extras.putString("details", s);
+        intent.putExtras(extras);
         startActivity(intent);
     }
 
@@ -67,13 +68,13 @@ public class AddWorkoutActivity extends ActionBarActivity implements custButtonL
     public void onButtonClickListener(int position, String value) {
         switch (ExerciseName.fromString(value)) {
             case WALK:
-                displayCardioDetails();
+                displayCardioDetails(value);
                 break;
             case JOG:
-                displayCardioDetails();
+                displayCardioDetails(value);
                 break;
             case RUN:
-                displayCardioDetails();
+                displayCardioDetails(value);
                 break;
             default:
                 displayStrengthDetails(value);

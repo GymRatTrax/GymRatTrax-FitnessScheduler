@@ -93,10 +93,14 @@
         </activity>
         <activity
             android:name=".activity.SelectDateActivity"
-            android:label="@string/select_date_time_activity" >
+            android:label="@string/select_date_activity" >
         </activity>
         <activity
             android:name=".activity.SelectTimeActivity"
+            android:label="@string/select_time_activity" >
+        </activity>
+        <activity
+            android:name=".activity.AddCardioWorkoutActivity"
             android:label="@string/add_workout_activity_add_cardio" >
         </activity>
 

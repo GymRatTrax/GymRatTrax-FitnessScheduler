@@ -11,53 +11,84 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        android:textStyle="bold"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/select_date_time_string"
         android:id="@+id/date_time"
         android:layout_gravity="center_horizontal" />
 
-    <CalendarView
-        android:layout_width="match_parent"
-        android:layout_height="280dp"
-        android:layout_marginTop="10dp"
-        android:id="@+id/calendar"
-        android:layout_gravity="center_horizontal"
-        android:background="@color/primary100"
-        android:clickable="true" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/exercise_name"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:textStyle="bold"
+        android:id="@+id/ex_name" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_marginTop="10dp"
-        android:text="Date Selected:"
+        android:text="@string/exDetails"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="15dp"
+        android:id="@+id/ex_details" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_margin="5dp"
+        >
+
+        <CalendarView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/calendar"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/primary100"
+            android:clickable="true" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_margin="5dp"
+        android:text="@string/DateSelected"
         android:id="@+id/textViewDate" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Date"
+        android:text="@string/Date"
         android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
         android:id="@+id/date_text"
         android:layout_gravity="center_horizontal" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/CurrentTime"
-        android:id="@+id/display_time"
-        android:layout_gravity="left" />
+    <!--<TextView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginLeft="5dp"-->
+    <!--android:layout_marginStart="5dp"-->
+    <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
+    <!--android:text="@string/CurrentTime"-->
+    <!--android:id="@+id/display_time"-->
+    <!--android:layout_gravity="start" />-->
 
     <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
-        <!--android:text="Time"-->
-        <!--android:id="@+id/TimeSelected"-->
-        <!--android:layout_gravity="center_horizontal" />-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
+    <!--android:text="Time"-->
+    <!--android:id="@+id/TimeSelected"-->
+    <!--android:layout_gravity="center_horizontal" />-->
 
     <Button
         android:layout_width="wrap_content"
@@ -66,9 +97,9 @@
         android:id="@+id/next"
         android:clickable="true"
         android:textStyle="bold"
+        android:layout_margin="5dp"
         android:textSize="25sp"
         android:background="@drawable/button_shp_rvrs_press"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="10dp" />
+        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>
