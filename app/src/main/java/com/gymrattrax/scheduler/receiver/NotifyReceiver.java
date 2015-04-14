@@ -15,6 +15,8 @@ import com.gymrattrax.scheduler.activity.SettingsActivity;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
@@ -79,6 +81,26 @@ public class NotifyReceiver extends BroadcastReceiver {
                 }
             }
             dbh.close();
+
+//            if (sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_WEIGH_ENABLED, false)) {
+//                Calendar calendar = Calendar.getInstance();
+//                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss");
+//                try {
+//                    calendar.setTime(sdf.parse(sharedPref.getString(SettingsActivity.PREF_NOTIFY_WEIGH_TIME, "")));
+//                } catch (ParseException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                if (calendar.after(today)) {
+//                    Log.d(TAG, "About to set notification (ID: " + workoutItem.getID() + ").");
+//                    setNotification(context, calendar, pIntent);
+//                } else {
+//                    Log.d(TAG, "Notification (ID: " + workoutItem.getID() + ") not set.");
+//                }
+//                if (sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_WEIGH_INHERIT, true)) {
+//
+//                }
+//            }
         }
     }
     private static void setNotification(Context context, Calendar calendar, PendingIntent pIntent) {

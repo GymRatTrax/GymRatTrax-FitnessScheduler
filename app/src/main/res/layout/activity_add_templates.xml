@@ -30,7 +30,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="350dp"
-        android:id="@+id/scrollView2"
+        android:id="@+id/addTemplateScroll"
         android:layout_gravity="center_horizontal"
         android:fillViewport="false"
         android:layout_weight="1.68">
@@ -38,7 +38,7 @@
             android:layout_width="match_parent"
             android:orientation="vertical"
             android:layout_height="match_parent"
-            android:id="@+id/suggestions_layout">
+            android:id="@+id/addTemplateLayout">
         </LinearLayout>
     </ScrollView>
 

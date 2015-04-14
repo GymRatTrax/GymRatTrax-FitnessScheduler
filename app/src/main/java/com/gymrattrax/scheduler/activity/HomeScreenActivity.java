@@ -92,6 +92,9 @@ public class HomeScreenActivity extends ActionBarActivity {
                     return true;
                 }
             });
+        } else if (BuildConfig.BETA_MODE) {
+            TextView version = (TextView) findViewById(R.id.versionNum);
+            version.setText(version.getText() + " BETA");
         }
 
         beginWorkoutButton.setOnClickListener(new Button.OnClickListener() {
@@ -293,7 +296,7 @@ public class HomeScreenActivity extends ActionBarActivity {
     private void buildFitnessClient() {
         // Create the Google API Client
         mClient = new GoogleApiClient.Builder(this)
-                .addApi(Fitness.API)
+//                .addApi(Fitness.API)
                 .addScope(new Scope(Scopes.FITNESS_LOCATION_READ))
                 .addConnectionCallbacks(
                         new GoogleApiClient.ConnectionCallbacks() {

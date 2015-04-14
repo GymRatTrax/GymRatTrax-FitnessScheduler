@@ -48,9 +48,7 @@ public class AddTemplatesActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_add_templates);
 
-        SuggestWorkoutButton = (Button) findViewById(R.id.negate_cal_button);
-        NegateEditText = (EditText) findViewById(R.id.negate_calories);
-        linearContainer = (LinearLayout) findViewById(R.id.suggestions_layout);
+        linearContainer = (LinearLayout) findViewById(R.id.addTemplateLayout);
         buttons = new Button[5];
         for (int i = 0; i < buttons.length; i++) {
             buttons[i] = new Button(AddTemplatesActivity.this);
