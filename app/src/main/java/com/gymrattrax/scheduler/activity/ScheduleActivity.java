@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterEdit;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
+import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ public class ScheduleActivity extends ActionBarActivity implements ListViewAdapt
 
     private ArrayList<String> workoutItems = new ArrayList<>();
     private String name;
+    private int id;
 
     WorkoutItem[] workouts = new WorkoutItem[100];
 
@@ -144,21 +146,50 @@ public class ScheduleActivity extends ActionBarActivity implements ListViewAdapt
         cal.set(2020, 3, 14);
         Date end = cal.getTime();
         workouts = dbh.getWorkoutsInRange(start, end);
-        String[] workoutsString = new String[workouts.length];
+        String[] workoutsArray = new String[workouts.length];
 
         for (final WorkoutItem w : workouts) {
-            workoutsString[i] = w.getName().toString();
-            double minutesDbl = w.getTimeScheduled();
-            int secondsTotal = (int) (minutesDbl * 60);
-            int seconds = secondsTotal % 60;
-            int minutes = (secondsTotal - seconds) / 60;
+            workoutsArray[i] = w.getName().toString();
+            id = w.getID();
 
-            String time = "\n" + minutes + " minutes, " + seconds + " seconds";
-            time = dbh.displayDateTime(this, w.getDateScheduled()) + time;
-            String infoString = "" + w.getName().toString() + ": \n" + time;
-            workoutsString[i] = infoString;
+            if (workoutsArray[i].equals("Walking")
+                || workoutsArray[i].equals("Jogging")
+                || workoutsArray[i].equals("Running"))
+            {
+                double minutesDbl = w.getTimeScheduled();
+                int secondsTotal = (int) (minutesDbl * 60);
+                int seconds = secondsTotal % 60;
+                int minutes = (secondsTotal - seconds) / 60;
+
+                String time = "\n" + minutes + " minutes, " + seconds + " seconds";
+                time = dbh.displayDateTime(this, w.getDateScheduled()) + time;
+                String infoString = "" + w.getName().toString() + ": \n" + time;
+                workoutsArray[i] = infoString;
+            } else {
+                String weightUsed = "" + ((StrengthWorkoutItem)w).getWeightUsed();
+                String reps = "" + ((StrengthWorkoutItem)w).getRepsScheduled();
+                String sets = "" + ((StrengthWorkoutItem)w).getSetsScheduled();
+                String dateTime = dbh.displayDateTime(this, w.getDateScheduled()) + "\n";
+                if (Double.parseDouble(weightUsed) == 1) {
+                    weightUsed = weightUsed + " lb x ";
+                } else {
+                    weightUsed = weightUsed + " lbs x ";
+                }
+                if (Integer.parseInt(sets) == 1) {
+                    sets = sets + " set x ";
+                } else {
+                    sets = sets + " sets x ";
+                }
+                if (Integer.parseInt(reps) == 1) {
+                    reps = reps + " rep";
+                } else {
+                    reps = reps + " reps";
+                }
+                String infoString = "" + w.getName().toString() + ":\n" + dateTime + weightUsed + sets + reps;
+                workoutsArray[i] = infoString;
+            }
             i++;
         }
-        return workoutsString;
+        return workoutsArray;
     }
 }

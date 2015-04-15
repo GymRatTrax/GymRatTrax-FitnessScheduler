@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
+
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.CardioWorkoutItem;
@@ -34,7 +34,7 @@ public class SelectTimeActivity extends ActionBarActivity {
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             selectedHour = hourOfDay;
             selectedMinutes = minute;
-            setTimeFromPicker();
+            getTimeFromPicker();
         }
     };
 
@@ -48,7 +48,7 @@ public class SelectTimeActivity extends ActionBarActivity {
         Button doneButton = (Button) findViewById(R.id.doneButton);
         TextView notifText = (TextView) findViewById(R.id.notifications_text);
         timeText = (TextView) findViewById(R.id.TimeSelected);
-        setTimeFromPicker();
+        getTimeFromPicker();
         String timeString = "" + selectedHour + ":" + selectedMinutes;
         final TextView exName = (TextView) findViewById(R.id.ex_name);
         final TextView exDetails = (TextView) findViewById(R.id.ex_details);
@@ -86,7 +86,7 @@ public class SelectTimeActivity extends ActionBarActivity {
             String weight;
             String sets;
             String reps;
-            if (Integer.parseInt(d[1]) == 1) {
+            if (Double.parseDouble(d[1]) == 1) {
                 weight = d[1] + " lb x ";
             } else {
                 weight = d[1] + " lbs x ";
@@ -116,39 +116,41 @@ public class SelectTimeActivity extends ActionBarActivity {
         });
     }
 
-    private void setTimeFromPicker() {
+    private String getTimeFromPicker() {
         String am = "AM";
         String pm = "PM";
+        String hour;
+        String minutes;
 
         if (selectedHour > 12) {
 
             selectedHour -= 12;
-            String hour = (selectedHour > 9) ? "" + selectedHour : "" + selectedHour;
-            String minutes = (selectedMinutes > 9) ? "" + selectedMinutes : "0" + selectedMinutes;
+            hour = (selectedHour > 9) ? "" + selectedHour : "" + selectedHour;
+            minutes = (selectedMinutes > 9) ? "" + selectedMinutes : "0" + selectedMinutes;
             timeText.setText(hour + ":" + minutes + " " + pm);
         }
         else if (selectedHour == 0) {
             selectedHour += 12;
-            String hour = (selectedHour > 9) ? "" + selectedHour : "" + selectedHour;
-            String minutes = (selectedMinutes > 9) ? "" + selectedMinutes : "0" + selectedMinutes;
+            hour = (selectedHour > 9) ? "" + selectedHour : "" + selectedHour;
+            minutes = (selectedMinutes > 9) ? "" + selectedMinutes : "0" + selectedMinutes;
             timeText.setText(hour + ":" + minutes + " " + am);
         }
         else if (selectedHour == 12) {
-            String hour = (selectedHour > 9) ? "" + selectedHour : "" + selectedHour;
-            String minutes = (selectedMinutes > 9) ? "" + selectedMinutes : "0" + selectedMinutes;
+            hour = (selectedHour > 9) ? "" + selectedHour : "" + selectedHour;
+            minutes = (selectedMinutes > 9) ? "" + selectedMinutes : "0" + selectedMinutes;
             timeText.setText(hour + ":" + minutes + " " + pm);
         }
         else {
-            String hour = (selectedHour > 9) ? "" + selectedHour : "0" + selectedHour;
-            String minutes = (selectedMinutes > 9) ? "" + selectedMinutes : "0" + selectedMinutes;
+            hour = (selectedHour > 9) ? "" + selectedHour : "0" + selectedHour;
+            minutes = (selectedMinutes > 9) ? "" + selectedMinutes : "0" + selectedMinutes;
             timeText.setText(hour + ":" + minutes + " " + am);
         }
+        return timeText.toString();
     }
 
     private void loadHomeScreen() {
         Intent intent = new Intent(SelectTimeActivity.this, HomeScreenActivity.class);
-        setTimeFromPicker();
-        String timePicked = selectedMinutes + ":" + selectedHour;
+        String timePicked = getTimeFromPicker();
         String newDetails = detailsString + "QQ" + timePicked;
         addThisWorkout(newDetails);
         startActivity(intent);
@@ -182,9 +184,8 @@ public class SelectTimeActivity extends ActionBarActivity {
         int month = Integer.parseInt(dateArray[0]);
         int day = Integer.parseInt(dateArray[1]);
         int year = Integer.parseInt(dateArray[2]);
-        String[] hoursMinutes = details[4].split(":", 2);
-        int hour = Integer.parseInt(hoursMinutes[0]);
-        int minute = Integer.parseInt(hoursMinutes[1]);
+        int hour = selectedHour;
+        int minute = selectedMinutes;
 
         Calendar cal = Calendar.getInstance();
         cal.set(year, month, day, hour, minute);
@@ -219,9 +220,8 @@ public class SelectTimeActivity extends ActionBarActivity {
         int month = Integer.parseInt(dateArray[0]);
         int day = Integer.parseInt(dateArray[1]);
         int year = Integer.parseInt(dateArray[2]);
-        String[] timeArr = details[5].split(":", 2);
-        int hour = Integer.parseInt(timeArr[0]);
-        int minute = Integer.parseInt(timeArr[1]);
+        int hour = selectedHour;
+        int minute = selectedMinutes;
 
         Calendar cal = Calendar.getInstance();
         cal.set(year, month, day, hour, minute);
