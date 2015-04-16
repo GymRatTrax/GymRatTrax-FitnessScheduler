@@ -73,7 +73,7 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
         counter = ((StrengthWorkoutItem)w).getSetsCompleted();
 
         if (w.getCaloriesBurned() > 0){
-            status.setText(String.format("You have logged this workout. Calories burned: %d", w.getCaloriesBurned()));
+            status.setText(String.format("You have logged this workout. Calories burned: %f", w.getCaloriesBurned()));
         }
 
         setsCompleted.setText("Completed Sets: " + Integer.toString(counter));
