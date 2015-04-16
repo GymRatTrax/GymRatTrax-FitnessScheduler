@@ -1,4 +1,9 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools" tools:context=".HomeScreen">
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_achievements"
+        android:title="@string/menu_achievements" />
+    <item android:id="@+id/menu_add_templates"
+        android:title="@string/menu_add_templates" />
+    <item android:id="@+id/menu_settings"
+        android:title="@string/menu_settings" />
 </menu>

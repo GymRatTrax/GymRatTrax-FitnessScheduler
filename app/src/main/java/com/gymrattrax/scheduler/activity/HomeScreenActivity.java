@@ -1,11 +1,13 @@
 package com.gymrattrax.scheduler.activity;
 
+import android.app.Activity;
 import android.content.IntentSender;
+import android.net.Uri;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -31,7 +33,7 @@ import com.gymrattrax.scheduler.model.ProfileItem;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
-public class HomeScreenActivity extends ActionBarActivity {
+public class HomeScreenActivity extends Activity {
     private static final String TAG = "HomeScreenActivity";
     private static final int REQUEST_OAUTH = 1;
 
@@ -53,14 +55,15 @@ public class HomeScreenActivity extends ActionBarActivity {
             authInProgress = savedInstanceState.getBoolean(AUTH_PENDING);
         }
 
-//        buildFitnessClient();
-
         //initiate tutorial/profile creation if there is no ProfileItem ID in database
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         ProfileItem create = new ProfileItem(this);
         if (!create.isComplete()) {
             initiateNewUserProfileSetup();
         }
+
+//        buildFitnessClient();
+
         setContentView(R.layout.activity_home_screen);
         final Animation animTranslate = AnimationUtils.loadAnimation(this, R.anim.anim_rotate);
 
@@ -82,8 +85,6 @@ public class HomeScreenActivity extends ActionBarActivity {
         });
 
         if (BuildConfig.DEBUG_MODE) {
-            TextView version = (TextView) findViewById(R.id.versionNum);
-            version.setText(version.getText() + " DEBUG");
             gymRat.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
@@ -146,7 +147,6 @@ public class HomeScreenActivity extends ActionBarActivity {
             @Override
             public void onClick(View view) {
                 loadSettings(view);
-//                loadNotificationTest(view);
             }
         });
 
@@ -157,6 +157,34 @@ public class HomeScreenActivity extends ActionBarActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_home_screen, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        Intent intent;
+        switch (item.getItemId()) {
+            case R.id.menu_feedback: //if BuildConfig.BETA_MODE
+                String url = "https://plus.google.com/communities/108977617832834843137";
+                intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                startActivity(intent);
+                return true;
+            case R.id.menu_achievements:
+                intent = new Intent (HomeScreenActivity.this, AchievementsActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.menu_add_templates:
+                intent = new Intent (HomeScreenActivity.this, AddTemplatesActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.menu_settings:
+                intent = new Intent (HomeScreenActivity.this, SettingsActivity.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 
@@ -189,11 +217,6 @@ public class HomeScreenActivity extends ActionBarActivity {
         Intent intent = new Intent (HomeScreenActivity.this, SettingsActivity.class);
         startActivity(intent);
     }
-//    public void loadNotificationTest(View view){
-//        Intent intent = new Intent (HomeScreenActivity.this, NotificationActivity.class);
-//        startActivity(intent);
-//    }
-
 
     //this method is triggered when user selects "View Progress" button from the main page
     public void loadProgress(View view){
@@ -281,6 +304,7 @@ public class HomeScreenActivity extends ActionBarActivity {
         toast.show();
         Intent intent = new Intent(HomeScreenActivity.this, ProfileSetupActivity.class);
         startActivity(intent);
+        finish();
     }
     /**
      *  Build a {@link GoogleApiClient} that will authenticate the user and allow the application
@@ -293,7 +317,7 @@ public class HomeScreenActivity extends ActionBarActivity {
     private void buildFitnessClient() {
         // Create the Google API Client
         mClient = new GoogleApiClient.Builder(this)
-                .addApi(Fitness.API)
+//                .addApi(Fitness.API)
                 .addScope(new Scope(Scopes.FITNESS_LOCATION_READ))
                 .addConnectionCallbacks(
                         new GoogleApiClient.ConnectionCallbacks() {

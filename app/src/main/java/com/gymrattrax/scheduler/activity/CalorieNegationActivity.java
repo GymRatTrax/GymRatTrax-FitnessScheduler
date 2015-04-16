@@ -40,7 +40,6 @@ public class CalorieNegationActivity extends ActionBarActivity {
     Button[] buttons;
     double[] times;
     ExerciseName[] exName;
-//    private NotifyScheduler notifyScheduler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -120,6 +119,7 @@ public class CalorieNegationActivity extends ActionBarActivity {
 
                 double BMR = p.getBMR();
 
+                //TODO: Resolve above comment
                 /*
                 NOTE: Also, now that I understand more of how we determine METs values, I feel like
                 there is a more efficient and more accurate way to do it. Until I figure that out
@@ -187,9 +187,6 @@ public class CalorieNegationActivity extends ActionBarActivity {
                     }
                     viewTime.setText(time);
 
-//                    LayoutParams mainParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-//                            LayoutParams.WRAP_CONTENT);
-//                    main.setLayoutParams(mainParams);
                     LayoutParams stackParams = new LinearLayout.LayoutParams(600,
                             LayoutParams.WRAP_CONTENT);
                     stack.setLayoutParams(stackParams);
@@ -291,31 +288,11 @@ public class CalorieNegationActivity extends ActionBarActivity {
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_calorie_negation, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     public void BackToHomeScreen(View view){
         Toast toast = Toast.makeText(getApplicationContext(),
                 "Workout successfully added to current schedule.", Toast.LENGTH_SHORT);
         toast.show();
-        Intent intent = new Intent (CalorieNegationActivity.this, HomeScreenActivity.class);
-        startActivity(intent);
+        finish();
     }
 
     public void addThisWorkout(WorkoutItem w) {

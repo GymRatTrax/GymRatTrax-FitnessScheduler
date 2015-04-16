@@ -1,75 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primary"
     android:baselineAligned="true"
-    android:weightSum="1"
-    android:id="@+id/add_cardio_layout">
+    android:weightSum="1">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/select_cardio_to_add"
-        android:id="@+id/cardio_title"
-        android:layout_gravity="center_horizontal" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/select_cardio_time"
-        android:id="@+id/cardio_set_time"
-        android:layout_gravity="center_horizontal" />
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:inputType="number"
-        android:ems="10"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_marginBottom="40dp"
-        android:id="@+id/editText4"
+        android:layout_margin="2dp"
+        android:textStyle="bold"
         android:layout_gravity="center_horizontal"
-        android:gravity="center"
-        android:background="@color/primary100" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/strength_details"
+        android:text="@string/set_goal_add"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/select_cardio_distance"
-        android:layout_margin="20dp"
-        android:id="@+id/cardio_set_distance"
-        android:layout_gravity="center_horizontal" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/exercise_name"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:textStyle="bold"
+        android:id="@+id/ex_name" />
 
-    <EditText
+    <RelativeLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:inputType="number"
-        android:layout_marginBottom="40dp"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:ems="10"
-        android:id="@+id/editText5"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center"
-        android:background="@color/primary100" />
+        android:layout_height="0dp"
+        android:layout_margin="5dp"
+        android:background="@color/primary100"
+        android:baselineAligned="true"
+        android:weightSum="1"
+        android:layout_weight="0.94"
+        android:layout_gravity="center_horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/select_cardio_distance"
+            android:paddingTop="50dp"
+            android:layout_margin="10dp"
+            android:id="@+id/entersets"
+            android:layout_gravity="center_horizontal"
+            android:layout_centerHorizontal="true" />
+
+        <EditText
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:layout_margin="10dp"
+            android:id="@+id/editText2"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:layout_below="@+id/entersets"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/select_cardio_time"
+            android:id="@+id/textView2"
+            android:layout_margin="10dp"
+            android:layout_below="@+id/editText2"
+            android:layout_centerHorizontal="true" />
+
+        <EditText
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:layout_margin="10dp"
+            android:id="@+id/editText3"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:layout_below="@+id/textView2"
+            android:layout_centerHorizontal="true" />
+
+    </RelativeLayout>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_margin="20dp"
         android:text="@string/next"
         android:id="@+id/next"
         android:clickable="true"
         android:textStyle="bold"
         android:textSize="25sp"
         android:background="@drawable/button_shp_rvrs_press"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="5dp" />
+        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>

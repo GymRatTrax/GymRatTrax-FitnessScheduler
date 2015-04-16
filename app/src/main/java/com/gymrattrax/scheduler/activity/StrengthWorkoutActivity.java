@@ -40,6 +40,7 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
     int exertionLvl;
     double userWeight;
     ImageButton link;
+    TextView status;
 
 
     @Override
@@ -54,8 +55,11 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
         setsCompleted = (TextView)findViewById(R.id.completed_sets);
         completeWorkout = (Button)findViewById(R.id.complete_strength);
         link = (ImageButton)findViewById(R.id.youtube_strength);
+        status = (TextView)findViewById(R.id.strength_status);
+
         Bundle b = getIntent().getExtras();
         ID = b.getInt("ID");
+
 
         ProfileItem user = new ProfileItem(StrengthWorkoutActivity.this);
         userWeight = user.getWeight();
@@ -67,6 +71,10 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
         reps = ((StrengthWorkoutItem)w).getRepsScheduled();
         weight = ((StrengthWorkoutItem)w).getWeightUsed();
         counter = ((StrengthWorkoutItem)w).getSetsCompleted();
+
+        if (w.getCaloriesBurned() > 0){
+            status.setText(String.format("You have logged this workout. Calories burned: %f", w.getCaloriesBurned()));
+        }
 
         setsCompleted.setText("Completed Sets: " + Integer.toString(counter));
 
@@ -363,6 +371,8 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
         double caloriesBurned = mets * userWeight * time;
         w.setCaloriesBurned(caloriesBurned);
         dbh.completeWorkout(w);
+        dbh.close();
+        status.setText(String.format("You have logged this workout. Calories burned: %f", w.getCaloriesBurned()));
     }
 
 }

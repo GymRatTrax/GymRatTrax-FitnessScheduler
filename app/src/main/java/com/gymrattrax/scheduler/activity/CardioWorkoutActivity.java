@@ -1,11 +1,13 @@
 package com.gymrattrax.scheduler.activity;
 
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Chronometer;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.RadioButton;
@@ -20,6 +22,11 @@ import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
 
+/** TO-DO convert chronometer time into an estimation
+ *  Complete cardioworkouts
+ *  if calories have been calculated, inform user workout is completed
+ *
+ */
 
 public class CardioWorkoutActivity extends ActionBarActivity {
 
@@ -33,11 +40,14 @@ public class CardioWorkoutActivity extends ActionBarActivity {
     Chronometer timer;
     double recordedTime = 0;
     TextView goalTime;
+    TextView completedTime;
     long timerState;
     static final String TIMER_STATE = "timerState";
     WorkoutItem w;
     int ID;
     double userWeight;
+    String timeString;
+    ImageButton link;
 
     @Override
     protected void onSaveInstanceState(Bundle savedInstanceState){
@@ -54,12 +64,23 @@ public class CardioWorkoutActivity extends ActionBarActivity {
         DatabaseHelper dbh = new DatabaseHelper(this);
 
         TextView title = (TextView) findViewById(R.id.cardio_title);
-        TextView scheduled = (TextView) findViewById(R.id.scheduled_time);
         goalTime = (TextView) findViewById(R.id.scheduled_time);
+        completedTime = (TextView)findViewById(R.id.completed_time);
         completeWorkout = (Button) findViewById(R.id.complete_cardio);
         timer = (Chronometer) findViewById(R.id.chronometer);
         start = (Button) findViewById(R.id.start_cardio);
         stop = (Button) findViewById(R.id.stop_cardio);
+
+        link = (ImageButton) findViewById(R.id.youtube_cardio);
+
+        link.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(String.format("https://www.youtube.com/results?search_query=how+to+do+%s", w.getName())));
+                startActivity(intent);
+            }
+        });
 
         start.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,22 +108,25 @@ public class CardioWorkoutActivity extends ActionBarActivity {
         int secondsTotal = (int) (minutesDbl * 60);
         int seconds = secondsTotal % 60;
         int minutes = (secondsTotal - seconds) / 60;
-        String time = minutes + ":" + seconds;
+        timeString = String.format("%02d", minutes) + ":" + String.format("%02d", seconds);
 
-        scheduled.setText("Scheduled Time: " + time);
+        goalTime.setText("Scheduled Time: " + timeString);
         title.setText(name);
 
         completeWorkout.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                //check to see if all sets have been completed
                 //make sure time is documented
                 //make sure a radio button is selected
                 lastPause = timer.getBase() - SystemClock.elapsedRealtime();
                 timer.stop();
 
-                double saveTime = SystemClock.elapsedRealtime() - timer.getBase();
+                //completedTime.setText("Logged Time: " + timer.getText().toString());
+
+                // calculate minutes from total seconds
+                double timeForCalculation = getSecondsFromDurationString(timer.getText().toString())/60;
+
 
                 if (exertionLvl == 0) {
                     final AlertDialog.Builder exertBuild = new AlertDialog.Builder(CardioWorkoutActivity.this);
@@ -117,62 +141,61 @@ public class CardioWorkoutActivity extends ActionBarActivity {
                     });
                     exertBuild.show();
 
+//                    exertBuild.setNegativeButton("No!", new DialogInterface.OnClickListener(){
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            dialog.cancel();
+//                        }
+//                    });
+//                    exertBuild.show();
 
-                    exertBuild.setNegativeButton("No!", new DialogInterface.OnClickListener(){
+//                } else if (timer.getText().toString() != timeString){
+//                    final AlertDialog.Builder editTime = new AlertDialog.Builder(CardioWorkoutActivity.this);
+//                    editTime.setTitle("Attention");
+//                    editTime.setMessage("The amount of time spent is not the same as time scheduled.  Would you like to edit?");
+//                    /**
+//                     * Recreate xml file for dialogue box
+//                     */
+////                    View dialog_layout = getLayoutInflater().inflate(R.layout.dialog_layout, null);
+////                    EditText minutes = (EditText)dialog_layout.findViewById(R.id.Minutes);
+////                    EditText seconds = (EditText)dialog_layout.findViewById(R.id.Seconds);
+//
+////                    editTime.setView(dialog_layout);
+//                    editTime.show();
+//                }
+
+                }else if ((timer.getText().toString() == timeString)) {
+                    //prompt user input
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(CardioWorkoutActivity.this);
+                    updateCompletedWorkout();
+                    builder.setTitle("Attention");
+                    builder.setMessage("WORKOUT LOGGED!");
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
                         }
                     });
-                    exertBuild.show();
+                    builder.show();
 
-                } else if (saveTime != w.getTimeScheduled()){
-                    final AlertDialog.Builder editTime = new AlertDialog.Builder(CardioWorkoutActivity.this);
-
-                    /**
-                     * Recreate xml file for dialogue box
-                     */
-                    View dialog_layout = getLayoutInflater().inflate(R.layout.dialog_layout, null);
-                    EditText minutes = (EditText)dialog_layout.findViewById(R.id.Minutes);
-                    EditText seconds = (EditText)dialog_layout.findViewById(R.id.Seconds);
-
-                    editTime.setView(dialog_layout);
-                    editTime.show();
                 }
-//
-//                else if ((w.getTimeScheduled() != saveTime)) {
-//                    //prompt user input
-//                    AlertDialog.Builder builder = new AlertDialog.Builder(CardioWorkoutActivity.this);
-//                    builder.setTitle("Attention");
-//                    builder.setMessage("The amount of time spent is not the same as time scheduled.  Would you like to edit?");
-//
-//                    builder.setPositiveButton("Yes!", new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//
-//                            else{
-//                                updateCompletedWorkout();
-//                            }
-//
-//                        }
-//                    });
-//                }
+
+                else{
+                    AlertDialog.Builder notFinished = new AlertDialog.Builder(CardioWorkoutActivity.this);
+                    updateCompletedWorkout();
+                    notFinished.setTitle("Attention");
+                    notFinished.setMessage("WORKOUT LOGGED BUT SCHEDULED TIME NOT REACHED");
+                    notFinished.setPositiveButton("OK", new DialogInterface.OnClickListener(){
+                       @Override
+                       public void onClick(DialogInterface dialog, int which){
+                           dialog.cancel();
+                       }
+                    });
+
+                }
             }
         });
     }
-
-
-//
-//        });
-
-    //implement chronometer and click listener
-
-
-    //display scheduled/goal time
-
-    //display radio buttons for "How You felt" after completing workout activity.  These radio buttons
-    //will only be active after user clicks on COMPLETE
-
 
     public void onRadioButtonClicked(View view) {
         // Is the button now checked?
@@ -201,14 +224,43 @@ public class CardioWorkoutActivity extends ActionBarActivity {
         WorkoutItem w = dbh.getWorkoutById(ID);
         w.setExertionLevel(exertionLvl);
         double mets = w.calculateMETs();
+        double timeRecorded = getSecondsFromDurationString(timer.getText().toString())/60;
+        w.setTimeSpent(timeRecorded);
         double time = w.getTimeSpent();
 
         double weights[] = dbh.getLatestWeight();
-        userWeight = weights[weights.length - 1];
+        userWeight = weights[0];
 
         double caloriesBurned = mets * userWeight * time;
         w.setCaloriesBurned(caloriesBurned);
         dbh.completeWorkout(w);
+        dbh.close();
+
+        completedTime.setText(String.format("You have logged this workout. Time Spent: %s\nCalories Burned: %f", timer.getText().toString(),
+                w.getCaloriesBurned()));
+    }
+
+    public static int getSecondsFromDurationString(String value){
+
+        String [] parts = value.split(":");
+
+        // Wrong format, no value for you.
+        if(parts.length < 2 || parts.length > 3)
+            return 0;
+
+        int seconds = 0, minutes = 0, hours = 0;
+
+        if(parts.length == 2){
+            seconds = Integer.parseInt(parts[1]);
+            minutes = Integer.parseInt(parts[0]);
+        }
+        else if(parts.length == 3){
+            seconds = Integer.parseInt(parts[2]);
+            minutes = Integer.parseInt(parts[1]);
+            hours = Integer.parseInt(parts[1]);
+        }
+
+        return seconds + (minutes*60) + (hours*3600);
     }
 
 

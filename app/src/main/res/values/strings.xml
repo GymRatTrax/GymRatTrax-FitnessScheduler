@@ -100,4 +100,24 @@
     <string name="pref_notify_weigh">Weigh-in notification</string>
     <string name="set">Set</string>
     <string name="cancel">Cancel</string>
+    <string name="select_date_activity">Select Date</string>
+    <string name="set_goal">Set Goal</string>
+    <string name="exercise_name">Exercise Name</string>
+    <string name="current_goal">Current Exercise</string>
+    <string name="change_cardio">Set Cardio Goal</string>
+    <string name="change_cardio_time">Set Time</string>
+    <string name="Date">Date</string>
+    <string name="DateSelected">Date Selected</string>
+    <string name="exDetails">Exercise Details</string>
+    <string name="select_time">Select Time</string>
+    <string name="notification">Notification</string>
+    <string name="time">Time</string>
+    <string name="set_goal_add">Set Goal</string>
+    <string name="setGoal">Set Goal</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_feedback">Send feedback</string>
+    <string name="menu_achievements">Achievements</string>
+    <string name="menu_add_templates">Add Templates</string>
+    <string name="title_activity_achievements_activity">Achievements</string>
+    <string name="title_activity_add_templates_activity">Workout Templates</string>
 </resources>

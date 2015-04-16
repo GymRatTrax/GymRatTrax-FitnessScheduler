@@ -604,20 +604,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DatabaseContract.WorkoutTable.COLUMN_NAME_EXERTION_LEVEL)));
 
 
-            if (cursor.getInt(cursor.getColumnIndex(
-                    DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_DEFAULT)) > 0) {
-                workouts[i].setNotificationDefault(true);
-            } else {
-                workouts[i].setNotificationDefault(true);
-                workouts[i].setNotificationEnabled(cursor.getInt(cursor.getColumnIndex(
-                        DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_ENABLED)) == 1);
-                workouts[i].setNotificationVibrate(cursor.getInt(cursor.getColumnIndex(
-                        DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_VIBRATE)) == 1);
-                workouts[i].setNotificationMinutesInAdvance(cursor.getInt(cursor.getColumnIndex(
-                        DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_ADVANCE)));
-                workouts[i].setNotificationTone(Uri.parse(cursor.getString(cursor.getColumnIndex(
-                        DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_TONE))));
-            }
+//            if (cursor.getInt(cursor.getColumnIndex(
+//                    DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_DEFAULT)) > 0) {
+//                workouts[i].setNotificationDefault(true);
+//            } else {
+//                workouts[i].setNotificationDefault(true);
+//                workouts[i].setNotificationEnabled(cursor.getInt(cursor.getColumnIndex(
+//                        DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_ENABLED)) == 1);
+//                workouts[i].setNotificationVibrate(cursor.getInt(cursor.getColumnIndex(
+//                        DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_VIBRATE)) == 1);
+//                workouts[i].setNotificationMinutesInAdvance(cursor.getInt(cursor.getColumnIndex(
+//                        DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_ADVANCE)));
+//                workouts[i].setNotificationTone(Uri.parse(cursor.getString(cursor.getColumnIndex(
+//                        DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_TONE))));
+//            }
 //            workouts[i].setNotificationOngoing(
 //                    getProfileInfo(DatabaseContract.ProfileTable.KEY_NOTIFY_ONGOING).equals("1"));
 
