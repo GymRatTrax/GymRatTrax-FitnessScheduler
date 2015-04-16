@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TableLayout;
@@ -23,7 +24,10 @@ import com.gymrattrax.scheduler.model.ProfileItem;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
 import com.gymrattrax.scheduler.model.WorkoutItem;
+import android.net.Uri;
 
+// april 11: added functionality that informs user that workout item has been logged.
+// TO-DO: display calories burned after workout has been logged
 public class StrengthWorkoutActivity extends ActionBarActivity {
     int sets;
     int reps;
@@ -35,6 +39,9 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
     Button completeWorkout;
     int exertionLvl;
     double userWeight;
+    ImageButton link;
+    TextView status;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +54,12 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
         TextView weightUsed = (TextView)findViewById(R.id.weight_used);
         setsCompleted = (TextView)findViewById(R.id.completed_sets);
         completeWorkout = (Button)findViewById(R.id.complete_strength);
+        link = (ImageButton)findViewById(R.id.youtube_strength);
+        status = (TextView)findViewById(R.id.strength_status);
+
         Bundle b = getIntent().getExtras();
         ID = b.getInt("ID");
+
 
         ProfileItem user = new ProfileItem(StrengthWorkoutActivity.this);
         userWeight = user.getWeight();
@@ -61,10 +72,24 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
         weight = ((StrengthWorkoutItem)w).getWeightUsed();
         counter = ((StrengthWorkoutItem)w).getSetsCompleted();
 
+        if (w.getCaloriesBurned() > 0){
+            status.setText(String.format("You have logged this workout. Calories burned: %d", w.getCaloriesBurned()));
+        }
+
         setsCompleted.setText("Completed Sets: " + Integer.toString(counter));
 
         dbh.close();
         displaySets();
+
+        link.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(String.format("https://www.youtube.com/results?search_query=how+to+do+%s", w.getName())));
+                startActivity(intent);
+            }
+        });
+
         completeWorkout.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -72,7 +97,20 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
                 //check to see if all sets have been completed
                 //make sure time is documented
                 //make sure a radio button is selected
-                if (((StrengthWorkoutItem)w).getSetsCompleted() != ((StrengthWorkoutItem) w).getSetsScheduled()){
+                if (w.getCaloriesBurned() != 0){
+                    final AlertDialog.Builder exertBuild = new AlertDialog.Builder(StrengthWorkoutActivity.this);
+                    exertBuild.setTitle("Error");
+                    exertBuild.setMessage("You have completed this Workout Item!");
+
+                    exertBuild.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    exertBuild.show();
+                }
+                else if (((StrengthWorkoutItem)w).getSetsCompleted() != ((StrengthWorkoutItem) w).getSetsScheduled()){
                     //prompt user input
                     AlertDialog.Builder builder = new AlertDialog.Builder(StrengthWorkoutActivity.this);
                     builder.setTitle("Attention");
@@ -152,9 +190,6 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
             }
 
         });
-
-        // complete workout onclicklistener checks to see if 1 of radio buttons is selected.
-        // complete workout onclicklistener updates database with
 
         strengthSets.setText("Reps: "+ Integer.toString(reps));
         strengthReps.setText("Sets: " + Integer.toString(sets));
@@ -336,6 +371,8 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
         double caloriesBurned = mets * userWeight * time;
         w.setCaloriesBurned(caloriesBurned);
         dbh.completeWorkout(w);
+        dbh.close();
+        status.setText(String.format("You have logged this workout. Calories burned: %d", w.getCaloriesBurned()));
     }
 
 }
