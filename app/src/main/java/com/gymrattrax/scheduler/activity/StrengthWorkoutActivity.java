@@ -372,7 +372,7 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
         w.setCaloriesBurned(caloriesBurned);
         dbh.completeWorkout(w);
         dbh.close();
-        status.setText(String.format("You have logged this workout. Calories burned: %d", w.getCaloriesBurned()));
+        status.setText(String.format("You have logged this workout. Calories burned: %f", w.getCaloriesBurned()));
     }
 
 }
