@@ -1,9 +1,9 @@
 package com.gymrattrax.scheduler.activity;
 
+import android.app.Activity;
 import android.content.IntentSender;
 import android.net.Uri;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -33,7 +33,7 @@ import com.gymrattrax.scheduler.model.ProfileItem;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
-public class HomeScreenActivity extends ActionBarActivity {
+public class HomeScreenActivity extends Activity {
     private static final String TAG = "HomeScreenActivity";
     private static final int REQUEST_OAUTH = 1;
 
@@ -55,14 +55,15 @@ public class HomeScreenActivity extends ActionBarActivity {
             authInProgress = savedInstanceState.getBoolean(AUTH_PENDING);
         }
 
-//        buildFitnessClient();
-
         //initiate tutorial/profile creation if there is no ProfileItem ID in database
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         ProfileItem create = new ProfileItem(this);
         if (!create.isComplete()) {
             initiateNewUserProfileSetup();
         }
+
+//        buildFitnessClient();
+
         setContentView(R.layout.activity_home_screen);
         final Animation animTranslate = AnimationUtils.loadAnimation(this, R.anim.anim_rotate);
 
@@ -163,14 +164,22 @@ public class HomeScreenActivity extends ActionBarActivity {
         // Handle item selection
         Intent intent;
         switch (item.getItemId()) {
-            case R.id.menu_settings:
-                intent = new Intent (HomeScreenActivity.this, SettingsActivity.class);
-                startActivity(intent);
-                return true;
             case R.id.menu_feedback: //if BuildConfig.BETA_MODE
                 String url = "https://plus.google.com/communities/108977617832834843137";
                 intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(url));
+                startActivity(intent);
+                return true;
+            case R.id.menu_achievements:
+                intent = new Intent (HomeScreenActivity.this, AchievementsActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.menu_add_templates:
+                intent = new Intent (HomeScreenActivity.this, AddTemplatesActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.menu_settings:
+                intent = new Intent (HomeScreenActivity.this, SettingsActivity.class);
                 startActivity(intent);
                 return true;
             default:
@@ -295,6 +304,7 @@ public class HomeScreenActivity extends ActionBarActivity {
         toast.show();
         Intent intent = new Intent(HomeScreenActivity.this, ProfileSetupActivity.class);
         startActivity(intent);
+        finish();
     }
     /**
      *  Build a {@link GoogleApiClient} that will authenticate the user and allow the application

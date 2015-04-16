@@ -1,17 +1,16 @@
 package com.gymrattrax.scheduler.activity;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -19,312 +18,231 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.model.CardioWorkoutItem;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.ExerciseName;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
-import com.gymrattrax.scheduler.model.ProfileItem;
 import com.gymrattrax.scheduler.R;
-import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
 import java.util.Calendar;
 import java.util.Date;
 
-public class AddTemplatesActivity extends ActionBarActivity {
+public class AddTemplatesActivity extends Activity {
 
     private static final String TAG = "AddTemplatesActivity";
-    Button SuggestWorkoutButton;
-    EditText NegateEditText;
     LinearLayout linearContainer;
     Button[] buttons;
-    double[] times;
-    ExerciseName[] exName;
-//    private NotifyScheduler notifyScheduler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_add_templates);
+        if (getActionBar() != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         linearContainer = (LinearLayout) findViewById(R.id.addTemplateLayout);
         buttons = new Button[5];
         for (int i = 0; i < buttons.length; i++) {
             buttons[i] = new Button(AddTemplatesActivity.this);
         }
-        times = new double[5];
-        exName = new ExerciseName[5];
 
-//        notifyScheduler = new NotifyScheduler(this);
-//        notifyScheduler.doBindService();
+        InputMethodManager inputManager = (InputMethodManager)
+                getSystemService(Context.INPUT_METHOD_SERVICE);
 
-        SuggestWorkoutButton.setOnClickListener(new Button.OnClickListener() {
+        if (getCurrentFocus() != null)
+            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                    InputMethodManager.HIDE_NOT_ALWAYS);
 
-            @Override
-            public void onClick(View view) {
-
-                /** grab random workout item ID, calculate how long it will take to burn
-                 *  x amount of calories, return workout.
-                 *  update
-                 **/
-
-                InputMethodManager inputManager = (InputMethodManager)
-                        getSystemService(Context.INPUT_METHOD_SERVICE);
-
-                if (getCurrentFocus() != null)
-                    inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                            InputMethodManager.HIDE_NOT_ALWAYS);
-
-                //Remove button views if they have already been used
-                for (Button b : buttons) {
-                    if((b.getParent() != null)){
-                        ((LinearLayout)b.getParent()).removeView(b);
-                    }
-                }
-                linearContainer.removeAllViewsInLayout();
-                TableLayout a = new TableLayout(AddTemplatesActivity.this);
-                a.removeAllViews();
-
-                int caloriesToNegate;
-                try {
-                    caloriesToNegate = Integer.parseInt(NegateEditText.getText().toString());
-                } catch (NumberFormatException e) {
-                    Toast t = Toast.makeText(getApplicationContext(), "Invalid input.",
-                            Toast.LENGTH_SHORT);
-                    t.show();
-                    return;
-                }
-                if (caloriesToNegate > 400) {
-                    Toast t = Toast.makeText(getApplicationContext(),
-                            "Do not use this feature to 'work off' an entire meal. " +
-                                    "Try a smaller number.",
-                            Toast.LENGTH_SHORT);
-                    t.show();
-                    return;
-                } else if (caloriesToNegate < 0) {
-                    Toast t = Toast.makeText(getApplicationContext(), "Calories must be positive.",
-                            Toast.LENGTH_SHORT);
-                    t.show();
-                    return;
-                } else if (caloriesToNegate == 0) {
-                    Toast t = Toast.makeText(getApplicationContext(),
-                            "Zero calories? No workout needed!",
-                            Toast.LENGTH_SHORT);
-                    t.show();
-                    return;
-                }
-                ProfileItem p = new ProfileItem(AddTemplatesActivity.this);
-
-                double BMR = p.getBMR();
-
-                /*
-                NOTE: Also, now that I understand more of how we determine METs values, I feel like
-                there is a more efficient and more accurate way to do it. Until I figure that out
-                completely, I am just using some local variables here. -CS
-                 */
-                double cardio_walk = 3.0;
-                double cardio_jog = 7.0;
-                double cardio_run = 11.0;
-                double strength_light = 3.5;
-                double strength_vigorous = 6.0;
-
-                double[] METsValues = new double[]{strength_light, strength_vigorous,
-                        cardio_walk, cardio_jog, cardio_run};
-                //Linear
-                linearContainer.addView(a);
-
-                for (int i = 0; i < METsValues.length; i++) {
-                    double minutesDbl = ((60 * 24 * caloriesToNegate) / (METsValues[i] * BMR));
-                    int secondsTotal = (int) (minutesDbl * 60);
-                    int seconds = secondsTotal % 60;
-                    int minutes = (secondsTotal - seconds) / 60;
-                    times[i] = minutesDbl;
-                    TableRow row = new TableRow(AddTemplatesActivity.this);
-                    LinearLayout main = new LinearLayout(AddTemplatesActivity.this);
-                    LinearLayout stack = new LinearLayout(AddTemplatesActivity.this);
-                    TextView viewTitle = new TextView(AddTemplatesActivity.this);
-                    TextView viewTime = new TextView(AddTemplatesActivity.this);
-                    row.setId(1000 + i);
-                    main.setId(2000 + i);
-                    stack.setId(3000 + i);
-                    viewTitle.setId(4000 + i);
-                    viewTime.setId(5000 + i);
-                    row.removeAllViews();
-                    row.setBackgroundColor(getResources().getColor(R.color.primary200));
-                    row.setPadding(5,10,5,10);
-                    TableLayout.LayoutParams trParams = new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT,
-                            LayoutParams.WRAP_CONTENT);
-                    trParams.setMargins(0,5,0,5);
-                    row.setLayoutParams(trParams);
-
-                    main.setOrientation(LinearLayout.HORIZONTAL);
-                    stack.setOrientation(LinearLayout.VERTICAL);
-
-                    if (i <= 1) {
-                        exName[i] = ExerciseName.getRandomStrength();
-                    } else if (i == 2) {
-                        exName[2] = ExerciseName.WALK;
-                    } else if (i == 3) {
-                        exName[3] = ExerciseName.JOG;
-                    } else if (i == 4) {
-                        exName[4] = ExerciseName.RUN;
-                    }
-
-                    viewTitle.setText(exName[i].toString());
-                    viewTitle.setTextSize(20);
-                    String time = minutes + " minutes, " + seconds + " seconds";
-                    if (i == 0) {
-                        time = time.replaceAll("minutes","mins");
-                        time = time.replaceAll("seconds","secs");
-                        time += ": 12 reps, 4 sets, 10 lb weights";
-                    } else if (i == 1) {
-                        time = time.replaceAll("minutes","mins");
-                        time = time.replaceAll("seconds","secs");
-                        time += ": 20 reps, 6 sets, 20 lb weights";
-                    }
-                    viewTime.setText(time);
-
-                    LayoutParams stackParams = new LinearLayout.LayoutParams(600,
-                            LayoutParams.WRAP_CONTENT);
-                    stack.setLayoutParams(stackParams);
-                    stack.addView(viewTitle);
-                    stack.addView(viewTime);
-                    main.addView(stack);
-                    buttons[i].setHeight(20);
-                    buttons[i].setWidth(20);
-                    buttons[i].setId(6000+i);
-                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
-                        buttons[i].setBackgroundDrawable(getResources().getDrawable(R.drawable.add_button_press));
-                    else
-                        buttons[i].setBackground(getResources().getDrawable(R.drawable.add_button_press));
-                    main.addView(buttons[i]);
-                    row.addView(main);
-                    a.addView(row);
-                }
+        //Remove button views if they have already been used
+        for (Button b : buttons) {
+            if((b.getParent() != null)){
+                ((LinearLayout)b.getParent()).removeView(b);
             }
-        });
+        }
+        linearContainer.removeAllViewsInLayout();
+        TableLayout a = new TableLayout(AddTemplatesActivity.this);
+        a.removeAllViews();
+
+        linearContainer.addView(a);
+
+        for (int i = 0; i < 3; i++) {
+            TableRow row = new TableRow(AddTemplatesActivity.this);
+            LinearLayout main = new LinearLayout(AddTemplatesActivity.this);
+            LinearLayout stack = new LinearLayout(AddTemplatesActivity.this);
+            TextView viewTitle = new TextView(AddTemplatesActivity.this);
+            TextView viewTime = new TextView(AddTemplatesActivity.this);
+            row.setId(1000 + i);
+            main.setId(2000 + i);
+            stack.setId(3000 + i);
+            viewTitle.setId(4000 + i);
+            viewTime.setId(5000 + i);
+            row.removeAllViews();
+            row.setBackgroundColor(getResources().getColor(R.color.primary200));
+            row.setPadding(5,10,5,10);
+            TableLayout.LayoutParams trParams = new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+                    LayoutParams.WRAP_CONTENT);
+            trParams.setMargins(0,5,0,5);
+            row.setLayoutParams(trParams);
+
+            main.setOrientation(LinearLayout.HORIZONTAL);
+            stack.setOrientation(LinearLayout.VERTICAL);
+
+            String title = "";
+            String time = "";
+            switch (i) {
+                case 0:
+                    title = "Prepare for 5K";
+                    time = "4-Week Plan";
+                    break;
+                case 1:
+                    title = "Balanced Routine";
+                    time = "3-Week Plan";
+                    break;
+                case 2:
+                    title = "Going the Extra Mile";
+                    time = "Complete a scheduled cardio workout with a distance of at least one" +
+                            "mile in excess of the miles scheduled.";
+                    break;
+            }
+            viewTitle.setText(title);
+            viewTitle.setTextSize(20);
+            viewTime.setText(time);
+
+            LayoutParams stackParams = new LinearLayout.LayoutParams(600,
+                    LayoutParams.WRAP_CONTENT);
+            stack.setLayoutParams(stackParams);
+            stack.addView(viewTitle);
+            stack.addView(viewTime);
+            main.addView(stack);
+            buttons[i].setHeight(20);
+            buttons[i].setWidth(20);
+            buttons[i].setId(6000+i);
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+                buttons[i].setBackgroundDrawable(getResources().getDrawable(R.drawable.add_button_press));
+            else
+                buttons[i].setBackground(getResources().getDrawable(R.drawable.add_button_press));
+            main.addView(buttons[i]);
+            row.addView(main);
+            a.addView(row);
+        }
 
         buttons[0].setOnClickListener(new Button.OnClickListener() {
 
             @Override
             public void onClick(View view) {
-                //Create light strength workout item and store it in today's schedule
+                final WorkoutItem[] workoutItems = new WorkoutItem[12];
+                for (int i = 0; i < workoutItems.length; i++) {
+                    workoutItems[i] = new CardioWorkoutItem();
+                    switch (i) {
+                        case 0:
+                        case 1:
+                        case 3:
+                        case 4:
+                            ((CardioWorkoutItem)workoutItems[i]).setDistance(1);
+                            workoutItems[i].setTimeScheduled(20);
+                            workoutItems[i].setName(ExerciseName.WALK);
+                            break;
+                        case 2:
+                            ((CardioWorkoutItem)workoutItems[i]).setDistance(2);
+                            workoutItems[i].setTimeScheduled(15);
+                            workoutItems[i].setName(ExerciseName.JOG);
+                            break;
+                        case 5:
+                        case 6:
+                            ((CardioWorkoutItem)workoutItems[i]).setDistance(2);
+                            workoutItems[i].setTimeScheduled(20);
+                            workoutItems[i].setName(ExerciseName.JOG);
+                            break;
+                        case 7:
+                            ((CardioWorkoutItem)workoutItems[i]).setDistance(1.5);
+                            workoutItems[i].setTimeScheduled(30);
+                            workoutItems[i].setName(ExerciseName.WALK);
+                            break;
+                        case 8:
+                            ((CardioWorkoutItem)workoutItems[i]).setDistance(1.5);
+                            workoutItems[i].setTimeScheduled(20);
+                            workoutItems[i].setName(ExerciseName.RUN);
+                            break;
+                        case 9:
+                        case 10:
+                            ((CardioWorkoutItem)workoutItems[i]).setDistance(2);
+                            workoutItems[i].setTimeScheduled(30);
+                            workoutItems[i].setName(ExerciseName.JOG);
+                            break;
+                        case 11:
+                            ((CardioWorkoutItem)workoutItems[i]).setDistance(3.1);
+                            workoutItems[i].setTimeScheduled(35);
+                            workoutItems[i].setName(ExerciseName.RUN);
+                            break;
+                    }
 
-                StrengthWorkoutItem item = new StrengthWorkoutItem();
-                item.setRepsScheduled(12);
-                item.setSetsScheduled(4);
-                item.setWeightUsed(10);
-                item.setName(exName[0]);
-                item.setTimeScheduled(times[0]);
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(Calendar.HOUR_OF_DAY, 8);
+                    calendar.set(Calendar.MINUTE, 0);
+                    calendar.set(Calendar.SECOND, 0);
+                    calendar.set(Calendar.MILLISECOND, 0);
+                    int offset = (int) (3 * i-2 * Math.floor(i / 3) - (Math.pow(i, 2) % 3));
+                    calendar.add(Calendar.DAY_OF_MONTH, offset);
+                    workoutItems[i].setDateScheduled(calendar.getTime());
+                }
 
-                addThisWorkout(item);
-                BackToHomeScreen(view);
-            }
-        });
-
-        buttons[1].setOnClickListener(new Button.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                //Create vigorous strength workout item and store it in today's schedule
-                StrengthWorkoutItem item = new StrengthWorkoutItem();
-                item.setRepsScheduled(20);
-                item.setSetsScheduled(6);
-                item.setWeightUsed(20);
-                item.setName(exName[1]);
-                item.setTimeScheduled(times[1]);
-
-                addThisWorkout(item);
-                BackToHomeScreen(view);
-            }
-        });
-
-        buttons[2].setOnClickListener(new Button.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                //Create walking workout item and store it in today's schedule
-                CardioWorkoutItem item = new CardioWorkoutItem();
-                item.setDistance(2);
-                item.setName(ExerciseName.WALK);
-                item.setTimeScheduled(times[2]);
-
-                addThisWorkout(item);
-                BackToHomeScreen(view);
-            }
-        });
-
-        buttons[3].setOnClickListener(new Button.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                //Create jogging workout item and store it in today's schedule
-                CardioWorkoutItem item = new CardioWorkoutItem();
-                item.setDistance(2);
-                item.setName(ExerciseName.JOG);
-                item.setTimeScheduled(times[3]);
-
-                addThisWorkout(item);
-                BackToHomeScreen(view);
-            }
-        });
-
-        buttons[4].setOnClickListener(new Button.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                //Create running workout item and store it in today's schedule
-                CardioWorkoutItem item = new CardioWorkoutItem();
-                item.setDistance(2);
-                item.setName(ExerciseName.RUN);
-                item.setTimeScheduled(times[4]);
-
-                addThisWorkout(item);
-                BackToHomeScreen(view);
+                AlertDialog.Builder builder = new AlertDialog.Builder(AddTemplatesActivity.this);
+                builder.setMessage("Day 1: Walk 20 minutes\n" +
+                        "Day 3: Walk 20 minutes\n" +
+                        "Day 6: Jog 15 minutes\n" +
+                        "Day 8: Walk 20 minutes\n" +
+                        "Day 10: Walk 20 minutes\n" +
+                        "Day 13: Jog 20 minutes\n" +
+                        "Day 15: Jog 20 minutes\n" +
+                        "Day 17: Walk 30 minutes\n" +
+                        "Day 20: Run 20 minutes\n" +
+                        "Day 22: Jog 30 minutes\n" +
+                        "Day 24: Jog 30 minutes\n" +
+                        "Day 27: Run 35 minutes")
+                        .setTitle("Select Start Date for Prepare for 5K")
+                        .setCancelable(true)
+                        .setPositiveButton("Today", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                addTheseWorkouts(workoutItems, 0);
+                            }
+                        })
+                        .setNeutralButton("Tomorrow", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                addTheseWorkouts(workoutItems, 1);
+                            }
+                        })
+                        .setNegativeButton("Cancel", null);
+                builder.show();
             }
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_calorie_negation, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+    public void addTheseWorkouts(WorkoutItem[] workoutItems, int dayOffset) {
+        if (BuildConfig.DEBUG_MODE) Log.d(TAG, "cancelNotifications called.");
+        NotifyReceiver.cancelNotifications(this);
+        DatabaseHelper dbh = new DatabaseHelper(this);
+        for (WorkoutItem workoutItem: workoutItems) {
+            if (dayOffset != 0) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(workoutItem.getDateScheduled());
+                calendar.add(Calendar.DAY_OF_MONTH, dayOffset);
+                Date date = calendar.getTime();
+                workoutItem.setDateScheduled(date);
+            }
+            workoutItem.setNotificationDefault(true);
+            dbh.addWorkout(workoutItem);
         }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    public void BackToHomeScreen(View view){
+        dbh.close();
+        if (BuildConfig.DEBUG_MODE) Log.d(TAG, "setNotifications called.");
+        NotifyReceiver.setNotifications(this);
         Toast toast = Toast.makeText(getApplicationContext(),
                 "Workout successfully added to current schedule.", Toast.LENGTH_SHORT);
         toast.show();
-        Intent intent = new Intent (AddTemplatesActivity.this, HomeScreenActivity.class);
-        startActivity(intent);
-    }
-
-    public void addThisWorkout(WorkoutItem w) {
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.SECOND, 3);
-        Date dat = cal.getTime();
-        w.setDateScheduled(dat);
-        w.setNotificationDefault(true);
-        Log.d(TAG, "cancelNotifications called.");
-        NotifyReceiver.cancelNotifications(this);
-        DatabaseHelper dbh = new DatabaseHelper(this);
-        dbh.addWorkout(w);
-        dbh.close();
-        Log.d(TAG, "setNotifications called.");
-        NotifyReceiver.setNotifications(this);
+        finish();
     }
 }

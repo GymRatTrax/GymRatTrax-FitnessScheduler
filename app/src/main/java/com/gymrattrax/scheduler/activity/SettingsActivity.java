@@ -33,7 +33,7 @@ public class SettingsActivity extends PreferenceActivity {
         } else {
             setTheme(android.R.style.Theme_Material_Light);
         }
-//        setTheme(R.style.SettingsTheme);
+
         if (getActionBar() != null) {
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }

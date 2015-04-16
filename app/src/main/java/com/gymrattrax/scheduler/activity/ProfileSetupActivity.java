@@ -79,6 +79,7 @@ public class ProfileSetupActivity extends ActionBarActivity {
                             dialog.cancel();
                             Intent intent = new Intent(ProfileSetupActivity.this, HomeScreenActivity.class);
                             startActivity(intent);
+                            finish();
                         }
 
                     });
