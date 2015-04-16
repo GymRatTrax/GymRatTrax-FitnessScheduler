@@ -2,12 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
-        config {
-            keyAlias 'MyAndroidKey'
-            keyPassword '1JQ1PNr_tlVk=7\'Wz0ji:tI%M'
-            storeFile file('C:/Development/Keystores/android.jks')
-            storePassword '\\UDYu3t,Btg,1EQ:/vB`.#W&$U'
-        }
+        config
     }
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
@@ -25,6 +20,8 @@ android {
             buildConfigField "boolean", "DEBUG_MODE", "false"
             buildConfigField "boolean", "BETA_MODE", "false"
             signingConfig signingConfigs.config
+//            runProguard false
+//            zipAlign true
         }
         beta {
             minifyEnabled false
@@ -34,7 +31,8 @@ android {
             applicationIdSuffix '.beta'
             versionNameSuffix 'b'
             signingConfig signingConfigs.config
-
+//            runProguard false
+//            zipAlign true
         }
         debug {
             debuggable true
@@ -52,3 +50,10 @@ dependencies {
     compile 'com.google.android.gms:play-services:7.0.0'
     compile files('src/main/libs/gson-2.2.4.jar')
 }
+
+def props = new Properties()
+props.load(new FileInputStream(rootProject.file("release.properties")))
+android.signingConfigs.config.storeFile rootProject.file(props.keyStore)
+android.signingConfigs.config.storePassword props.keyStorePassword
+android.signingConfigs.config.keyAlias props.keyAlias
+android.signingConfigs.config.keyPassword props.keyAliasPassword
