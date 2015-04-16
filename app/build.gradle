@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
-        config
+//        config
     }
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
@@ -19,7 +19,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField "boolean", "DEBUG_MODE", "false"
             buildConfigField "boolean", "BETA_MODE", "false"
-            signingConfig signingConfigs.config
+//            signingConfig signingConfigs.config
 //            runProguard false
 //            zipAlign true
         }
@@ -30,7 +30,7 @@ android {
             buildConfigField "boolean", "BETA_MODE", "true"
             applicationIdSuffix '.beta'
             versionNameSuffix 'b'
-            signingConfig signingConfigs.config
+//            signingConfig signingConfigs.config
 //            runProguard false
 //            zipAlign true
         }
@@ -51,9 +51,9 @@ dependencies {
     compile files('src/main/libs/gson-2.2.4.jar')
 }
 
-def props = new Properties()
-props.load(new FileInputStream(rootProject.file("release.properties")))
-android.signingConfigs.config.storeFile rootProject.file(props.keyStore)
-android.signingConfigs.config.storePassword props.keyStorePassword
-android.signingConfigs.config.keyAlias props.keyAlias
-android.signingConfigs.config.keyPassword props.keyAliasPassword
+//def props = new Properties()
+//props.load(new FileInputStream(rootProject.file("release.properties")))
+//android.signingConfigs.config.storeFile rootProject.file(props.keyStore)
+//android.signingConfigs.config.storePassword props.keyStorePassword
+//android.signingConfigs.config.keyAlias props.keyAlias
+//android.signingConfigs.config.keyPassword props.keyAliasPassword
