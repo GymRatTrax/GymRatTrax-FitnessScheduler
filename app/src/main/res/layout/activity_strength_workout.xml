@@ -127,5 +127,12 @@
         android:layout_gravity="center_horizontal"
         android:background="@drawable/button_shape_press" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/strength_status"
+        android:layout_gravity="center_horizontal" />
+
 
 </LinearLayout>
