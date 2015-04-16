@@ -1,11 +1,13 @@
 package com.gymrattrax.scheduler.activity;
 
 import android.content.IntentSender;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -82,8 +84,6 @@ public class HomeScreenActivity extends ActionBarActivity {
         });
 
         if (BuildConfig.DEBUG_MODE) {
-            TextView version = (TextView) findViewById(R.id.versionNum);
-            version.setText(version.getText() + " DEBUG");
             gymRat.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
@@ -92,9 +92,6 @@ public class HomeScreenActivity extends ActionBarActivity {
                     return true;
                 }
             });
-        } else if (BuildConfig.BETA_MODE) {
-            TextView version = (TextView) findViewById(R.id.versionNum);
-            version.setText(version.getText() + " BETA");
         }
 
         beginWorkoutButton.setOnClickListener(new Button.OnClickListener() {
@@ -149,7 +146,6 @@ public class HomeScreenActivity extends ActionBarActivity {
             @Override
             public void onClick(View view) {
                 loadSettings(view);
-//                loadNotificationTest(view);
             }
         });
 
@@ -160,6 +156,26 @@ public class HomeScreenActivity extends ActionBarActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_home_screen, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        Intent intent;
+        switch (item.getItemId()) {
+            case R.id.menu_settings:
+                intent = new Intent (HomeScreenActivity.this, SettingsActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.menu_feedback: //if BuildConfig.BETA_MODE
+                String url = "https://plus.google.com/communities/108977617832834843137";
+                intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 
@@ -192,11 +208,6 @@ public class HomeScreenActivity extends ActionBarActivity {
         Intent intent = new Intent (HomeScreenActivity.this, SettingsActivity.class);
         startActivity(intent);
     }
-//    public void loadNotificationTest(View view){
-//        Intent intent = new Intent (HomeScreenActivity.this, NotificationActivity.class);
-//        startActivity(intent);
-//    }
-
 
     //this method is triggered when user selects "View Progress" button from the main page
     public void loadProgress(View view){

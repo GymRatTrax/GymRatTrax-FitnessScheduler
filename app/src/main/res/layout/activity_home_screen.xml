@@ -5,19 +5,9 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".HomeScreen"
     android:background="@color/primary"
-    android:id="@+id/Homescreen"
+    android:id="@+id/home_screen"
     android:orientation="vertical"
-
     android:weightSum="1">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/gym_rat_trax_version_num"
-        android:id="@+id/versionNum"
-        android:layout_gravity="center_horizontal"
-        android:layout_weight="0.08" />
 
     <ImageView
         android:layout_width="wrap_content"
@@ -48,13 +38,9 @@
             android:id="@+id/BeginWorkoutButton"
             android:layout_gravity="center_horizontal"
             android:clickable="true"
-            android:layout_below="@+id/add_workout_strength"
-            android:layout_centerHorizontal="true"
             android:layout_marginBottom="5dp"
             android:textStyle="bold"
             android:textSize="25sp"
-            android:layout_row="1"
-            android:layout_column="0"
             android:background="@drawable/button_shape_press"
             android:shadowColor="@color/shadow"
             android:shadowDx="2"
@@ -63,6 +49,7 @@
             android:singleLine="false"
             android:layout_weight="0.31"
             android:layout_marginRight="2dp"
+            android:layout_marginEnd="2dp"
             android:longClickable="false" />
 
         <Button

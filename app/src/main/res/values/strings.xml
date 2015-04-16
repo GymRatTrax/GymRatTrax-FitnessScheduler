@@ -114,4 +114,6 @@
     <string name="time">Time</string>
     <string name="set_goal_add">Set Goal</string>
     <string name="setGoal">Set Goal</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_feedback">Send feedback</string>
 </resources>

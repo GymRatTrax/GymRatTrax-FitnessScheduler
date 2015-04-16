@@ -2,4 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/menu_settings"
         android:title="@string/menu_settings" />
+    <item android:id="@+id/menu_feedback"
+        android:title="@string/menu_feedback" />
 </menu>
