@@ -35,10 +35,11 @@
             <ImageButton
                 android:layout_width="40dp"
                 android:layout_height="39dp"
-                android:id="@+id/imageButton"
+                android:id="@+id/youtube_strength"
                 android:layout_gravity="right"
                 android:background="@drawable/youtube"
                 android:layout_row="0"
+                android:clickable="true"
                 android:layout_column="33" />
         </TableRow>
     </TableLayout>
