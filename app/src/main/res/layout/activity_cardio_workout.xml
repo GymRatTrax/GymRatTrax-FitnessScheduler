@@ -20,11 +20,42 @@
         android:id="@+id/cardio_title"
         android:layout_gravity="center_horizontal" />
 
+    <TableLayout
+        android:layout_width="114dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal" >
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="Tutorial: "
+                android:id="@+id/textView4"
+                android:layout_column="32"
+                android:layout_gravity="center" />
+
+            <ImageButton
+                android:layout_width="40dp"
+                android:layout_height="39dp"
+                android:id="@+id/youtube_cardio"
+                android:layout_gravity="right"
+                android:background="@drawable/youtube"
+                android:layout_row="0"
+                android:layout_column="33" />
+        </TableRow>
+    </TableLayout>
+
     <Chronometer
-        android:layout_width="wrap_content"
+        android:layout_width="142dp"
         android:layout_height="wrap_content"
         android:id="@+id/chronometer"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:textSize="50dp"
+        android:textAlignment="center" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -35,33 +66,38 @@
         android:layout_gravity="center_horizontal"
         android:textAlignment="center" />
 
-    <Button
-        android:layout_width="128dp"
-        android:layout_height="43dp"
-        android:text="START"
-        android:id="@+id/start_cardio"
-        android:layout_gravity="center_horizontal"
-        android:background="@drawable/button_shp_rvrs_press" />
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal">
 
-    <Button
-        android:layout_width="128dp"
-        android:layout_height="43dp"
-        android:text="STOP"
-        android:id="@+id/stop_cardio"
-        android:layout_gravity="center_horizontal"
-        android:background="@drawable/button_shp_rvrs_press" />
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
 
-    <Button
-        android:layout_width="128dp"
-        android:layout_height="45dp"
-        android:text="COMPLETE"
-        android:id="@+id/complete_cardio"
-        android:layout_gravity="center_horizontal"
-        android:background="@drawable/button_shape_press" />
+            <Button
+                android:layout_width="128dp"
+                android:layout_height="43dp"
+                android:text="START"
+                android:id="@+id/start_cardio"
+                android:layout_gravity="center"
+                android:background="@drawable/button_shp_rvrs_press" />
+
+            <Button
+                android:layout_width="128dp"
+                android:layout_height="43dp"
+                android:text="STOP"
+                android:id="@+id/stop_cardio"
+                android:layout_gravity="center"
+                android:background="@drawable/button_shp_rvrs_press"
+                android:layout_marginLeft="5dp" />
+        </TableRow>
+    </TableLayout>
 
     <RadioGroup
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_weight="0.36">
 
         <RadioButton
             android:layout_width="wrap_content"
@@ -96,5 +132,22 @@
             android:layout_gravity="center_horizontal"/>
 
     </RadioGroup>
+
+    <Button
+        android:layout_width="218dp"
+        android:layout_height="45dp"
+        android:text="COMPLETE"
+        android:id="@+id/complete_cardio"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/button_shape_press"
+        android:layout_weight="0.17"
+        android:textSize="35dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/completed_time"
+        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>
