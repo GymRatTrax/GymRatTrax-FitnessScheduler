@@ -8,16 +8,25 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Iterator;
+
 import com.gymrattrax.scheduler.R;
+import com.gymrattrax.scheduler.data.DatabaseHelper;
+import com.gymrattrax.scheduler.model.CardioWorkoutItem;
+import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.GridLabelRenderer;
+import com.gymrattrax.scheduler.model.WorkoutItem;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Set;
 import android.graphics.Color;
 import com.jjoe64.graphview.ValueDependentColor;
 
@@ -26,6 +35,7 @@ public class ProgressActivity extends ActionBarActivity {
     private Spinner GraphSpin;
     private GraphView graph;
     private GridLabelRenderer o;
+    private DatabaseHelper dbh;
 //    private DateAsXAxisLabelFormatter dateFormatter;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +47,6 @@ public class ProgressActivity extends ActionBarActivity {
         graph.getGridLabelRenderer().setNumHorizontalLabels(10);
         GraphSpin = (Spinner)findViewById(R.id.graph_spinner);
 
-        //store as an array in future (weekly) & (monthly) nng
         Calendar calendar = Calendar.getInstance();
         final Date d7 = calendar.getTime();
         calendar.add(Calendar.DATE, -1);
@@ -52,7 +61,12 @@ public class ProgressActivity extends ActionBarActivity {
         final Date d2 = calendar.getTime();
         calendar.add(Calendar.DATE, -1);
         final Date d1 = calendar.getTime();
+        calendar.add(Calendar.DATE, -1);
+        final Date d0 = calendar.getTime();
 
+        final Calendar today = Calendar.getInstance();
+        final Calendar lastWeek = Calendar.getInstance();
+        lastWeek.add(Calendar.DATE, -7);
 
         GraphSpin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -71,20 +85,24 @@ public class ProgressActivity extends ActionBarActivity {
                         graph.getGridLabelRenderer().setVerticalAxisTitle("Weight");
 
 //                        DatabaseHelper dbHelper = new DatabaseHelper(ProgressActivity.this);
-//                        Map<Date, Double> data = dbh.getWeights(d1,d7);
+                        Map<Date, Double> data = new HashMap<>();
+
+                        Date one = new Date();
+                        System.out.println(one);
+                        Map <Date, Double> weights = dbh.getWeights(today.getTime(),lastWeek.getTime());
 
 
-                        LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[] {
+                        DataPoint points[] = new DataPoint[10];
+                        int i = 0;
 
-                                //y values will be based on database information
-                                new DataPoint(d1, 250),
-                                new DataPoint(d2, 248),
-                                new DataPoint(d3, 247),
-                                new DataPoint(d4, 244),
-                                new DataPoint(d5, 242),
-                                new DataPoint(d6, 240),
-                                new DataPoint(d7, 242)
-                        });
+                        Set<Date> dateSet = weights.keySet();
+                        for (Date date : dateSet) {
+                            double weightForDate = weights.get(date);
+                            points[i] = new DataPoint(date, weightForDate);
+                            i++;
+                            }
+
+                        LineGraphSeries<DataPoint> series = new LineGraphSeries(points);
 
 //                        graph.getViewport().setScrollable(true);
                         graph.addSeries(series);
@@ -106,15 +124,61 @@ public class ProgressActivity extends ActionBarActivity {
                         graph.getGridLabelRenderer().setHorizontalAxisTitle("Date");
                         graph.getGridLabelRenderer().setVerticalAxisTitle("Calories");
 
+                        dbh = new DatabaseHelper(ProgressActivity.this);
+                        dbh.getWorkoutsInRange(d1, d7);
+
+                        WorkoutItem d1Workouts[] = dbh.getWorkoutsInRange(d1, d1);
+                        WorkoutItem d2Workouts[] = dbh.getWorkoutsInRange(d2, d2);
+                        WorkoutItem d3Workouts[] = dbh.getWorkoutsInRange(d3, d3);
+                        WorkoutItem d4Workouts[] = dbh.getWorkoutsInRange(d4, d4);
+                        WorkoutItem d5Workouts[] = dbh.getWorkoutsInRange(d5, d5);
+                        WorkoutItem d6Workouts[] = dbh.getWorkoutsInRange(d6, d6);
+                        WorkoutItem d7Workouts[] = dbh.getWorkoutsInRange(d7, d7);
+
+                        double d1Cal= 0, d2Cal = 0, d3Cal = 0, d4Cal = 0, d5Cal = 0, d6Cal = 0, d7Cal = 0;
+
+
+                        for (WorkoutItem a : d1Workouts){
+                            d1Cal = d1Cal + a.getCaloriesBurned();
+
+                        }
+
+                        for (WorkoutItem b : d2Workouts){
+                            d2Cal = d2Cal + b.getCaloriesBurned();
+                        }
+
+                        for (WorkoutItem c : d3Workouts){
+                            d3Cal = d3Cal + c.getCaloriesBurned();
+                        }
+
+                        for (WorkoutItem d : d4Workouts){
+                            d4Cal = d4Cal + d.getCaloriesBurned();
+                        }
+
+                        for (WorkoutItem e : d5Workouts){
+                            d5Cal = d5Cal + e.getCaloriesBurned();
+                        }
+
+                        for (WorkoutItem f : d6Workouts){
+                            d6Cal = d6Cal + f.getCaloriesBurned();
+                        }
+
+                        for (WorkoutItem g : d7Workouts){
+                            d7Cal = d7Cal + g.getCaloriesBurned();
+                        }
+
+
+
                         BarGraphSeries<DataPoint> series1 = new BarGraphSeries<DataPoint>(new DataPoint[] {
+
                                 //y values will be based on database information
-                                new DataPoint(d1, 1000),
-                                new DataPoint(d2, 525),
-                                new DataPoint(d3, 315),
-                                new DataPoint(d4, 700),
-                                new DataPoint(d5, 1500),
-                                new DataPoint(d6, 890),
-                                new DataPoint(d7, 1200)
+                                new DataPoint(d1, d1Cal),
+                                new DataPoint(d2, d2Cal),
+                                new DataPoint(d3, d3Cal),
+                                new DataPoint(d4, d4Cal),
+                                new DataPoint(d5, d5Cal),
+                                new DataPoint(d6, d6Cal),
+                                new DataPoint(d7, d7Cal)
                         });
                         series1.setSpacing(10);
 
@@ -124,8 +188,7 @@ public class ProgressActivity extends ActionBarActivity {
 
                                 if (data.getX() % 2 == 0) {
                                     return Color.BLUE;
-                                }
-                                else
+                                } else
                                     return Color.GREEN;
 
                             }
@@ -140,6 +203,16 @@ public class ProgressActivity extends ActionBarActivity {
                         graph.getViewport().setMaxX(d7.getTime());
                         graph.getViewport().setXAxisBoundsManual(true);
 
+                        break;
+
+                    case "Strength Suggestions":
+                        WorkoutItem weeklyStrength[] = dbh.getWorkoutsInRange(d1, d7);
+                        String strengthWorkoutNameArr [];
+                        // create array with workout names then display percentages
+                        
+                        break;
+
+                    case "Cardio Suggestions":
                         break;
                 }
             }
@@ -176,5 +249,20 @@ public class ProgressActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public double getPercentageComplete(WorkoutItem w){
+        String input = w.getType().toString();
+        switch(input) {
+            case "CARDIO":
+                double cardioPercentage = ((CardioWorkoutItem)w).getTimeSpent()/ ((CardioWorkoutItem)w).getTimeScheduled();
+            break;
+            
+            case "STRENGTH":
+                double strengthPercentage = ((StrengthWorkoutItem)w).getSetsCompleted()/((StrengthWorkoutItem)w).getSetsScheduled();
+            break;
+            
+        }
+        return 0;
     }
 }
