@@ -26,6 +26,7 @@ public class DatabaseHelperTest extends AndroidTestCase {
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
+        dbh.close();
     }
 
     private WorkoutItem getWorkout() {
@@ -107,20 +108,6 @@ public class DatabaseHelperTest extends AndroidTestCase {
 
         assertFalse(rows == 0);
 
-//        Date date = null;
-//        try {
-//            date = dbh.convertDate("2015-03-20 00:00:00.000");
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//        WorkoutItem[] returnedWorkouts = dbh.getWorkoutsInRange(date, date);
-//        WorkoutItem returnWorkout = null;
-//        for (WorkoutItem w : returnedWorkouts) {
-//            if (w.getID() == id) {
-//                returnWorkout = w;
-//                break;
-//            }
-//        }
         WorkoutItem returnWorkout = dbh.getWorkoutById(id);
 
         assertNull(returnWorkout);
