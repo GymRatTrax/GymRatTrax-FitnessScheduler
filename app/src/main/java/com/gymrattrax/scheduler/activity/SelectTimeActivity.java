@@ -216,7 +216,7 @@ public class SelectTimeActivity extends ActionBarActivity {
         int minute = timepicker.getCurrentMinute();
 
         Calendar cal = Calendar.getInstance();
-        cal.set(year, month, day, hour, minute);
+        cal.set(year, month-1, day, hour, minute);
         Date d = cal.getTime();
         sItem.setDateScheduled(d);
 
