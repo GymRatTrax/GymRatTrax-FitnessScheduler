@@ -10,25 +10,19 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.service.NotifyService;
 import com.gymrattrax.scheduler.activity.SettingsActivity;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
- * Set all alarms again when the device restarts.
+ * Set all alarms again when the device restarts or a broadcast is manually sent.
  */
 public class NotifyReceiver extends BroadcastReceiver {
     public static final String TAG = "NotifyReceiver";
-
-    public static final String ID = "id";
-    public static final String NAME = "name";
-    public static final String TIME = "time";
-    public static final String TONE = "tone";
 
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "Broadcast received.");
@@ -73,34 +67,38 @@ public class NotifyReceiver extends BroadcastReceiver {
                     calendar.add(Calendar.MINUTE, -workoutItem.getNotificationMinutesInAdvance());
                     //TODO: Remove this 'quick fix' later. (Past due dates are fine, we just need to know they've been previously set.
                     if (calendar.after(today)) {
-                        Log.d(TAG, "About to set notification (ID: " + workoutItem.getID() + ").");
+                        if (BuildConfig.DEBUG_MODE) Log.d(TAG, "About to set notification (ID: " + workoutItem.getID() + ").");
                         setNotification(context, calendar, pIntent);
                     } else {
-                        Log.d(TAG, "Notification (ID: " + workoutItem.getID() + ") not set.");
+                        if (BuildConfig.DEBUG_MODE) Log.d(TAG, "Notification (ID: " + workoutItem.getID() + ") not set.");
                     }
                 }
             }
             dbh.close();
 
-//            if (sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_WEIGH_ENABLED, false)) {
-//                Calendar calendar = Calendar.getInstance();
-//                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss");
-//                try {
-//                    calendar.setTime(sdf.parse(sharedPref.getString(SettingsActivity.PREF_NOTIFY_WEIGH_TIME, "")));
-//                } catch (ParseException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                if (calendar.after(today)) {
-//                    Log.d(TAG, "About to set notification (ID: " + workoutItem.getID() + ").");
-//                    setNotification(context, calendar, pIntent);
-//                } else {
-//                    Log.d(TAG, "Notification (ID: " + workoutItem.getID() + ") not set.");
-//                }
-//                if (sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_WEIGH_INHERIT, true)) {
-//
-//                }
-//            }
+            if (sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_WEIGH_ENABLED, false)) {
+                Calendar prefTime = Calendar.getInstance();
+                prefTime.setTimeInMillis(sharedPref.getLong(SettingsActivity.PREF_NOTIFY_WEIGH_TIME, 0));
+                Calendar todayDate = Calendar.getInstance();
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.HOUR, prefTime.get(Calendar.HOUR));
+                calendar.set(Calendar.MINUTE, prefTime.get(Calendar.MINUTE));
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
+                if (calendar.before(todayDate))
+                    calendar.add(Calendar.DAY_OF_MONTH, 1);
+                PendingIntent pIntent;
+                if (sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_WEIGH_INHERIT, true)) {
+                    pIntent = createPendingIntent(context, 999, "Time to weigh-in", calendar,
+                            defaultVibrate, defaultTone);
+                } else {
+                    pIntent = createPendingIntent(context, 999, "Time to weigh-in", calendar,
+                            sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_VIBRATE, true),
+                            Uri.parse(sharedPref.getString(SettingsActivity.PREF_NOTIFY_TONE, "")));
+                }
+                if (BuildConfig.DEBUG_MODE) Log.d(TAG, "About to set weight notification.");
+                setNotification(context, calendar, pIntent);
+            }
         }
     }
     private static void setNotification(Context context, Calendar calendar, PendingIntent pIntent) {
@@ -127,21 +125,61 @@ public class NotifyReceiver extends BroadcastReceiver {
         }
     }
 
+    /**
+     * Create a PendingIntent for the NotifyService for a WorkoutItem object. For other generic
+     * cases, use {@link com.gymrattrax.scheduler.receiver.NotifyReceiver#createPendingIntent(
+     * android.content.Context, int, String, java.util.Calendar, boolean, android.net.Uri)}.
+     * @param context A Context of the application package implementing this class.
+     * @param workoutItem A WorkoutItem object that corresponds to the workout which will receive a
+     *                    notification. The notification preferences are already stored in the
+     *                    object.
+     * @return The PendingIntent that will be started when the alarm goes off.
+     */
     private static PendingIntent createPendingIntent(Context context, WorkoutItem workoutItem) {
         Intent intent = new Intent(context, NotifyService.class);
-        intent.putExtra(ID, workoutItem.getID());
-        intent.putExtra(NAME, workoutItem.getName());
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(workoutItem.getDateScheduled());
-        cal.add(Calendar.MINUTE, -workoutItem.getNotificationMinutesInAdvance());
-        intent.putExtra(TIME, cal.getTimeInMillis());
+        intent.putExtra(NotifyService.ID, workoutItem.getID());
+        intent.putExtra(NotifyService.NAME, workoutItem.getName());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(workoutItem.getDateScheduled());
+        calendar.add(Calendar.MINUTE, -workoutItem.getNotificationMinutesInAdvance());
+        intent.putExtra(NotifyService.HOUR, calendar.get(Calendar.HOUR_OF_DAY));
+        intent.putExtra(NotifyService.MINUTE, calendar.get(Calendar.MINUTE));
         if (workoutItem.getNotificationTone() != null) {
-            intent.putExtra(TONE, workoutItem.getNotificationTone().toString());
+            intent.putExtra(NotifyService.TONE, workoutItem.getNotificationTone().toString());
         } else {
-            intent.putExtra(TONE, (String)null);
+            intent.putExtra(NotifyService.TONE, (String)null);
         }
 
         return PendingIntent.getService(context, workoutItem.getID(), intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    /**
+     * Create a PendingIntent for the NotifyService. For a WorkoutItem, use
+     * {@link com.gymrattrax.scheduler.receiver.NotifyReceiver#createPendingIntent(
+     * android.content.Context, com.gymrattrax.scheduler.model.WorkoutItem)} instead.
+     * @param context A Context of the application package implementing this class.
+     * @param id Sets the int {@link com.gymrattrax.scheduler.service.NotifyService#ID} field.
+     * @param name Sets the String {@link com.gymrattrax.scheduler.service.NotifyService#NAME}
+     *             field.
+     * @param calendar A Calendar object from which the
+     *                 {@link com.gymrattrax.scheduler.service.NotifyService#HOUR} and
+     *                 {@link com.gymrattrax.scheduler.service.NotifyService#MINUTE} fields are set.
+     * @param vibrate Set the {@link com.gymrattrax.scheduler.service.NotifyService#VIBRATE} field
+     *                where true means the notification will vibrate.
+     * @param tone Uri value which contains a String representation that will Set the String
+     *             {@link com.gymrattrax.scheduler.service.NotifyService#TONE} field.
+     * @return The PendingIntent that will be started when the alarm goes off.
+     */
+    private static PendingIntent createPendingIntent(Context context, int id, String name,
+                                                     Calendar calendar, boolean vibrate, Uri tone) {
+        Intent intent = new Intent(context, NotifyService.class);
+        intent.putExtra(NotifyService.ID, id);
+        intent.putExtra(NotifyService.NAME, name);
+        intent.putExtra(NotifyService.HOUR, calendar.get(Calendar.HOUR_OF_DAY));
+        intent.putExtra(NotifyService.MINUTE, calendar.get(Calendar.MINUTE));
+        intent.putExtra(NotifyService.VIBRATE, vibrate);
+        intent.putExtra(NotifyService.TONE, tone.toString());
+        return PendingIntent.getService(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 }

@@ -26,6 +26,5 @@
     <item name="ex_details" type="id">ExerciseDetails</item>
     <item name="notifications_text" type="id">NotifText</item>
     <item name="ex_date" type="id">ExerciseDate</item>
-    <item name="app_id" type="string">801615753980</item>
     <item name="menu_feedback" type="id">menu_feedback</item>
 </resources>

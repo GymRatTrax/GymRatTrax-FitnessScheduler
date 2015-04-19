@@ -57,11 +57,12 @@
                 android:key="pref_notify_weigh_enabled"
                 android:dependency="pref_notify_enabled_all"
                 android:title="Enable weigh-in notification"
-                android:defaultValue="true" />
+                android:defaultValue="false" />
             <com.gymrattrax.scheduler.model.TimePreference
                 android:dependency="pref_notify_weigh_enabled"
                 android:key="pref_notify_weigh_time"
-                android:title="Time of day for notification"/>
+                android:title="Time of day for notification"
+                android:defaultValue="43200000"/>
             <CheckBoxPreference
                 android:dependency="pref_notify_weigh_enabled"
                 android:disableDependentsState="true"

@@ -17,6 +17,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.activity.CardioWorkoutActivity;
 import com.gymrattrax.scheduler.activity.DailyWorkoutActivity;
@@ -26,13 +27,29 @@ import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.CardioWorkoutItem;
 import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
 import com.gymrattrax.scheduler.model.WorkoutItem;
-import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
 /**
  * Receive Alarm and create the notification itself.
  */
 public class NotifyService extends Service {
     private static final String TAG ="NotifyService";
+
+    public static final int NOTIFICATION = 7010;
+    public static final int NOTIFY_ID_WEIGH = 7020;
+
+    public static final String ID = "id";
+    public static final String NAME = "name";
+    public static final String HOUR = "hour";
+    public static final String MINUTE = "minute";
+    public static final String TONE = "tone";
+    public static final String VIBRATE = "vibrate";
+
+    private int id = -1;
+    private String name = "GymRatTrax";
+    private int hour = -1;
+    private int minute = -1;
+    private String tone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION).toString();
+    private int vibrate = 0;
 
     private WorkoutItem workoutItem;
 
@@ -45,29 +62,41 @@ public class NotifyService extends Service {
         }
     }
 
-    // Unique id to identify the notification.
-    private static final int NOTIFICATION = 7918;
-    // Name of an intent extra we can use to identify if this service was started to create a notification
-
     @Override
     public void onCreate() {}
 
+    /**
+     * The entry point of a notification that was sent from NotifyReceiver. When the notification
+     * has been sent, this service will be set such that it can be closed if needed.
+     * @param intent The Intent supplied to startService(Intent), as given. This may be null if the
+     *               service is being restarted after its process has gone away, and it had
+     *               previously returned anything except START_STICKY_COMPATIBILITY.
+     * @param flags Additional data about this start request. Currently either 0,
+     *              START_FLAG_REDELIVERY, or START_FLAG_RETRY.
+     * @param startId A unique integer representing this specific request to start. Use with
+     *                stopSelfResult(int).
+     * @return The return value indicates what semantics the system should use for the service's
+     * current started state. It may be one of the constants associated with the
+     * START_CONTINUATION_MASK bits.
+     */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i("TAG", "Received start id " + startId + ": " + intent);
+        if (BuildConfig.DEBUG_MODE) Log.i("TAG", "Received start id " + startId + ": " + intent);
 
-        // If this service was started by out NotifyAlarm intent then we want to show our notification
+        id = intent.getIntExtra(ID, -1);
+        name = intent.getStringExtra(NAME);
+        hour = intent.getIntExtra(HOUR, -1);
+        minute = intent.getIntExtra(MINUTE, -1);
+        if (intent.getBooleanExtra(VIBRATE, true)) vibrate = 300;
 
-        long wid = intent.getIntExtra(NotifyReceiver.ID, -1);
+        long wid = intent.getIntExtra(ID, -1);
         if (wid > 0) {
             DatabaseHelper dbh = new DatabaseHelper(getApplicationContext());
             workoutItem = dbh.getWorkoutById(wid);
             dbh.close();
         }
-//        if(intent.getBooleanExtra(NotifyReceiver.INTENT_NOTIFY, false))
-            showNotification();
+        showNotification();
 
-        // We don't care if this service is stopped as we have already delivered our notification
         return START_NOT_STICKY;
     }
 
@@ -151,6 +180,11 @@ public class NotifyService extends Service {
             b.putInt("ID", workoutItem.getID());
             intent.putExtras(b);
 
+        } else if (name.toLowerCase().contains("weigh")) {
+            mBuilder.setContentTitle("Time to weigh-in");
+            mBuilder.setContentText("Weigh yourself and update here");
+            mBuilder.setSound(Uri.parse(tone));
+            mBuilder.setVibrate(new long[]{0, vibrate, 0});
         } else {
             mBuilder.setContentTitle("Time to work out!");
             mBuilder.setContentText("Let's go!");
@@ -162,7 +196,8 @@ public class NotifyService extends Service {
 
         NotificationManager mNotificationManager =
                 (NotificationManager)this.getSystemService(Context.NOTIFICATION_SERVICE);
-        Log.d(TAG, "Displaying notification for workout item (ID: " + workoutItem.getID() + ").");
+        if (BuildConfig.DEBUG_MODE && workoutItem != null)
+            Log.d(TAG, "Displaying notification for workout item (ID: " + workoutItem.getID() + ").");
         mNotificationManager.notify(NOTIFICATION, mBuilder.build());
 
         // Stop the service when we are finished
