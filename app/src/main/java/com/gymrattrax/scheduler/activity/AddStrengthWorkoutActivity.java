@@ -12,7 +12,7 @@ import com.gymrattrax.scheduler.R;
 
 
 public class AddStrengthWorkoutActivity extends ActionBarActivity {
-    private String details;
+    private String name;
     private EditText weight, sets, reps;
 
     @Override
@@ -20,9 +20,6 @@ public class AddStrengthWorkoutActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_strength_details);
 
-        final TextView strengthSets = (TextView) findViewById(R.id.strength_sets);
-        final TextView strengthReps = (TextView) findViewById(R.id.strength_reps);
-        final TextView weightused = (TextView) findViewById(R.id.weight_used);
         final TextView exName = (TextView) findViewById(R.id.ex_name);
         weight = (EditText) findViewById(R.id.editText);
         sets = (EditText) findViewById(R.id.editText2);
@@ -31,8 +28,8 @@ public class AddStrengthWorkoutActivity extends ActionBarActivity {
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            details = extras.getString("details");
-                exName.setText(details);
+            name = extras.getString("name");
+            exName.setText(name);
         }
 
         nextButton.setOnClickListener(new Button.OnClickListener() {
@@ -47,10 +44,14 @@ public class AddStrengthWorkoutActivity extends ActionBarActivity {
     private void loadDateTime() {
         Intent intent = new Intent(AddStrengthWorkoutActivity.this, SelectDateActivity.class);
         Bundle extras = new Bundle();
-        String newDetails = details + "QQ" + weight.getText()
-                + "QQ" + sets.getText() + "QQ" + reps.getText();
-        extras.putString("details", newDetails);
+        String weightStr = weight.getText().toString();
+        String setsStr = sets.getText().toString();
+        String repsStr = reps.getText().toString();
+        extras.putString("name", name);
+        extras.putString("weight", weightStr);
+        extras.putString("sets", setsStr);
+        extras.putString("reps", repsStr);
         intent.putExtras(extras);
         startActivity(intent);
     }
-    }
+}

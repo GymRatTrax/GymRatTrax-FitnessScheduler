@@ -5,9 +5,19 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".HomeScreen"
     android:background="@color/primary"
-    android:id="@+id/home_screen"
+    android:id="@+id/Homescreen"
     android:orientation="vertical"
+
     android:weightSum="1">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/gym_rat_trax_version_num"
+        android:id="@+id/versionNum"
+        android:layout_marginBottom="5dp"
+        android:layout_gravity="center_horizontal" />
 
     <ImageView
         android:layout_width="wrap_content"
@@ -17,7 +27,6 @@
         android:baselineAlignBottom="false"
         android:cropToPadding="false"
         android:clickable="false"
-        android:layout_gravity="center"
         android:onClick="@anim/anim_rotate"
         android:paddingBottom="10dp" />
 
@@ -38,9 +47,13 @@
             android:id="@+id/BeginWorkoutButton"
             android:layout_gravity="center_horizontal"
             android:clickable="true"
+            android:layout_below="@+id/add_workout_strength"
+            android:layout_centerHorizontal="true"
             android:layout_marginBottom="5dp"
             android:textStyle="bold"
             android:textSize="25sp"
+            android:layout_row="1"
+            android:layout_column="0"
             android:background="@drawable/button_shape_press"
             android:shadowColor="@color/shadow"
             android:shadowDx="2"
@@ -49,7 +62,6 @@
             android:singleLine="false"
             android:layout_weight="0.31"
             android:layout_marginRight="2dp"
-            android:layout_marginEnd="2dp"
             android:longClickable="false" />
 
         <Button
@@ -195,21 +207,19 @@
         android:textSize="20dp"
         android:textStyle="bold" />
 
-    <ScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/daily_workout_scroll"
-        android:fillViewport="false"
-        android:layout_weight="2.91">
+        android:layout_height="match_parent"
+        android:background="@color/primary"
+        android:id="@+id/todays_workouts_scroll">
 
-        <LinearLayout
+        <ListView
             android:layout_width="match_parent"
-            android:orientation="vertical"
-            android:layout_height="match_parent"
-            android:id="@+id/daily_workout_layout">
+            android:layout_height="200dp"
+            android:background="@color/primary100"
+            android:dividerHeight="3dip"
+            android:divider="@color/primary"
+            android:id="@+id/schedule_upcoming_workouts" />
 
-        </LinearLayout>
-    </ScrollView>
-
-
+    </RelativeLayout>
 </LinearLayout>

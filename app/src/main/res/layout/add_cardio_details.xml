@@ -53,6 +53,7 @@
             android:layout_height="wrap_content"
             android:inputType="number"
             android:ems="10"
+            android:textCursorDrawable="@null"
             android:layout_margin="10dp"
             android:id="@+id/editText2"
             android:layout_gravity="center_horizontal"
@@ -75,12 +76,31 @@
             android:layout_height="wrap_content"
             android:inputType="number"
             android:ems="10"
+            android:textCursorDrawable="@null"
             android:layout_margin="10dp"
             android:id="@+id/editText3"
             android:layout_gravity="center_horizontal"
             android:gravity="center"
             android:layout_below="@+id/textView2"
             android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="mile(s)"
+            android:id="@+id/textView10"
+            android:layout_alignTop="@+id/editText2"
+            android:layout_toRightOf="@+id/editText2"
+            android:layout_toEndOf="@+id/editText2" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="minute(s)"
+            android:id="@+id/textView11"
+            android:layout_alignTop="@+id/editText3"
+            android:layout_alignLeft="@+id/textView10"
+            android:layout_alignStart="@+id/textView10" />
 
     </RelativeLayout>
 

@@ -23,7 +23,7 @@ public class ListViewAdapterAdd extends ArrayAdapter<String> {
     private custButtonListener customListener;
 
     public ListViewAdapterAdd(Context context, ArrayList<String> workoutItems) {
-        super(context, R.layout.list_item, workoutItems);
+        super(context, R.layout.add_list_item, workoutItems);
         this.item = workoutItems;
         this.context = context;
     }
@@ -36,7 +36,7 @@ public class ListViewAdapterAdd extends ArrayAdapter<String> {
         this.customListener = listener;
     }
 
-//    items in each row in listView
+    //    items in each row in listView
     public class ViewHolder {
         TextView workout_name;
         Button button;
@@ -47,7 +47,7 @@ public class ListViewAdapterAdd extends ArrayAdapter<String> {
         final ViewHolder viewHolder;
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(context);
-            convertView = inflater.inflate(R.layout.list_item, null);
+            convertView = inflater.inflate(R.layout.add_list_item, null);
             viewHolder = new ViewHolder();
             viewHolder.workout_name = (TextView) convertView.findViewById(R.id.list_name);
             viewHolder.button = (Button) convertView.findViewById(R.id.addWorkoutToScheduleButton);

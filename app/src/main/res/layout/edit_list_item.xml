@@ -19,6 +19,15 @@
         android:layout_marginTop="10dp"
         android:id="@+id/details" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:id="@+id/id"
+        android:visibility="gone"/>
+
     <Button
         android:id="@+id/editWorkoutButton"
         android:layout_width="80dp"
@@ -27,15 +36,12 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="7dp"
         android:layout_marginRight="7dp"
-
         android:layout_gravity="end"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-
         android:clickable="true"
         android:textSize="20sp"
-
         android:background="@drawable/button_shp_rvrs_press"
         android:shadowColor="@color/shadow"
         android:shadowDx="0"

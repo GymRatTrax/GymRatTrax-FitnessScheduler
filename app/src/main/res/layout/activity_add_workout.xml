@@ -41,5 +41,6 @@
             android:dividerHeight="3dip"
             android:divider="@color/primary"
             android:layout_gravity="center" />
+
     </RelativeLayout>
 </LinearLayout>

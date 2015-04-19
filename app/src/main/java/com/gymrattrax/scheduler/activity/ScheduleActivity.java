@@ -3,17 +3,18 @@ package com.gymrattrax.scheduler.activity;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
+
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterEdit;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
+import com.gymrattrax.scheduler.model.CardioWorkoutItem;
 import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
@@ -28,8 +29,6 @@ public class ScheduleActivity extends ActionBarActivity implements ListViewAdapt
     private ArrayList<String> workoutItems = new ArrayList<>();
     private String name;
     private int id;
-
-    WorkoutItem[] workouts = new WorkoutItem[100];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,14 +56,13 @@ public class ScheduleActivity extends ActionBarActivity implements ListViewAdapt
 //                loadViewSchedule(dateToShow);
 //            }
 //        });
-
     }
 
     private void loadEditStrengthWorkout() {
         Intent intent = new Intent(ScheduleActivity.this, EditStrengthWorkoutActivity.class);
         Bundle extras = new Bundle();
-        Toast.makeText(this, name, Toast.LENGTH_LONG).show();
-        extras.putString("details", name);
+        extras.putString("name", name);
+        extras.putInt("id", id);
         intent.putExtras(extras);
         startActivity(intent);
     }
@@ -75,6 +73,7 @@ public class ScheduleActivity extends ActionBarActivity implements ListViewAdapt
 
         List<String> tempItems = Arrays.asList(scheduledWorkouts);
         workoutItems.addAll(tempItems);
+
         ListView listView = (ListView) findViewById(R.id.workouts_list);
 
         // custom listView adapter
@@ -88,7 +87,16 @@ public class ScheduleActivity extends ActionBarActivity implements ListViewAdapt
             }
         });
     }
+    @Override
+    public void onBackPressed() {
+        loadHomeScreen();
+        super.onBackPressed();
+    }
 
+    private void loadHomeScreen() {
+        Intent intent = new Intent(ScheduleActivity.this, HomeScreenActivity.class);
+        startActivity(intent);
+    }
 //    private void loadViewWorkoutEvent() {
 //        Intent intent = new Intent(CalendarService.viewEvent());
 //        startActivity(intent);
@@ -113,7 +121,9 @@ public class ScheduleActivity extends ActionBarActivity implements ListViewAdapt
     }
 
     public void onButtonClickListener(int position, String value) {
-        name = value;
+        String[] valArr = value.split(":", 2);
+        id = Integer.parseInt(valArr[0]);
+        name = valArr[1];
         switch (name) {
             case "Walking":
                 loadEditCardioWorkout();
@@ -132,8 +142,8 @@ public class ScheduleActivity extends ActionBarActivity implements ListViewAdapt
     private void loadEditCardioWorkout() {
         Intent intent = new Intent(ScheduleActivity.this, EditCardioWorkoutActivity.class);
         Bundle extras = new Bundle();
-        extras.putString("details", name);
-        Toast.makeText(this, name, Toast.LENGTH_LONG).show();
+        extras.putString("name", name);
+        extras.putInt("id", id);
         intent.putExtras(extras);
         startActivity(intent);
     }
@@ -145,25 +155,43 @@ public class ScheduleActivity extends ActionBarActivity implements ListViewAdapt
         Date start = cal.getTime();
         cal.set(2020, 3, 14);
         Date end = cal.getTime();
-        workouts = dbh.getWorkoutsInRange(start, end);
+        WorkoutItem[] workouts = dbh.getWorkoutsInRange(start, end);
         String[] workoutsArray = new String[workouts.length];
 
         for (final WorkoutItem w : workouts) {
             workoutsArray[i] = w.getName().toString();
             id = w.getID();
-
             if (workoutsArray[i].equals("Walking")
-                || workoutsArray[i].equals("Jogging")
-                || workoutsArray[i].equals("Running"))
+                    || workoutsArray[i].equals("Jogging")
+                    || workoutsArray[i].equals("Running"))
             {
                 double minutesDbl = w.getTimeScheduled();
                 int secondsTotal = (int) (minutesDbl * 60);
                 int seconds = secondsTotal % 60;
                 int minutes = (secondsTotal - seconds) / 60;
+                double distanceDbl = ((CardioWorkoutItem)w).getDistance();
+                String distanceStr;
+                String minString;
+                String secString;
+                if (minutes == 1) {
+                    minString = "" + minutes + " minute, ";
+                } else {
+                    minString = "" + minutes + " minutes, ";
+                }
+                if (seconds == 1) {
+                    secString = "" + seconds + " second";
+                } else {
+                    secString = "" + seconds + " seconds";
+                }
+                if (distanceDbl == 1) {
+                    distanceStr = "" + distanceDbl + " mile in ";
+                } else {
+                    distanceStr = "" + distanceDbl + " miles in ";
+                }
 
-                String time = "\n" + minutes + " minutes, " + seconds + " seconds";
+                String time = "\n" + distanceStr + minString + secString;
                 time = dbh.displayDateTime(this, w.getDateScheduled()) + time;
-                String infoString = "" + w.getName().toString() + ": \n" + time;
+                String infoString = "" + id + ":" + w.getName().toString() + ": \n" + time;
                 workoutsArray[i] = infoString;
             } else {
                 String weightUsed = "" + ((StrengthWorkoutItem)w).getWeightUsed();
@@ -185,7 +213,7 @@ public class ScheduleActivity extends ActionBarActivity implements ListViewAdapt
                 } else {
                     reps = reps + " reps";
                 }
-                String infoString = "" + w.getName().toString() + ":\n" + dateTime + weightUsed + sets + reps;
+                String infoString = "" + id + ":" + w.getName().toString() + ":\n" + dateTime + weightUsed + sets + reps;
                 workoutsArray[i] = infoString;
             }
             i++;

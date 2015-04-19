@@ -121,4 +121,10 @@
     <string name="title_activity_achievements_activity">Achievements</string>
     <string name="title_activity_add_templates_activity">Workout Templates</string>
     <string name="signin_other_error">Sign in other error</string>
+    <string name="Delete_Workout_Button">delete</string>
+    <string name="exercise_details">ex_details</string>
+    <string name="current_goal_text">ex_goal</string>
+    <string name="editStrength">edit_strength</string>
+    <string name="editcardio">Edit Cardio Workout</string>
+    <string name="lbs">lbs.</string>
 </resources>

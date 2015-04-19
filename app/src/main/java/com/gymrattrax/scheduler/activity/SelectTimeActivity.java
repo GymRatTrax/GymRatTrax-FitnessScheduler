@@ -1,6 +1,5 @@
 package com.gymrattrax.scheduler.activity;
 
-import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -8,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
@@ -20,107 +20,111 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class SelectTimeActivity extends ActionBarActivity {
-    private String dateSelected, date;
     private TextView timeText;
-    private TimePicker timePicker;
-    private Calendar cal;
-    private int id;
-    private String detailsString, name;
+    private String name;
 
     private int selectedHour = 0, selectedMinutes = 0;
+    private TimePicker timepicker;
 
-    private TimePickerDialog.OnTimeSetListener mTimeListener = new TimePickerDialog.OnTimeSetListener() {
-        @Override
-        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            selectedHour = hourOfDay;
-            selectedMinutes = minute;
-            getTimeFromPicker();
-        }
-    };
+    private String weight;
+    private String date, distance, duration;
+    private String sets;
+    private String reps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_time);
+
+        timepicker = (TimePicker) findViewById(R.id.time_picker);
         final Calendar cal = Calendar.getInstance();
         this.selectedHour = cal.get(Calendar.HOUR_OF_DAY);
         this.selectedMinutes = cal.get(Calendar.MINUTE);
         Button doneButton = (Button) findViewById(R.id.doneButton);
         TextView notifText = (TextView) findViewById(R.id.notifications_text);
         timeText = (TextView) findViewById(R.id.TimeSelected);
-        getTimeFromPicker();
-        String timeString = "" + selectedHour + ":" + selectedMinutes;
+        updateTimeUI();
         final TextView exName = (TextView) findViewById(R.id.ex_name);
         final TextView exDetails = (TextView) findViewById(R.id.ex_details);
         final TextView exDate = (TextView) findViewById(R.id.ex_date);
 
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
-            detailsString = extras.getString("details");
-        }
+            name = extras.getString("name");
+            date = extras.getString("date");
 
-        String[] d = detailsString.split("QQ");
-        String name = d[0];
-        // Display cardio details in text view
-        if (name.equals("Walking") || name.equals("Jogging")
-                || name.equals("Running")) {
-            String distance;
-            String time;
-            if (Integer.parseInt(d[1]) == 1) {
-                distance = d[1] + " mile";
+            if (name.equals("Walking") || name.equals("Jogging")
+                    || name.equals("Running")) {
+                distance = extras.getString("distance");
+                duration = extras.getString("duration");
+                String dStr;
+                String tStr;
+
+                // Display cardio details in text view
+                if (Double.parseDouble(distance) == 1) {
+                    dStr = distance + " mile";
+                } else {
+                    dStr = distance + " miles";
+                }
+                if (Double.parseDouble(duration) == 1) {
+                    tStr = " in " + duration + " minute";
+                } else {
+                    tStr = duration + " minutes";
+                }
+                exName.setText(name + " ");
+                exDetails.setText(dStr + " in " + tStr);
+                exDate.setText("on " + date);
             } else {
-                distance = d[1] + " miles";
+                // Display strength details
+                weight = extras.getString("weight");
+                sets = extras.getString("sets");
+                reps = extras.getString("reps");
+                String weightStr;
+                String setsStr;
+                String repsStr;
+
+                if (Double.parseDouble(weight) == 1) {
+                    weightStr = weight + " lb x ";
+                } else {
+                    weightStr = weight + " lbs x ";
+                }
+                if (Integer.parseInt(sets) == 1) {
+                    setsStr = sets + " set x ";
+                } else {
+                    setsStr = sets + " sets x ";
+                }
+                if (Integer.parseInt(reps) == 1) {
+                    repsStr = reps + " rep";
+                } else {
+                    repsStr = reps + " reps";
+                }
+                exName.setText(name + " ");
+                exDetails.setText(weightStr + setsStr + repsStr);
+                exDate.setText("on " + date);
             }
-            if (Integer.parseInt(d[2]) == 1) {
-                time = " in " + d[2] + " minute";
-            } else {
-                time = d[2] + " minutes";
-            }
-            String date = d[3];
-            exName.setText(name + " ");
-            exDetails.setText(distance + " in " + time);
-            exDate.setText("on " + date);
-        } else
-        // Display strength details
-        {
-            String weight;
-            String sets;
-            String reps;
-            if (Double.parseDouble(d[1]) == 1) {
-                weight = d[1] + " lb x ";
-            } else {
-                weight = d[1] + " lbs x ";
-            }
-            if (Integer.parseInt(d[2]) == 1) {
-                sets = d[2] + " set x ";
-            } else {
-                sets = d[2] + " sets x ";
-            }
-            if (Integer.parseInt(d[3]) == 1) {
-                reps = d[3] + " rep";
-            } else {
-                reps = d[3] + " reps";
-            }
-            String date = d[4];
-            exName.setText(name + " ");
-            exDetails.setText(weight + sets + reps);
-            exDate.setText("on " + date);
         }
 
         doneButton.setOnClickListener(new Button.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                SelectTimeActivity.this.loadHomeScreen();
+                SelectTimeActivity.this.loadSchedule();
             }
         });
     }
 
-    private String getTimeFromPicker() {
+    private void loadSchedule() {
+        Intent intent = new Intent(SelectTimeActivity.this, ScheduleActivity.class);
+        addThisWorkout();
+        startActivity(intent);
+    }
+
+    private void updateTimeUI() {
         String am = "AM";
         String pm = "PM";
         String hour;
         String minutes;
+
 
         if (selectedHour > 12) {
 
@@ -145,50 +149,39 @@ public class SelectTimeActivity extends ActionBarActivity {
             minutes = (selectedMinutes > 9) ? "" + selectedMinutes : "0" + selectedMinutes;
             timeText.setText(hour + ":" + minutes + " " + am);
         }
-        return timeText.toString();
     }
 
-    private void loadHomeScreen() {
-        Intent intent = new Intent(SelectTimeActivity.this, HomeScreenActivity.class);
-        String timePicked = getTimeFromPicker();
-        String newDetails = detailsString + "QQ" + timePicked;
-        addThisWorkout(newDetails);
-        startActivity(intent);
-    }
-
-    private void addThisWorkout(String newDetails) {
-        String[] details = newDetails.split("QQ");
-        name = details[0];
+    private void addThisWorkout() {
         switch (name) {
             case "Walking":
-                addThisCardioWorkout(details);
+                addThisCardioWorkout();
                 break;
             case "Jogging":
-                addThisCardioWorkout(details);
+                addThisCardioWorkout();
                 break;
             case "Running":
-                addThisCardioWorkout(details);
+                addThisCardioWorkout();
                 break;
             default:
-                addThisStrengthWorkout(details);
+                addThisStrengthWorkout();
         }
     }
 
-    public void addThisCardioWorkout(String[] details) {
+    public void addThisCardioWorkout( ) {
         DatabaseHelper dbh = new DatabaseHelper(SelectTimeActivity.this);
         CardioWorkoutItem cItem = new CardioWorkoutItem();
+        updateTimeUI();
 
         // Set cardio item date
-        String dateString = (details[3]);
-        String[] dateArray = dateString.split("/", 3);
+        String[] dateArray = date.split("/", 3);
         int month = Integer.parseInt(dateArray[0]);
         int day = Integer.parseInt(dateArray[1]);
         int year = Integer.parseInt(dateArray[2]);
-        int hour = selectedHour;
-        int minute = selectedMinutes;
+        int hourInt = timepicker.getCurrentHour();
+        int minInt = timepicker.getCurrentMinute();
 
         Calendar cal = Calendar.getInstance();
-        cal.set(year, month, day, hour, minute);
+        cal.set(year, month, day, hourInt, minInt);
         Date d = cal.getTime();
         cItem.setDateScheduled(d);
 
@@ -197,31 +190,30 @@ public class SelectTimeActivity extends ActionBarActivity {
         cItem.setName(exName);
 
         // Set cardio item distance
-        String distance = details[1];
         cItem.setDistance(Double.parseDouble(distance));
 
-        // Set cardio item time
-        String t = details[2];
-        cItem.setTimeScheduled(Double.parseDouble(t));
+        // Set cardio item duration
+        cItem.setTimeScheduled(Double.parseDouble(duration));
 
         // Add cardio workout to db
         dbh.addWorkout(cItem);
-//        Toast.makeText(this, "Cardio workout added to schedule", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, name + " added to schedule", Toast.LENGTH_SHORT).show();
         dbh.close();
     }
 
-    public void addThisStrengthWorkout(String[] details) {
+    public void addThisStrengthWorkout() {
         DatabaseHelper dbh = new DatabaseHelper(SelectTimeActivity.this);
         StrengthWorkoutItem sItem = new StrengthWorkoutItem();
+        updateTimeUI();
 
-        // Set Strength date and time
-        String dateString = details[4];
+        // Set Strength date and duration
+        String dateString = date;
         String[] dateArray = dateString.split("/", 3);
         int month = Integer.parseInt(dateArray[0]);
         int day = Integer.parseInt(dateArray[1]);
         int year = Integer.parseInt(dateArray[2]);
-        int hour = selectedHour;
-        int minute = selectedMinutes;
+        int hour = timepicker.getCurrentHour();
+        int minute = timepicker.getCurrentMinute();
 
         Calendar cal = Calendar.getInstance();
         cal.set(year, month, day, hour, minute);
@@ -234,17 +226,14 @@ public class SelectTimeActivity extends ActionBarActivity {
         ExerciseName exName = ExerciseName.fromString(name);
         sItem.setName(exName);
 
-        // Set strength detailsString
-        double weightUsed = Double.parseDouble(details[1]);
-        int sets = Integer.parseInt(details[2]);
-        int reps = Integer.parseInt(details[3]);
-        sItem.setWeightUsed(weightUsed);
-        sItem.setRepsScheduled(reps);
-        sItem.setSetsScheduled(sets);
+        // Set strength details
+        sItem.setWeightUsed(Double.parseDouble(weight));
+        sItem.setRepsScheduled(Integer.parseInt(reps));
+        sItem.setSetsScheduled(Integer.parseInt(sets));
 
         NotifyReceiver.cancelNotifications(this);
         dbh.addWorkout(sItem);
-//        Toast.makeText(this, "Strength workout added to schedule", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, name + " added to schedule", Toast.LENGTH_SHORT).show();
         dbh.close();
         NotifyReceiver.setNotifications(this);
     }
