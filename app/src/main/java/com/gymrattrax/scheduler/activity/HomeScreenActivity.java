@@ -10,7 +10,6 @@ import android.view.Menu;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -24,7 +23,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.R;
+import com.gymrattrax.scheduler.adapter.ListViewAdapterView;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
+import com.gymrattrax.scheduler.model.CardioWorkoutItem;
 import com.gymrattrax.scheduler.model.ProfileItem;
 import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
 import com.gymrattrax.scheduler.model.WorkoutItem;
@@ -48,6 +49,7 @@ public class HomeScreenActivity extends ActionBarActivity {
 
     private GoogleApiClient mClient = null;
     private ArrayList<String> workoutItems = new ArrayList<>();
+    private String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +69,7 @@ public class HomeScreenActivity extends ActionBarActivity {
         }
         setContentView(R.layout.activity_home_screen);
 
-        displayCurrentWorkouts();
+        displayUpcomingWorkouts();
 
         final Animation animTranslate = AnimationUtils.loadAnimation(this, R.anim.anim_rotate);
 
@@ -215,13 +217,14 @@ public class HomeScreenActivity extends ActionBarActivity {
     /**
      * pull workouts (current day) from database and then populate ScrollView child
      */
-    private void displayCurrentWorkouts() {
+    private void displayUpcomingWorkouts() {
         String[] scheduledWorkouts = getWorkoutsString();
 
         List<String> tempItems = Arrays.asList(scheduledWorkouts);
         workoutItems.addAll(tempItems);
+
         ListView listView = (ListView) findViewById(R.id.schedule_upcoming_workouts);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.view_list_item, workoutItems);
+        ListViewAdapterView adapter = new ListViewAdapterView(HomeScreenActivity.this, workoutItems);
         listView.setAdapter(adapter);
     }
 
@@ -319,16 +322,35 @@ public class HomeScreenActivity extends ActionBarActivity {
                 int secondsTotal = (int) (minutesDbl * 60);
                 int seconds = secondsTotal % 60;
                 int minutes = (secondsTotal - seconds) / 60;
+                double distanceDbl = ((CardioWorkoutItem)w).getDistance();
+                String distanceStr;
+                String minString;
+                String secString;
+                if (minutes == 1) {
+                    minString = "" + minutes + " minute, ";
+                } else {
+                    minString = "" + minutes + " minutes, ";
+                }
+                if (seconds == 1) {
+                    secString = "" + seconds + " second";
+                } else {
+                    secString = "" + seconds + " seconds";
+                }
+                if (distanceDbl == 1) {
+                    distanceStr = "" + distanceDbl + " mile in ";
+                } else {
+                    distanceStr = "" + distanceDbl + " miles in ";
+                }
 
-                String time = "\n" + minutes + " minutes, " + seconds + " seconds";
-                time = dbh.displayDateTime(this, w.getDateScheduled()) + time;
-                String infoString = "" + w.getName().toString() + ": \n" + time;
+                String details = "" + distanceStr + minString + secString;
+                details = "" + dbh.displayDateTime(this, w.getDateScheduled()) + "!" + details;
+                String infoString = "" + w.getName().toString() + "!" + details;
                 workoutsArray[i] = infoString;
             } else {
                 String weightUsed = "" + ((StrengthWorkoutItem)w).getWeightUsed();
                 String reps = "" + ((StrengthWorkoutItem)w).getRepsScheduled();
                 String sets = "" + ((StrengthWorkoutItem)w).getSetsScheduled();
-                String dateTime = dbh.displayDateTime(this, w.getDateScheduled()) + "\n";
+                String dateTime = dbh.displayDateTime(this, w.getDateScheduled());
                 if (Double.parseDouble(weightUsed) == 1) {
                     weightUsed = weightUsed + " lb x ";
                 } else {
@@ -344,7 +366,7 @@ public class HomeScreenActivity extends ActionBarActivity {
                 } else {
                     reps = reps + " reps";
                 }
-                String infoString = "" + w.getName().toString() + ":\n" + dateTime + weightUsed + sets + reps;
+                String infoString = "" + w.getName().toString() + "!" + dateTime + "!" + weightUsed + sets + reps;
                 workoutsArray[i] = infoString;
             }
             i++;
