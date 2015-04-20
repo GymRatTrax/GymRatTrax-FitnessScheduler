@@ -8,9 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Iterator;
 
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
@@ -35,7 +33,7 @@ public class ProgressActivity extends ActionBarActivity {
     private Spinner GraphSpin;
     private GraphView graph;
     private GridLabelRenderer o;
-    private DatabaseHelper dbh;
+    public DatabaseHelper dbh;
 //    private DateAsXAxisLabelFormatter dateFormatter;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +44,8 @@ public class ProgressActivity extends ActionBarActivity {
         graph.setBackgroundColor(Color.WHITE);
         graph.getGridLabelRenderer().setNumHorizontalLabels(10);
         GraphSpin = (Spinner)findViewById(R.id.graph_spinner);
+        dbh = new DatabaseHelper(ProgressActivity.this);
+
 
         Calendar calendar = Calendar.getInstance();
         final Date d7 = calendar.getTime();
@@ -61,70 +61,58 @@ public class ProgressActivity extends ActionBarActivity {
         final Date d2 = calendar.getTime();
         calendar.add(Calendar.DATE, -1);
         final Date d1 = calendar.getTime();
-        calendar.add(Calendar.DATE, -1);
-        final Date d0 = calendar.getTime();
-
-        final Calendar today = Calendar.getInstance();
-        final Calendar lastWeek = Calendar.getInstance();
-        lastWeek.add(Calendar.DATE, -7);
 
         GraphSpin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-
+            
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String input = GraphSpin.getItemAtPosition(position).toString();
-                // display appropriate graph
 
                 switch(input){
-                    //must have at least
-                    case "Weekly Weight": //This will be a line graph
+                    case "Weekly Weight":
                         graph.removeAllSeries();
                         graph.setTitle("Weight");
                         graph.getGridLabelRenderer().setHorizontalAxisTitle("Date");
                         graph.getGridLabelRenderer().setVerticalAxisTitle("Weight");
 
-//                        DatabaseHelper dbHelper = new DatabaseHelper(ProgressActivity.this);
-                        Map<Date, Double> data = new HashMap<>();
+                        Calendar today = Calendar.getInstance();
+                        Calendar lastWeek = Calendar.getInstance();
+                        lastWeek.add(Calendar.DATE, -7);
 
-                        Date one = new Date();
-                        System.out.println(one);
-                        Map <Date, Double> weights = dbh.getWeights(today.getTime(),lastWeek.getTime());
+                        Map <Date, Double> weights = dbh.getWeights(lastWeek.getTime(),today.getTime());
 
 
-                        DataPoint points[] = new DataPoint[10];
+
+                        DataPoint points[] = new DataPoint[weights.size()];
                         int i = 0;
 
                         Set<Date> dateSet = weights.keySet();
                         for (Date date : dateSet) {
                             double weightForDate = weights.get(date);
-                            points[i] = new DataPoint(date, weightForDate);
+                            points[i] = new DataPoint(date.getTime(), weightForDate);
                             i++;
                             }
 
+
                         LineGraphSeries<DataPoint> series = new LineGraphSeries(points);
 
-//                        graph.getViewport().setScrollable(true);
                         graph.addSeries(series);
-                        // set date label formatter
 
                         graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(ProgressActivity.this));
                         graph.getGridLabelRenderer().setNumHorizontalLabels(7); // only 4 because of the space
 
-                        // set manual x bounds to have nice steps
                         graph.getViewport().setMinX(d1.getTime());
                         graph.getViewport().setMaxX(d7.getTime());
                         graph.getViewport().setXAxisBoundsManual(true);
 
                         break;
 
-                    case "Weekly Calories": //This will be a bar graph
+                    case "Weekly Calories":
                         graph.removeAllSeries();
                         graph.setTitle("Calories Burned");
                         graph.getGridLabelRenderer().setHorizontalAxisTitle("Date");
                         graph.getGridLabelRenderer().setVerticalAxisTitle("Calories");
 
-                        dbh = new DatabaseHelper(ProgressActivity.this);
                         dbh.getWorkoutsInRange(d1, d7);
 
                         WorkoutItem d1Workouts[] = dbh.getWorkoutsInRange(d1, d1);
@@ -170,8 +158,6 @@ public class ProgressActivity extends ActionBarActivity {
 
 
                         BarGraphSeries<DataPoint> series1 = new BarGraphSeries<DataPoint>(new DataPoint[] {
-
-                                //y values will be based on database information
                                 new DataPoint(d1, d1Cal),
                                 new DataPoint(d2, d2Cal),
                                 new DataPoint(d3, d3Cal),

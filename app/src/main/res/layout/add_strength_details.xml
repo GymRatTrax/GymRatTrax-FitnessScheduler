@@ -52,6 +52,7 @@
             android:layout_height="wrap_content"
             android:inputType="number"
             android:ems="10"
+            android:textCursorDrawable="@null"
             android:id="@+id/editText"
             android:layout_gravity="center_horizontal"
             android:layout_margin="10dp"
@@ -75,6 +76,7 @@
             android:layout_height="wrap_content"
             android:inputType="number"
             android:ems="10"
+            android:textCursorDrawable="@null"
             android:layout_margin="10dp"
             android:id="@+id/editText2"
             android:layout_gravity="center_horizontal"
@@ -97,12 +99,23 @@
             android:layout_height="wrap_content"
             android:inputType="number"
             android:ems="10"
+            android:textCursorDrawable="@null"
             android:layout_margin="10dp"
             android:id="@+id/editText3"
             android:layout_gravity="center_horizontal"
             android:gravity="center"
             android:layout_below="@+id/textView2"
             android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lbs"
+            android:id="@+id/textView4"
+            android:layout_alignBaseline="@+id/editText"
+            android:layout_alignBottom="@+id/editText"
+            android:layout_toRightOf="@+id/editText"
+            android:layout_toEndOf="@+id/editText" />
 
     </RelativeLayout>
 

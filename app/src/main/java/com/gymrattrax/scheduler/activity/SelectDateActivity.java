@@ -13,7 +13,9 @@ import java.util.Calendar;
 public class SelectDateActivity extends ActionBarActivity {
     private static String dateSelected;
     private TextView dateText;
-    private String details;
+    private String name;
+    private String distance;
+    private String duration, weight, sets, reps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,60 +36,69 @@ public class SelectDateActivity extends ActionBarActivity {
         final TextView exName = (TextView) findViewById(R.id.ex_name);
         final TextView exDetails = (TextView) findViewById(R.id.ex_details);
 
-
         updateDateUI(dateString);
 
         initializeCalendar(calendar);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            details = extras.getString("details");
-        }
-
-        if (details != null) {
-            String[] d = details.split("QQ");
-            String name = d[0];
-            String time;
-            // Display cardio details in text view
+            name = extras.getString("name");
             if (name.equals("Walking") || name.equals("Jogging")
                     || name.equals("Running")) {
-                String distance;
-                if (Integer.parseInt(d[1]) == 1) {
-                    distance = d[1] + " mile";
+                distance = extras.getString("distance");
+                duration = extras.getString("duration");
+            } else {
+                weight = extras.getString("weight");
+                sets = extras.getString("sets");
+                reps = extras.getString("reps");
+            }
+            // Display cardio details in text view
+            String newDetails;
+            if (name.equals("Walking") || name.equals("Jogging")
+                    || name.equals("Running")) {
+                String distanceString;
+                if (Double.parseDouble(distance) == 1) {
+                    distanceString = distance + " mile";
                 } else {
-                    distance = d[1] + " miles";
+                    distanceString = distance + " miles";
                 }
-                if (Integer.parseInt(d[2]) == 1) {
-                    time = " in " + d[2] + " minutes";
+                String timeString;
+                if (Integer.parseInt(duration) == 1) {
+                    timeString = " in " + duration + " minutes";
                 } else {
-                    time = " in " + d[2] + " minutes";
+                    timeString = " in " + duration + " minutes";
                 }
-                exName.setText(name + " ");
-                exDetails.setText(distance + time);
+                newDetails = (distanceString + timeString);
             } else
             // Display strength details
             {
-                String weight = null;
-                String sets = null;
-                String reps = null;
-                if (Integer.parseInt(d[1]) == 1) {
-                    weight = d[1] + " lb ";
+                String wString;
+                String setsStr;
+                String repsStr;
+                weight = extras.getString("weight");
+                sets = extras.getString("sets");
+                reps = extras.getString("reps");
+                if (Double.parseDouble(weight) == 1) {
+                    wString = weight + " lb ";
                 } else {
-                    weight = d[1] + " lbs x ";
+                    wString = weight + " lbs x ";
                 }
-                if (Integer.parseInt(d[2]) == 1) {
-                    sets = d[2] + " set ";
+                if (Integer.parseInt(sets) == 1) {
+                    setsStr = sets + " set ";
                 } else {
-                    sets = d[2] + " sets x ";
+                    setsStr = sets + " sets x ";
                 }
-                if (Integer.parseInt(d[3]) == 1) {
-                    reps = d[3] + "  rep ";
+                if (Integer.parseInt(reps) == 1) {
+                    repsStr = reps + "  rep ";
                 } else {
-                    reps = d[3] + " reps ";
+                    repsStr = reps + " reps ";
                 }
-                exName.setText(name);
-                exDetails.setText(weight + sets + reps);
+                newDetails = ("" + wString + setsStr + repsStr);
+
             }
+            exName.setText(name + " ");
+            exDetails.setText(newDetails);
+
         }
 
         Button nextButton = (Button) findViewById(R.id.next);
@@ -120,11 +131,19 @@ public class SelectDateActivity extends ActionBarActivity {
     private void loadSelectTime() {
         Intent intent = new Intent(SelectDateActivity.this, SelectTimeActivity.class);
         Bundle extras = new Bundle();
-        String newDetails = details + "QQ" + dateText.getText();
-        extras.putString("details", newDetails);
+        String dateStr =  dateText.getText().toString();
+        extras.putString("date", dateStr);
+        extras.putString("name", name);
+        if(name.equals("Walking") || name.equals("Jogging") ||name.equals("Running")){
+            extras.putString("distance", distance);
+            extras.putString("duration", duration);
+        } else {
+            extras.putString("weight", weight);
+            extras.putString("sets", sets);
+            extras.putString("reps", reps);
+        }
         intent.putExtras(extras);
         startActivity(intent);
-
     }
 
     //  sets calendar details and returns date selected from calendar in String

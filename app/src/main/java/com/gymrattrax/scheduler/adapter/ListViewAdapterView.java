@@ -1,29 +1,23 @@
 package com.gymrattrax.scheduler.adapter;
 
 import android.content.Context;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.TextView;
-
 
 import com.gymrattrax.scheduler.R;
 
 import java.util.ArrayList;
 
-import static android.view.View.OnClickListener;
-
-public class ListViewAdapterAdd extends ArrayAdapter<String> {
+public class ListViewAdapterView extends ArrayAdapter<String> {
 
     private ArrayList<String> item = new ArrayList<>();
     private Context context;
-    private custButtonListener customListener;
 
-    public ListViewAdapterAdd(Context context, ArrayList<String> workoutItems) {
-        super(context, R.layout.add_list_item, workoutItems);
+    public ListViewAdapterView(Context context, ArrayList<String> workoutItems) {
+        super(context, R.layout.edit_list_item, workoutItems);
         this.item = workoutItems;
         this.context = context;
     }
@@ -32,14 +26,11 @@ public class ListViewAdapterAdd extends ArrayAdapter<String> {
         public void onButtonClickListener(int position, String value);
     }
 
-    public void setCustButtonListener(custButtonListener listener) {
-        this.customListener = listener;
-    }
-
     //    items in each row in listView
     public class ViewHolder {
         TextView workout_name;
-        Button button;
+        TextView workout_date;
+        TextView workout_details;
     }
 
     @Override
@@ -47,30 +38,26 @@ public class ListViewAdapterAdd extends ArrayAdapter<String> {
         final ViewHolder viewHolder;
         if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(context);
-            convertView = inflater.inflate(R.layout.add_list_item, null);
+            convertView = inflater.inflate(R.layout.view_list_item, null);
             viewHolder = new ViewHolder();
-            viewHolder.workout_name = (TextView) convertView.findViewById(R.id.list_name);
-            viewHolder.button = (Button) convertView.findViewById(R.id.addWorkoutToScheduleButton);
+            viewHolder.workout_name = (TextView) convertView.findViewById(R.id.name);
+            viewHolder.workout_date = (TextView) convertView.findViewById(R.id.date);
+            viewHolder.workout_details = (TextView) convertView.findViewById(R.id.details);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        final String temp1 = getItem(position);
+        final String nameTemp = getItem(position);
         ArrayList<String> arrayList = new ArrayList<>();
-        arrayList.add(temp1);
+        for (String str: nameTemp.split("!", 3)){
+            arrayList.add(str);
+        }
 
         viewHolder.workout_name.setText(arrayList.get(0));
+        viewHolder.workout_date.setText(arrayList.get(1));
+        viewHolder.workout_details.setText(arrayList.get(2));
 
-        viewHolder.button.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (customListener != null) {
-                    String text = viewHolder.workout_name.getText().toString();
-                    customListener.onButtonClickListener(position, text);
-                }
-            }
-        });
         return convertView;
     }
 }

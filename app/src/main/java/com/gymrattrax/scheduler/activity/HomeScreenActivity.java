@@ -1,24 +1,19 @@
 package com.gymrattrax.scheduler.activity;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.content.IntentSender;
-import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
-import android.widget.ImageView;
-import android.widget.Button;
-import android.content.Intent;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -26,14 +21,21 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
-import com.google.android.gms.fitness.Fitness;
 import com.gymrattrax.scheduler.BuildConfig;
-import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.ProfileItem;
 import com.gymrattrax.scheduler.R;
+import com.gymrattrax.scheduler.adapter.ListViewAdapterView;
+import com.gymrattrax.scheduler.data.DatabaseHelper;
+import com.gymrattrax.scheduler.model.CardioWorkoutItem;
+import com.gymrattrax.scheduler.model.ProfileItem;
+import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
-public class HomeScreenActivity extends Activity {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+
+public class HomeScreenActivity extends ActionBarActivity {
     private static final String TAG = "HomeScreenActivity";
     private static final int REQUEST_OAUTH = 1;
 
@@ -46,6 +48,8 @@ public class HomeScreenActivity extends Activity {
     private boolean authInProgress = false;
 
     private GoogleApiClient mClient = null;
+    private ArrayList<String> workoutItems = new ArrayList<>();
+    private String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,16 +59,18 @@ public class HomeScreenActivity extends Activity {
             authInProgress = savedInstanceState.getBoolean(AUTH_PENDING);
         }
 
+//        buildFitnessClient();
+
         //initiate tutorial/profile creation if there is no ProfileItem ID in database
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         ProfileItem create = new ProfileItem(this);
         if (!create.isComplete()) {
             initiateNewUserProfileSetup();
         }
-
-//        buildFitnessClient();
-
         setContentView(R.layout.activity_home_screen);
+
+        displayUpcomingWorkouts();
+
         final Animation animTranslate = AnimationUtils.loadAnimation(this, R.anim.anim_rotate);
 
         ImageView gymRat = (ImageView) findViewById(R.id.home_rat);
@@ -75,8 +81,6 @@ public class HomeScreenActivity extends Activity {
         Button calorieNegationButton = (Button) findViewById(R.id.CalorieNegationButton);
         Button editSettingsButton = (Button) findViewById(R.id.EditSettingsButton);
 
-        displayCurrentWorkouts();
-
         gymRat.setOnClickListener(new ImageView.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,6 +89,8 @@ public class HomeScreenActivity extends Activity {
         });
 
         if (BuildConfig.DEBUG_MODE) {
+            TextView version = (TextView) findViewById(R.id.versionNum);
+            version.setText(version.getText() + " DEBUG");
             gymRat.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
@@ -147,6 +153,7 @@ public class HomeScreenActivity extends Activity {
             @Override
             public void onClick(View view) {
                 loadSettings(view);
+//                loadNotificationTest(view);
             }
         });
 
@@ -157,34 +164,6 @@ public class HomeScreenActivity extends Activity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_home_screen, menu);
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        Intent intent;
-        switch (item.getItemId()) {
-            case R.id.menu_feedback: //if BuildConfig.BETA_MODE
-                String url = "https://plus.google.com/communities/108977617832834843137";
-                intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(url));
-                startActivity(intent);
-                return true;
-            case R.id.menu_achievements:
-                intent = new Intent (HomeScreenActivity.this, AchievementsActivity.class);
-                startActivity(intent);
-                return true;
-            case R.id.menu_add_templates:
-                intent = new Intent (HomeScreenActivity.this, AddTemplatesActivity.class);
-                startActivity(intent);
-                return true;
-            case R.id.menu_settings:
-                intent = new Intent (HomeScreenActivity.this, SettingsActivity.class);
-                startActivity(intent);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
 
@@ -217,6 +196,11 @@ public class HomeScreenActivity extends Activity {
         Intent intent = new Intent (HomeScreenActivity.this, SettingsActivity.class);
         startActivity(intent);
     }
+//    public void loadNotificationTest(View view){
+//        Intent intent = new Intent (HomeScreenActivity.this, NotificationActivity.class);
+//        startActivity(intent);
+//    }
+
 
     //this method is triggered when user selects "View Progress" button from the main page
     public void loadProgress(View view){
@@ -233,67 +217,15 @@ public class HomeScreenActivity extends Activity {
     /**
      * pull workouts (current day) from database and then populate ScrollView child
      */
-    private void displayCurrentWorkouts() {
-        LinearLayout linearContainer = (LinearLayout) findViewById(R.id.daily_workout_layout);
-        TextView title = (TextView) findViewById(R.id.daily_workout_title);
+    private void displayUpcomingWorkouts() {
+        String[] scheduledWorkouts = getWorkoutsString();
 
-        linearContainer.removeAllViewsInLayout();
-        TableLayout a = new TableLayout(HomeScreenActivity.this);
-        a.removeAllViews();
+        List<String> tempItems = Arrays.asList(scheduledWorkouts);
+        workoutItems.addAll(tempItems);
 
-        DatabaseHelper dbh = new DatabaseHelper(this);
-        WorkoutItem[] workouts = dbh.getWorkoutsForToday();
-        //Linear
-        linearContainer.addView(a);
-
-        int i = 0;
-        for (WorkoutItem w : workouts) {
-            TableRow row = new TableRow(HomeScreenActivity.this);
-            LinearLayout main = new LinearLayout(HomeScreenActivity.this);
-            LinearLayout stack = new LinearLayout(HomeScreenActivity.this);
-            TextView viewTitle = new TextView(HomeScreenActivity.this);
-            TextView viewTime = new TextView(HomeScreenActivity.this);
-            row.setId(1000 + i);
-            main.setId(2000 + i);
-            stack.setId(3000 + i);
-            viewTitle.setId(4000 + i);
-            viewTime.setId(5000 + i);
-            row.removeAllViews();
-            row.setBackgroundColor(getResources().getColor(R.color.primary200));
-            row.setPadding(5,10,5,10);
-            TableLayout.LayoutParams trParams = new TableLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
-            trParams.setMargins(0,5,0,5);
-            row.setLayoutParams(trParams);
-
-            main.setOrientation(LinearLayout.HORIZONTAL);
-            stack.setOrientation(LinearLayout.VERTICAL);
-
-            viewTitle.setText(w.getName().toString());
-            viewTitle.setTextSize(20);
-
-            double minutesDbl = w.getTimeScheduled();
-            int secondsTotal = (int) (minutesDbl * 60);
-            int seconds = secondsTotal % 60;
-            int minutes = (secondsTotal - seconds) / 60;
-            String time = minutes + " minutes, " + seconds + " seconds";
-            time = dbh.displayDateTime(this, w.getDateScheduled()) + ": " + time;
-            viewTime.setText(time);
-
-            ViewGroup.LayoutParams stackParams = new LinearLayout.LayoutParams(600,
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
-            stack.setLayoutParams(stackParams);
-            stack.addView(viewTitle);
-            stack.addView(viewTime);
-            main.addView(stack);
-
-            row.addView(main);
-            a.addView(row);
-            title.setText("Workouts for Today");
-            i++;
-        }
-        dbh.close();
+        ListView listView = (ListView) findViewById(R.id.schedule_upcoming_workouts);
+        ListViewAdapterView adapter = new ListViewAdapterView(HomeScreenActivity.this, workoutItems);
+        listView.setAdapter(adapter);
     }
 
     private void initiateNewUserProfileSetup() {
@@ -304,7 +236,6 @@ public class HomeScreenActivity extends Activity {
         toast.show();
         Intent intent = new Intent(HomeScreenActivity.this, ProfileSetupActivity.class);
         startActivity(intent);
-        finish();
     }
     /**
      *  Build a {@link GoogleApiClient} that will authenticate the user and allow the application
@@ -371,6 +302,76 @@ public class HomeScreenActivity extends Activity {
                         }
                 )
                 .build();
+    }
+
+    public String[] getWorkoutsString() {
+        DatabaseHelper dbh = new DatabaseHelper(this);
+        int i = 0;
+
+        WorkoutItem[] workouts = dbh.getWorkoutsForToday();
+        String[] workoutsArray = new String[workouts.length];
+
+        for (final WorkoutItem w : workouts) {
+            workoutsArray[i] = w.getName().toString();
+
+            if (workoutsArray[i].equals("Walking")
+                    || workoutsArray[i].equals("Jogging")
+                    || workoutsArray[i].equals("Running"))
+            {
+                double minutesDbl = w.getTimeScheduled();
+                int secondsTotal = (int) (minutesDbl * 60);
+                int seconds = secondsTotal % 60;
+                int minutes = (secondsTotal - seconds) / 60;
+                double distanceDbl = ((CardioWorkoutItem)w).getDistance();
+                String distanceStr;
+                String minString;
+                String secString;
+                if (minutes == 1) {
+                    minString = "" + minutes + " minute, ";
+                } else {
+                    minString = "" + minutes + " minutes, ";
+                }
+                if (seconds == 1) {
+                    secString = "" + seconds + " second";
+                } else {
+                    secString = "" + seconds + " seconds";
+                }
+                if (distanceDbl == 1) {
+                    distanceStr = "" + distanceDbl + " mile in ";
+                } else {
+                    distanceStr = "" + distanceDbl + " miles in ";
+                }
+
+                String details = "" + distanceStr + minString + secString;
+                details = "" + dbh.displayDateTime(this, w.getDateScheduled()) + "!" + details;
+                String infoString = "" + w.getName().toString() + "!" + details;
+                workoutsArray[i] = infoString;
+            } else {
+                String weightUsed = "" + ((StrengthWorkoutItem)w).getWeightUsed();
+                String reps = "" + ((StrengthWorkoutItem)w).getRepsScheduled();
+                String sets = "" + ((StrengthWorkoutItem)w).getSetsScheduled();
+                String dateTime = dbh.displayDateTime(this, w.getDateScheduled());
+                if (Double.parseDouble(weightUsed) == 1) {
+                    weightUsed = weightUsed + " lb x ";
+                } else {
+                    weightUsed = weightUsed + " lbs x ";
+                }
+                if (Integer.parseInt(sets) == 1) {
+                    sets = sets + " set x ";
+                } else {
+                    sets = sets + " sets x ";
+                }
+                if (Integer.parseInt(reps) == 1) {
+                    reps = reps + " rep";
+                } else {
+                    reps = reps + " reps";
+                }
+                String infoString = "" + w.getName().toString() + "!" + dateTime + "!" + weightUsed + sets + reps;
+                workoutsArray[i] = infoString;
+            }
+            i++;
+        }
+        return workoutsArray;
     }
 //    @Override
 //    protected void onStart() {

@@ -1,9 +1,8 @@
 package com.gymrattrax.scheduler.activity;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,7 +12,7 @@ import com.gymrattrax.scheduler.R;
 
 public class AddCardioWorkoutActivity extends ActionBarActivity {
 
-    private String details;
+    private String name;
     private EditText distanceText, timeText;
 
     @Override
@@ -21,7 +20,6 @@ public class AddCardioWorkoutActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_cardio_details);
 
-        TextView title = (TextView) findViewById(R.id.add_workout_cardio);
         distanceText = (EditText) findViewById(R.id.editText2);
         timeText = (EditText) findViewById(R.id.editText3);
         final TextView exName = (TextView) findViewById(R.id.ex_name);
@@ -29,10 +27,10 @@ public class AddCardioWorkoutActivity extends ActionBarActivity {
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            details = extras.getString("details");
+            name = extras.getString("name");
         }
 
-        exName.setText(details);
+        exName.setText(name);
 
         nextButton.setOnClickListener(new Button.OnClickListener() {
 
@@ -46,18 +44,12 @@ public class AddCardioWorkoutActivity extends ActionBarActivity {
     private void loadDateTime() {
         Intent intent = new Intent(AddCardioWorkoutActivity.this, SelectDateActivity.class);
         Bundle extras = new Bundle();
-        String cardioDetails = details + "QQ" + distanceText.getText() + "QQ" + timeText.getText();
-        extras.putString("details", cardioDetails);
+        String cardioDistance =  distanceText.getText().toString();
+        String cardioTime = timeText.getText().toString();
+        extras.putString("name", name);
+        extras.putString("distance", cardioDistance);
+        extras.putString("duration", cardioTime);
         intent.putExtras(extras);
         startActivity(intent);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
-        return super.onOptionsItemSelected(item);
     }
 }

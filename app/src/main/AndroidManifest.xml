@@ -12,12 +12,17 @@
         android:label="@string/app_name"
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme"
-        android:logo="@drawable/ic_launcher" >
+        android:logo="@drawable/ic_launcher"
+        android:backupAgent=".data.BackupAgent">
 
         <meta-data android:name="com.google.android.gms.games.APP_ID"
             android:value="@string/app_id" />
+        <meta-data android:name="com.google.android.gms.appstate.APP_ID"
+            android:value="@string/app_id" />
         <meta-data android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version"/>
+        <meta-data android:name="com.google.android.backup.api_key"
+            android:value="AEdPqrEAAAAIRMUjhfF6BPFGCojdMRPTFlwzvHjX9X2VCwoICA" />
         <activity
             android:name=".activity.HomeScreenActivity"
             android:label="@string/app_name"
@@ -27,15 +32,6 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".activity.AchievementsActivity"
-            android:label="@string/title_activity_achievements_activity"
-            android:theme="@style/NewTheme"
-            android:parentActivityName=".activity.HomeScreenActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.HomeScreenActivity" />
         </activity>
         <activity
             android:name=".activity.AddCardioWorkoutActivity"
@@ -81,6 +77,14 @@
         <activity
             android:name=".activity.DatabaseDebugActivity"
             android:label="Database Debug" >
+        </activity>
+        <activity
+            android:name=".activity.EditCardioWorkoutActivity"
+            android:label="Edit Cardio Workout Activity" >
+        </activity>
+        <activity
+            android:name=".activity.EditStrengthWorkoutActivity"
+            android:label="Edit Strength Workout Activity" >
         </activity>
         <activity
             android:name=".activity.ProfileActivity"

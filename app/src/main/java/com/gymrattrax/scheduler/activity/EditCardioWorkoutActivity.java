@@ -10,43 +10,89 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
+import com.gymrattrax.scheduler.model.CardioWorkoutItem;
+import com.gymrattrax.scheduler.model.WorkoutItem;
 
 public class EditCardioWorkoutActivity extends ActionBarActivity {
     final DatabaseHelper dbh = new DatabaseHelper(this);
-    private String details;
     private EditText distanceText;
     private EditText timeText;
+    private String name;
+    private int id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_cardio_details);
 
-        TextView title = (TextView) findViewById(R.id.edit_workout_cardio);
         distanceText = (EditText) findViewById(R.id.editText2);
         timeText = (EditText) findViewById(R.id.editText3);
         final Button nextButton = (Button) findViewById(R.id.next);
         final TextView exName = (TextView) findViewById(R.id.ex_name);
-
+        final TextView exDetails = (TextView) findViewById(R.id.ex_details);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            details = extras.getString("details");
+            name = extras.getString("name");
+            id = extras.getInt("id");
+            exName.setText(name);
         }
 
-        exName.setText(details);
+        final DatabaseHelper dbh = new DatabaseHelper(this);
+        final WorkoutItem w = dbh.getWorkoutById(id);
+
+        double oldDistance = ((CardioWorkoutItem)w).getDistance();
+        double oldDuration = w.getTimeScheduled();
+
+        String oldDistanceString;
+        if (oldDistance == 1) {
+            oldDistanceString = oldDistance + " mile";
+        } else {
+            oldDistanceString = oldDistance + " miles";
+        }
+        String oldDurationString;
+        if (oldDuration == 1) {
+            oldDurationString = " in " + oldDuration + " minutes";
+        } else {
+            oldDurationString = " in " + oldDuration + " minutes";
+        }
+
+        String oldDetails = "" + oldDistanceString + oldDurationString;
+
+        exDetails.setText(oldDetails);
+
         nextButton.setOnClickListener(new Button.OnClickListener() {
 
             @Override
             public void onClick(View v) {
+                dbh.deleteWorkout(w);
+                dbh.close();
                 EditCardioWorkoutActivity.this.loadDateTime();
+            }
+        });
+
+        Button deleteButton = (Button) findViewById(R.id.delete);
+        deleteButton.setOnClickListener(new Button.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dbh.deleteWorkout(w);
+                dbh.close();
+                EditCardioWorkoutActivity.this.loadSchedule();
             }
         });
     }
 
-    private void showErrorToast(String s) {
+    private void loadSchedule() {
+        Intent intent = new Intent(EditCardioWorkoutActivity.this, ScheduleActivity.class);
+        showToast("" + name + " removed from schedule.");
+        startActivity(intent);
+    }
+
+    private void showToast(String s) {
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
 
@@ -71,9 +117,12 @@ public class EditCardioWorkoutActivity extends ActionBarActivity {
 //        else if(timeText == null) {
 //            showErrorToast("Time required.");
 //        } else {
-        String newDetails = details + "QQ" + distanceText.getText()
-                + "QQ" + timeText.getText();
-        extras.putString("details", newDetails);
+        String distance = distanceText.getText().toString();
+        String duration = timeText.getText().toString();
+        extras.putString("name", name);
+        extras.putInt("id", id);
+        extras.putString("distance", distance);
+        extras.putString("duration", duration);
         intent.putExtras(extras);
         startActivity(intent);
     }

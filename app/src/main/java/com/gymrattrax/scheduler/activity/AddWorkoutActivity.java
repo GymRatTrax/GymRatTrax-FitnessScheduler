@@ -1,15 +1,17 @@
 package com.gymrattrax.scheduler.activity;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
-import com.gymrattrax.scheduler.model.ExerciseName;
-import com.gymrattrax.scheduler.adapter.ListViewAdapterAdd;
-import com.gymrattrax.scheduler.adapter.ListViewAdapterEdit.custButtonListener;
-import com.gymrattrax.scheduler.R;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
+import com.gymrattrax.scheduler.R;
+import com.gymrattrax.scheduler.adapter.ListViewAdapterAdd;
+import com.gymrattrax.scheduler.adapter.ListViewAdapterEdit.custButtonListener;
+import com.gymrattrax.scheduler.model.ExerciseName;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +38,6 @@ public class AddWorkoutActivity extends ActionBarActivity implements custButtonL
         adapter.setCustButtonListener(AddWorkoutActivity.this);
         listView.setAdapter(adapter);
 
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -47,7 +48,7 @@ public class AddWorkoutActivity extends ActionBarActivity implements custButtonL
     private void displayCardioDetails(String s) {
         Intent intent = new Intent(AddWorkoutActivity.this, AddCardioWorkoutActivity.class);
         Bundle extras = new Bundle();
-        extras.putString("details", s);
+        extras.putString("name", s);
         intent.putExtras(extras);
         startActivity(intent);
     }
@@ -55,7 +56,7 @@ public class AddWorkoutActivity extends ActionBarActivity implements custButtonL
     private void displayStrengthDetails(String s) {
         Intent intent = new Intent(AddWorkoutActivity.this, AddStrengthWorkoutActivity.class);
         Bundle extras = new Bundle();
-        extras.putString("details", s);
+        extras.putString("name", s);
         intent.putExtras(extras);
         startActivity(intent);
     }

@@ -29,7 +29,7 @@
         android:layout_centerHorizontal="true">
 
         <ListView
-            android:layout_width="350dp"
+            android:layout_width="match_parent"
             android:background="@color/primary100"
             android:gravity="center"
             android:layout_height="match_parent"
