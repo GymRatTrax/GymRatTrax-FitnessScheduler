@@ -18,26 +18,23 @@
     <string name="schedule_activity_add_event">Add Event</string>
     <string name="schedule_activity_back">BACK</string>
     <string name="title_activity_view_progress">View Progress</string>
-    <string name="place_holder_text_for_scroll_view">        \nTHIS TEXT IS A PLACE HOLDER \nthis text is a place holder \nREDLOH ECALP A SI TXET SIHT
-        \nredloh ecalp a si txet siht
-        \nTHIS TEXT IS A PLACE HOLDER \nthis text is a place holder \nREDLOH ECALP A SI TXET SIHT
-        \nredloh ecalp a si txet siht
-        \nTHIS TEXT IS A PLACE HOLDER \nthis text is a place holder \nREDLOH ECALP A SI TXET SIHT
-        \nredloh ecalp a si txet siht
-        \nTHIS TEXT IS A PLACE HOLDER \nthis text is a place holder \nREDLOH ECALP A SI TXET SIHT
-        \nredloh ecalp a si txet siht
-        \nTHIS TEXT IS A PLACE HOLDER \nthis text is a place holder \nREDLOH ECALP A SI TXET SIHT
-        \nredloh ecalp a si txet siht
-        \nTHIS TEXT IS A PLACE HOLDER \nthis text is a place holder \nREDLOH ECALP A SI TXET SIHT
-        \nredloh ecalp a si txet siht
-        \nTHIS TEXT IS A PLACE HOLDER \nthis text is a place holder \nREDLOH ECALP A SI TXET SIHT
-        \nredloh ecalp a si txet siht
-        \nTHIS TEXT IS A PLACE HOLDER \nthis text is a place holder \nREDLOH ECALP A SI TXET SIHT
-        \nredloh ecalp a si txet siht
-        \nTHIS TEXT IS A PLACE HOLDER \nthis text is a place holder \nREDLOH ECALP A SI TXET SIHT
-        \nredloh ecalp a si txet siht
-        \nTHIS TEXT IS A PLACE HOLDER \nthis text is a place holder \nREDLOH ECALP A SI TXET SIHT
-        \nredloh ecalp a si txet siht</string>
+    <string name="help_text">
+    GymRatTrax\n
+    GymRatTrax is a mobile application that replaces a physical workout journal.  You may record your workouts and track your progress all in
+    one centralized location.\n\n
+    Profile Setup\n
+    Be sure to keep your profile up to date! Having accurate records will produce accurate data.  Be sure to weigh in occasionally.  You may
+    set notifications to keep you on track.\n\n
+    Workouts\n
+    Select "Begin Workout" to load your scheduled workouts for the current day.  You may then select a workout to begin.  Within each workout,
+    you may log the sets completed for strength workouts and also time completed for cardio workouts.  Your calories burned for the exercise
+    will be displayed after you log a workout.  Click on the youtube button to load tutorial videos in case you do not know how to do a workout.\n\n
+    Edit Schedule\n
+    You may create and edit your workout schedule by clicking "Edit Schedule".  Here you will be able to add various workouts to your schedule and set
+    which days and times you wish you workout.\n\n
+    Progress Reports\n
+    You may track your weight loss, total calories burned, and get suggestions for updating your workout schedule by clicking on "View Progress".
+    </string>
     <string name="gym_rat_trax_version_num">GymRatTrax Version 0.1</string>
     <string name="title_activity_cardio_workout">Cardio Workout</string>
     <string name="title_activity_view_schedule">View Schedule Activity</string>
@@ -118,6 +115,7 @@
     <string name="menu_feedback">Send feedback</string>
     <string name="menu_achievements">Achievements</string>
     <string name="menu_add_templates">Add From Template</string>
+    <string name="menu_help">Help</string>
     <string name="title_activity_achievements_activity">Achievements</string>
     <string name="title_activity_add_templates_activity">Workout Templates</string>
     <string name="signin_other_error">Sign in other error</string>

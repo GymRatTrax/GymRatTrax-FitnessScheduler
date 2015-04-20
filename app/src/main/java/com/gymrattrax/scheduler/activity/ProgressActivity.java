@@ -63,7 +63,7 @@ public class ProgressActivity extends ActionBarActivity {
         final Date d1 = calendar.getTime();
 
         GraphSpin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            
+
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String input = GraphSpin.getItemAtPosition(position).toString();
@@ -78,10 +78,10 @@ public class ProgressActivity extends ActionBarActivity {
                         Calendar today = Calendar.getInstance();
                         Calendar lastWeek = Calendar.getInstance();
                         lastWeek.add(Calendar.DATE, -7);
+                        Date endDate = today.getTime();
+                        Date beginDate = lastWeek.getTime();
 
                         Map <Date, Double> weights = dbh.getWeights(lastWeek.getTime(),today.getTime());
-
-
 
                         DataPoint points[] = new DataPoint[weights.size()];
                         int i = 0;
@@ -89,22 +89,23 @@ public class ProgressActivity extends ActionBarActivity {
                         Set<Date> dateSet = weights.keySet();
                         for (Date date : dateSet) {
                             double weightForDate = weights.get(date);
-                            points[i] = new DataPoint(date.getTime(), weightForDate);
+                            points[i] = new DataPoint(date, weightForDate);
                             i++;
                             }
 
 
-                        LineGraphSeries<DataPoint> series = new LineGraphSeries(points);
+                        LineGraphSeries series = new LineGraphSeries(points);
 
+                        series.setDrawDataPoints(true);
                         graph.addSeries(series);
 
+
                         graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(ProgressActivity.this));
-                        graph.getGridLabelRenderer().setNumHorizontalLabels(7); // only 4 because of the space
+                        graph.getGridLabelRenderer().setNumHorizontalLabels(points.length); // only 4 because of the space
 
-                        graph.getViewport().setMinX(d1.getTime());
-                        graph.getViewport().setMaxX(d7.getTime());
+                        graph.getViewport().setMinX(beginDate.getTime());
+                        graph.getViewport().setMaxX(endDate.getTime());
                         graph.getViewport().setXAxisBoundsManual(true);
-
                         break;
 
                     case "Weekly Calories":
@@ -128,7 +129,6 @@ public class ProgressActivity extends ActionBarActivity {
 
                         for (WorkoutItem a : d1Workouts){
                             d1Cal = d1Cal + a.getCaloriesBurned();
-
                         }
 
                         for (WorkoutItem b : d2Workouts){
@@ -154,8 +154,6 @@ public class ProgressActivity extends ActionBarActivity {
                         for (WorkoutItem g : d7Workouts){
                             d7Cal = d7Cal + g.getCaloriesBurned();
                         }
-
-
 
                         BarGraphSeries<DataPoint> series1 = new BarGraphSeries<DataPoint>(new DataPoint[] {
                                 new DataPoint(d1, d1Cal),
@@ -184,7 +182,6 @@ public class ProgressActivity extends ActionBarActivity {
                         graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(ProgressActivity.this));
                         graph.getGridLabelRenderer().setNumHorizontalLabels(7); // only 4 because of the space
 
-                        // set manual x bounds to have nice steps
                         graph.getViewport().setMinX(d1.getTime());
                         graph.getViewport().setMaxX(d7.getTime());
                         graph.getViewport().setXAxisBoundsManual(true);
@@ -192,6 +189,7 @@ public class ProgressActivity extends ActionBarActivity {
                         break;
 
                     case "Strength Suggestions":
+
                         WorkoutItem weeklyStrength[] = dbh.getWorkoutsInRange(d1, d7);
                         String strengthWorkoutNameArr [];
                         // create array with workout names then display percentages

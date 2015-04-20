@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.MenuItem;
+import android.net.Uri;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -166,6 +168,37 @@ public class HomeScreenActivity extends ActionBarActivity {
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        Intent intent;
+        switch (item.getItemId()) {
+            case R.id.menu_feedback: //if BuildConfig.BETA_MODE
+                String url = "https://plus.google.com/communities/108977617832834843137";
+                intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                startActivity(intent);
+                return true;
+            case R.id.menu_achievements:
+//                intent = new Intent (HomeScreenActivity.this, AchievementsActivity.class);
+//                startActivity(intent);
+                return true;
+            case R.id.menu_add_templates:
+                intent = new Intent (HomeScreenActivity.this, AddTemplatesActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.menu_settings:
+                intent = new Intent (HomeScreenActivity.this, SettingsActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.help:
+                intent = new Intent (HomeScreenActivity.this, HelpActivity.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     //the following method is triggered when user selects "Begin Workout" button from main page
     //if no workout is schedule, display message instructing user to "Create New Plan"
@@ -236,6 +269,7 @@ public class HomeScreenActivity extends ActionBarActivity {
         toast.show();
         Intent intent = new Intent(HomeScreenActivity.this, ProfileSetupActivity.class);
         startActivity(intent);
+        finish();
     }
     /**
      *  Build a {@link GoogleApiClient} that will authenticate the user and allow the application
