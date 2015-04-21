@@ -1,26 +1,32 @@
 package com.gymrattrax.scheduler.activity;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.os.Bundle;
+import android.net.Uri;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.ImageView;
+import android.widget.Button;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.Scopes;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.fitness.Fitness;
+import com.google.android.gms.games.Games;
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterView;
@@ -34,8 +40,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
-public class HomeScreenActivity extends ActionBarActivity {
+public class HomeScreenActivity extends Activity implements
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener{
     private static final String TAG = "HomeScreenActivity";
     private static final int REQUEST_OAUTH = 1;
 
@@ -47,19 +54,17 @@ public class HomeScreenActivity extends ActionBarActivity {
     private static final String AUTH_PENDING = "auth_state_pending";
     private boolean authInProgress = false;
 
-    private GoogleApiClient mClient = null;
+    private static final int RC_SIGN_IN = 9001;
+    private GoogleApiClient mGoogleApiClient = null;
+    private boolean mResolvingConnectionFailure = false;
+    private boolean mSignInClicked = false;
+    private boolean mAutoStartSignInflow = true;
     private ArrayList<String> workoutItems = new ArrayList<>();
-    private String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
-        //initialize Google Play
-        if (savedInstanceState != null) {
-            authInProgress = savedInstanceState.getBoolean(AUTH_PENDING);
-        }
-
-//        buildFitnessClient();
 
         //initiate tutorial/profile creation if there is no ProfileItem ID in database
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -68,6 +73,8 @@ public class HomeScreenActivity extends ActionBarActivity {
             initiateNewUserProfileSetup();
         }
         setContentView(R.layout.activity_home_screen);
+
+        connectToGooglePlayServices();
 
         displayUpcomingWorkouts();
 
@@ -89,8 +96,6 @@ public class HomeScreenActivity extends ActionBarActivity {
         });
 
         if (BuildConfig.DEBUG_MODE) {
-            TextView version = (TextView) findViewById(R.id.versionNum);
-            version.setText(version.getText() + " DEBUG");
             gymRat.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
@@ -153,7 +158,6 @@ public class HomeScreenActivity extends ActionBarActivity {
             @Override
             public void onClick(View view) {
                 loadSettings(view);
-//                loadNotificationTest(view);
             }
         });
 
@@ -166,6 +170,33 @@ public class HomeScreenActivity extends ActionBarActivity {
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        Intent intent;
+        switch (item.getItemId()) {
+            case R.id.menu_feedback: //if BuildConfig.BETA_MODE
+                String url = "https://plus.google.com/communities/108977617832834843137";
+                intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                startActivity(intent);
+                return true;
+            case R.id.menu_achievements:
+                int REQUEST_ACHIEVEMENTS = 991;
+                startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleApiClient), REQUEST_ACHIEVEMENTS);
+                return true;
+            case R.id.menu_add_templates:
+                intent = new Intent (HomeScreenActivity.this, AddTemplatesActivity.class);
+                startActivity(intent);
+                return true;
+            case R.id.menu_settings:
+                intent = new Intent (HomeScreenActivity.this, SettingsActivity.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     //the following method is triggered when user selects "Begin Workout" button from main page
     //if no workout is schedule, display message instructing user to "Create New Plan"
@@ -196,11 +227,6 @@ public class HomeScreenActivity extends ActionBarActivity {
         Intent intent = new Intent (HomeScreenActivity.this, SettingsActivity.class);
         startActivity(intent);
     }
-//    public void loadNotificationTest(View view){
-//        Intent intent = new Intent (HomeScreenActivity.this, NotificationActivity.class);
-//        startActivity(intent);
-//    }
-
 
     //this method is triggered when user selects "View Progress" button from the main page
     public void loadProgress(View view){
@@ -236,6 +262,7 @@ public class HomeScreenActivity extends ActionBarActivity {
         toast.show();
         Intent intent = new Intent(HomeScreenActivity.this, ProfileSetupActivity.class);
         startActivity(intent);
+        finish();
     }
     /**
      *  Build a {@link GoogleApiClient} that will authenticate the user and allow the application
@@ -245,65 +272,140 @@ public class HomeScreenActivity extends ActionBarActivity {
      *  can address. Examples of this include the user never having signed in before, or having
      *  multiple accounts on the device and needing to specify which account to use, etc.
      */
-    private void buildFitnessClient() {
+    private void connectToGooglePlayServices() {
         // Create the Google API Client
-        mClient = new GoogleApiClient.Builder(this)
-//                .addApi(Fitness.API)
-                .addScope(new Scope(Scopes.FITNESS_LOCATION_READ))
-                .addConnectionCallbacks(
-                        new GoogleApiClient.ConnectionCallbacks() {
-
-                            @Override
-                            public void onConnected(Bundle bundle) {
-                                Log.i(TAG, "Connected!!!");
-                                // Now you can make calls to the Fitness APIs.
-                                // Put application specific code here.
-                            }
-
-                            @Override
-                            public void onConnectionSuspended(int i) {
-                                // If your connection to the sensor gets lost at some point,
-                                // you'll be able to determine the reason and react to it here.
-                                if (i == GoogleApiClient.ConnectionCallbacks.CAUSE_NETWORK_LOST) {
-                                    Log.i(TAG, "Connection lost.  Cause: Network Lost.");
-                                } else if (i == GoogleApiClient.ConnectionCallbacks.CAUSE_SERVICE_DISCONNECTED) {
-                                    Log.i(TAG, "Connection lost.  Reason: Service Disconnected");
-                                }
-                            }
-                        }
-                )
-                .addOnConnectionFailedListener(
-                        new GoogleApiClient.OnConnectionFailedListener() {
-                            // Called whenever the API client fails to connect.
-                            @Override
-                            public void onConnectionFailed(ConnectionResult result) {
-                                Log.i(TAG, "Connection failed. Cause: " + result.toString());
-                                if (!result.hasResolution()) {
-                                    // Show the localized error dialog
-                                    GooglePlayServicesUtil.getErrorDialog(result.getErrorCode(),
-                                            HomeScreenActivity.this, 0).show();
-                                    return;
-                                }
-                                // The failure has a resolution. Resolve it.
-                                // Called typically when the app is not yet authorized, and an
-                                // authorization dialog is displayed to the user.
-                                if (!authInProgress) {
-                                    try {
-                                        Log.i(TAG, "Attempting to resolve failed connection");
-                                        authInProgress = true;
-                                        result.startResolutionForResult(HomeScreenActivity.this,
-                                                REQUEST_OAUTH);
-                                    } catch (IntentSender.SendIntentException e) {
-                                        Log.e(TAG,
-                                                "Exception while starting resolution activity", e);
-                                    }
-                                }
-                            }
-                        }
-                )
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(Fitness.HISTORY_API).addScope(Fitness.SCOPE_ACTIVITY_READ_WRITE)
+                .addApi(Games.API).addScope(Games.SCOPE_GAMES)
                 .build();
     }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // Connect to the Fitness API
+        if (BuildConfig.DEBUG_MODE) Log.i(TAG, "Connecting...");
+        mGoogleApiClient.connect();
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_OAUTH) {
+            authInProgress = false;
+            if (resultCode == RESULT_OK) {
+                // Make sure the app is not already connected or attempting to connect
+                if (!mGoogleApiClient.isConnecting() && !mGoogleApiClient.isConnected()) {
+                    mGoogleApiClient.connect();
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(AUTH_PENDING, authInProgress);
+    }
+
+    /**
+     * The user is signed in. Hide the sign-in button and allow user to proceed.
+     * @param bundle Also referred to as "connectionHint".
+     */
+    @Override
+    public void onConnected(Bundle bundle) {
+    }
+
+    /**
+     * Attempts to reconnect.
+//     * @param i
+     */
+    @Override
+    public void onConnectionSuspended(int i) {
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        if (mResolvingConnectionFailure) {
+            // already resolving
+            return;
+        }
+
+        // if the sign-in button was clicked or if auto sign-in is enabled,
+        // launch the sign-in flow
+        if (mSignInClicked || mAutoStartSignInflow) {
+            mAutoStartSignInflow = false;
+            mSignInClicked = false;
+            mResolvingConnectionFailure = true;
+
+            // Attempt to resolve the connection failure using BaseGameUtils.
+            // The R.string.signin_other_error value should reference a generic
+            // error string in your strings.xml file, such as "There was
+            // an issue with sign-in, please try again later."
+            if (!resolveConnectionFailure(this,
+                    mGoogleApiClient, connectionResult,
+                    RC_SIGN_IN, getString(R.string.signin_other_error))) {
+                mResolvingConnectionFailure = false;
+            }
+        }
+        SignInButton signInButton = new SignInButton(this);
+
+        LinearLayout parentLayout = (LinearLayout)findViewById(R.id.home_screen);
+        parentLayout.addView(signInButton, 4);
+    }
+
+    // Call when the sign-in button is clicked
+    private void signInClicked() {
+        mSignInClicked = true;
+        mGoogleApiClient.connect();
+    }
+
+    // Call when the sign-out button is clicked
+    private void signOutclicked() {
+        mSignInClicked = false;
+        Games.signOut(mGoogleApiClient);
+    }
+    public static boolean resolveConnectionFailure(Activity activity,
+                                                   GoogleApiClient client, ConnectionResult result, int requestCode,
+                                                   String fallbackErrorMessage) {
+
+        if (result.hasResolution()) {
+            try {
+                result.startResolutionForResult(activity, requestCode);
+                return true;
+            } catch (IntentSender.SendIntentException e) {
+                // The intent was canceled before it was sent.  Return to the default
+                // state and attempt to connect to get an updated ConnectionResult.
+                client.connect();
+                return false;
+            }
+        } else {
+            // not resolvable... so show an error message
+            int errorCode = result.getErrorCode();
+            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(errorCode,
+                    activity, requestCode);
+            if (dialog != null) {
+                dialog.show();
+            } else {
+                // no built-in dialog: show the fallback error message
+                showAlert(activity, fallbackErrorMessage);
+            }
+            return false;
+        }
+    }
+    public static void showAlert(Activity activity, String message) {
+        (new AlertDialog.Builder(activity)).setMessage(message)
+                .setNeutralButton(android.R.string.ok, null).create().show();
+    }
     public String[] getWorkoutsString() {
         DatabaseHelper dbh = new DatabaseHelper(this);
         int i = 0;
@@ -373,38 +475,4 @@ public class HomeScreenActivity extends ActionBarActivity {
         }
         return workoutsArray;
     }
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//        // Connect to the Fitness API
-//        Log.i(TAG, "Connecting...");
-//        mClient.connect();
-//    }
-//
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//        if (mClient.isConnected()) {
-//            mClient.disconnect();
-//        }
-//    }
-//
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        if (requestCode == REQUEST_OAUTH) {
-//            authInProgress = false;
-//            if (resultCode == RESULT_OK) {
-//                // Make sure the app is not already connected or attempting to connect
-//                if (!mClient.isConnecting() && !mClient.isConnected()) {
-//                    mClient.connect();
-//                }
-//            }
-//        }
-//    }
-//
-//    @Override
-//    protected void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//        outState.putBoolean(AUTH_PENDING, authInProgress);
-//    }
 }

@@ -29,5 +29,4 @@ proguard/
 # Other
 .idea/workspace.xml
 GymRatTrax-Scheduler.iml
-
-app/src/main/java/com/gymrattrax/scheduler/activity/HomeScreenActivity.java
+release.properties
