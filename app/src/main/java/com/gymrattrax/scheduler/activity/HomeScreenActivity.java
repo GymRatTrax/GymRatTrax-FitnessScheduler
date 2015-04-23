@@ -27,6 +27,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.games.Games;
+import com.google.example.games.basegameutils.BaseGameUtils;
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterView;
@@ -298,19 +299,6 @@ public class HomeScreenActivity extends Activity implements
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_OAUTH) {
-            authInProgress = false;
-            if (resultCode == RESULT_OK) {
-                // Make sure the app is not already connected or attempting to connect
-                if (!mGoogleApiClient.isConnecting() && !mGoogleApiClient.isConnected()) {
-                    mGoogleApiClient.connect();
-                }
-            }
-        }
-    }
-
-    @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(AUTH_PENDING, authInProgress);
@@ -322,15 +310,6 @@ public class HomeScreenActivity extends Activity implements
      */
     @Override
     public void onConnected(Bundle bundle) {
-    }
-
-    /**
-     * Attempts to reconnect.
-//     * @param i
-     */
-    @Override
-    public void onConnectionSuspended(int i) {
-        mGoogleApiClient.connect();
     }
 
     @Override
@@ -351,7 +330,7 @@ public class HomeScreenActivity extends Activity implements
             // The R.string.signin_other_error value should reference a generic
             // error string in your strings.xml file, such as "There was
             // an issue with sign-in, please try again later."
-            if (!resolveConnectionFailure(this,
+            if (!BaseGameUtils.resolveConnectionFailure(this,
                     mGoogleApiClient, connectionResult,
                     RC_SIGN_IN, getString(R.string.signin_other_error))) {
                 mResolvingConnectionFailure = false;
@@ -361,6 +340,36 @@ public class HomeScreenActivity extends Activity implements
 
         LinearLayout parentLayout = (LinearLayout)findViewById(R.id.home_screen);
         parentLayout.addView(signInButton, 4);
+    }
+
+    /**
+     * Attempts to reconnect.
+     */
+    @Override
+    public void onConnectionSuspended(int i) {
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == RC_SIGN_IN) {
+            mSignInClicked = false;
+            mResolvingConnectionFailure = false;
+            authInProgress = false;
+            if (resultCode == RESULT_OK) {
+                // Make sure the app is not already connected or attempting to connect
+                if (!mGoogleApiClient.isConnecting() && !mGoogleApiClient.isConnected()) {
+                    mGoogleApiClient.connect();
+                }
+            } else {
+                // Bring up an error dialog to alert the user that sign-in
+                // failed. The R.string.signin_failure should reference an error
+                // string in your strings.xml file that tells the user they
+                // could not be signed in, such as "Unable to sign in."
+                BaseGameUtils.showActivityResultError(this,
+                        requestCode, resultCode, R.string.signin_failure);
+            }
+        }
     }
 
     // Call when the sign-in button is clicked

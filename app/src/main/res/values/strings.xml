@@ -127,4 +127,12 @@
     <string name="editStrength">edit_strength</string>
     <string name="editcardio">Edit Cardio Workout</string>
     <string name="lbs">lbs.</string>
+    <string name="gamehelper_unknown_error">Unknown error</string>
+    <string name="gamehelper_sign_in_failed">Sign in failed</string>
+    <string name="gamehelper_app_misconfigured">App misconfigured</string>
+    <string name="gamehelper_license_failed">License failed</string>
+    <string name="app_misconfigured">App misconfigured</string>
+    <string name="sign_in_failed">Sign in failed</string>
+    <string name="license_failed">License failed</string>
+    <string name="signin_failure">Sign in failed</string>
 </resources>
