@@ -20,8 +20,6 @@ android {
             buildConfigField "boolean", "DEBUG_MODE", "false"
             buildConfigField "boolean", "BETA_MODE", "false"
 //            signingConfig signingConfigs.config
-//            runProguard false
-//            zipAlign true
         }
         beta {
             minifyEnabled false
@@ -29,8 +27,6 @@ android {
             buildConfigField "boolean", "DEBUG_MODE", "false"
             buildConfigField "boolean", "BETA_MODE", "true"
 //            signingConfig signingConfigs.config
-//            runProguard false
-//            zipAlign true
         }
         debug {
             debuggable true
@@ -47,6 +43,7 @@ dependencies {
     compile 'com.google.apis:google-api-services-calendar:v3-rev120-1.19.1'
     compile 'com.google.android.gms:play-services:7.0.0'
     compile files('src/main/libs/gson-2.2.4.jar')
+    compile project(':BaseGameUtils')
 }
 
 //def props = new Properties()

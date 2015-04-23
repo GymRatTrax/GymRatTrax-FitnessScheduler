@@ -1,6 +1,7 @@
 package com.gymrattrax.scheduler.activity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
@@ -150,8 +151,10 @@ public class SelectDateActivity extends ActionBarActivity {
     private void initializeCalendar(CalendarView calendar) {
         calendar.setShowWeekNumber(false);
         calendar.setFirstDayOfWeek(1);
-        calendar.setSelectedWeekBackgroundColor(getResources().getColor(R.color.primary200));
-        calendar.setSelectedDateVerticalBar(R.color.primary700);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            calendar.setSelectedWeekBackgroundColor(getResources().getColor(R.color.primary200));
+            calendar.setSelectedDateVerticalBar(R.color.primary700);
+        }
 
         calendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             public void onSelectedDayChange(CalendarView view, int year, int month, int day) {

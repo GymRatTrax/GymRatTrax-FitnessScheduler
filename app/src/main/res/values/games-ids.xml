@@ -6,6 +6,8 @@
     <string name="achievement_going_the_extra_mile">CgkI_OWWoKoXEAIQBw</string>
     <string name="achievement_focused">CgkI_OWWoKoXEAIQCA</string>
     <string name="achievement_one_heck_of_a_snack_pack">CgkI_OWWoKoXEAIQCQ</string>
+    <string name="achievement_working_hard">CgkI_OWWoKoXEAIQDw</string>
+    <string name="achievement_keep_it_100">CgkI_OWWoKoXEAIQDg</string>
     <string name="event_workouts_completed">CgkI_OWWoKoXEAIQAQ</string>
     <string name="event_time_spent_tracking_workouts">CgkI_OWWoKoXEAIQAg</string>
 </resources>

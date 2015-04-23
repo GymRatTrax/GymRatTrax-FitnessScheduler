@@ -44,10 +44,12 @@ public class NotifyReceiver extends BroadcastReceiver {
                     sharedPref.getString(SettingsActivity.PREF_NOTIFY_ADVANCE, "0"));
             Uri defaultTone = Uri.parse(sharedPref.getString(SettingsActivity.PREF_NOTIFY_TONE, ""));
 
+            Calendar lastWeek = Calendar.getInstance();
+            lastWeek.add(Calendar.DAY_OF_MONTH, -7);
             Calendar today = Calendar.getInstance();
-            Calendar nextWeek = Calendar.getInstance();
-            nextWeek.add(Calendar.DAY_OF_MONTH, 7);
-            WorkoutItem[] workouts = dbh.getWorkoutsInRange(today.getTime(), nextWeek.getTime());
+            Calendar nextYear = Calendar.getInstance();
+            nextYear.add(Calendar.YEAR, 1);
+            WorkoutItem[] workouts = dbh.getWorkoutsInRange(lastWeek.getTime(), nextYear.getTime());
 
             for (WorkoutItem workoutItem : workouts) {
                 if (workoutItem.isNotificationDefault()) {

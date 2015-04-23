@@ -3,12 +3,14 @@ package com.gymrattrax.scheduler.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.CardioWorkoutItem;
@@ -20,6 +22,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class SelectTimeActivity extends ActionBarActivity {
+    private static final String TAG = "SelectTimeActivity";
     private TextView timeText;
     private String name;
 
@@ -168,6 +171,8 @@ public class SelectTimeActivity extends ActionBarActivity {
     }
 
     public void addThisCardioWorkout( ) {
+        if (BuildConfig.DEBUG_MODE) Log.d(TAG, "cancelNotifications called.");
+        NotifyReceiver.cancelNotifications(this);
         DatabaseHelper dbh = new DatabaseHelper(SelectTimeActivity.this);
         CardioWorkoutItem cItem = new CardioWorkoutItem();
         updateTimeUI();
@@ -181,7 +186,7 @@ public class SelectTimeActivity extends ActionBarActivity {
         int minInt = timepicker.getCurrentMinute();
 
         Calendar cal = Calendar.getInstance();
-        cal.set(year, month, day, hourInt, minInt);
+        cal.set(year, month - 1, day, hourInt, minInt);
         Date d = cal.getTime();
         cItem.setDateScheduled(d);
 
@@ -199,9 +204,13 @@ public class SelectTimeActivity extends ActionBarActivity {
         dbh.addWorkout(cItem);
         Toast.makeText(this, name + " added to schedule", Toast.LENGTH_SHORT).show();
         dbh.close();
+        if (BuildConfig.DEBUG_MODE) Log.d(TAG, "setNotifications called.");
+        NotifyReceiver.setNotifications(this);
     }
 
     public void addThisStrengthWorkout() {
+        if (BuildConfig.DEBUG_MODE) Log.d(TAG, "cancelNotifications called.");
+        NotifyReceiver.cancelNotifications(this);
         DatabaseHelper dbh = new DatabaseHelper(SelectTimeActivity.this);
         StrengthWorkoutItem sItem = new StrengthWorkoutItem();
         updateTimeUI();
@@ -235,6 +244,7 @@ public class SelectTimeActivity extends ActionBarActivity {
         dbh.addWorkout(sItem);
         Toast.makeText(this, name + " added to schedule", Toast.LENGTH_SHORT).show();
         dbh.close();
+        if (BuildConfig.DEBUG_MODE) Log.d(TAG, "setNotifications called.");
         NotifyReceiver.setNotifications(this);
     }
 }

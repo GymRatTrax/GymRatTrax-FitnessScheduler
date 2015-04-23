@@ -1,5 +1,6 @@
 package com.gymrattrax.scheduler.service;
 
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -111,13 +112,14 @@ public class NotifyService extends Service {
     /**
      * Creates a notification and shows it in the OS drag-down status bar
      */
+
     private void showNotification() {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_stat_name)
                 .setAutoCancel(true)
                 .setOngoing(false)
-                .setPriority(Notification.PRIORITY_MAX)
                 .setColor(getResources().getColor(R.color.primary));
+        mBuilder.setPriority(Notification.PRIORITY_HIGH);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             mBuilder.setCategory(Notification.CATEGORY_EVENT);

@@ -1,12 +1,12 @@
 package com.gymrattrax.scheduler.data;
 
+import android.app.backup.BackupManager;
 import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.content.Context;
-import android.net.Uri;
 import android.preference.PreferenceManager;
 
 import com.gymrattrax.scheduler.BuildConfig;
@@ -28,8 +28,11 @@ import java.util.Map;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHelper";
+    private Context mContext;
+
     public DatabaseHelper(Context context) {
         super(context, DatabaseContract.DATABASE_NAME, null, DatabaseContract.DATABASE_VERSION);
+        mContext = context;
     }
 
     /**
@@ -105,13 +108,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //If the value is empty, we delete the whole record.
         if (value.trim().isEmpty()) {
             //Some settings values may be blocked from being deleted.
-            if (!key.equals(DatabaseContract.ProfileTable.KEY_DATE_FORMAT)) {
-                if (cursor.moveToFirst()) {
-                    String[] args = new String[1];
-                    args[0] = key;
-                    db.delete(DatabaseContract.ProfileTable.TABLE_NAME,
-                            DatabaseContract.ProfileTable.COLUMN_NAME_KEY + " = ?", args);
-                }
+            if (cursor.moveToFirst()) {
+                String[] args = new String[1];
+                args[0] = key;
+                db.delete(DatabaseContract.ProfileTable.TABLE_NAME,
+                        DatabaseContract.ProfileTable.COLUMN_NAME_KEY + " = ?", args);
             }
         }
         else {
@@ -229,6 +230,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             db.close();
         }
+        requestBackup();
     }
 
     /**
@@ -369,7 +371,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String query = "SELECT * FROM " + DatabaseContract.WorkoutTable.TABLE_NAME + " WHERE " +
                 DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_SCHEDULED + " >=  \"" + startStr + "\" AND " +
-                DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_SCHEDULED + " <=  \"" + endStr + "\"";
+                DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_SCHEDULED + " <=  \"" + endStr + "\" ORDER BY " +
+                DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_SCHEDULED;
 
         return storeWorkouts(query);
     }
@@ -627,5 +630,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
 
         return workouts;
+    }
+    public void requestBackup() {
+        BackupManager bm = new BackupManager(mContext);
+        bm.dataChanged();
     }
 }
