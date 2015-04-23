@@ -1,12 +1,15 @@
 package com.gymrattrax.scheduler.activity;
 
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.fragment.SettingsFragment;
+import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
 public class SettingsActivity extends PreferenceActivity {
     public static final String TAG = "SettingsActivity";
@@ -40,5 +43,16 @@ public class SettingsActivity extends PreferenceActivity {
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new SettingsFragment())
                 .commit();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        prefs.registerOnSharedPreferenceChangeListener(
+                new SharedPreferences.OnSharedPreferenceChangeListener() {
+                    @Override
+                    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+                                                          String key) {
+
+                        if (BuildConfig.DEBUG_MODE) Log.d(TAG, "setNotifications called.");
+                        NotifyReceiver.setNotifications(getApplicationContext());
+                    }
+                });
     }
 }

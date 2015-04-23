@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.content.Context;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 
 import com.gymrattrax.scheduler.BuildConfig;
@@ -305,10 +307,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         workoutItem.setID((int) id);
 
-//        if (workoutItem.isNotificationEnabled()) {
-//            addNotification(workoutItem, context);
-//        }
-
         return id;
     }
 
@@ -349,11 +347,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return getWorkoutsInRange(cal.getTime(),cal.getTime());
     }
 
-    //TODO: Decide if a Context needs to be added to this.
-    /*
-     * The Context that will be passed into the getDefaultSharedPreferences routine
-     *                (if applicable for default notifications purposes).
-     */
     /**
      * Returns an array of all workout items that fall within a provided date range.
      * @param start A Date value that contains the start date requested for Workout records. The
@@ -607,22 +600,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DatabaseContract.WorkoutTable.COLUMN_NAME_EXERTION_LEVEL)));
 
 
-//            if (cursor.getInt(cursor.getColumnIndex(
-//                    DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_DEFAULT)) > 0) {
-//                workouts[i].setNotificationDefault(true);
-//            } else {
-//                workouts[i].setNotificationDefault(true);
-//                workouts[i].setNotificationEnabled(cursor.getInt(cursor.getColumnIndex(
-//                        DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_ENABLED)) == 1);
-//                workouts[i].setNotificationVibrate(cursor.getInt(cursor.getColumnIndex(
-//                        DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_VIBRATE)) == 1);
-//                workouts[i].setNotificationMinutesInAdvance(cursor.getInt(cursor.getColumnIndex(
-//                        DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_ADVANCE)));
-//                workouts[i].setNotificationTone(Uri.parse(cursor.getString(cursor.getColumnIndex(
-//                        DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_TONE))));
-//            }
-//            workouts[i].setNotificationOngoing(
-//                    getProfileInfo(DatabaseContract.ProfileTable.KEY_NOTIFY_ONGOING).equals("1"));
+            if (cursor.getInt(cursor.getColumnIndex(
+                    DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_DEFAULT)) > 0) {
+                workouts[i].setNotificationDefault(true);
+            } else {
+                workouts[i].setNotificationDefault(true);
+                workouts[i].setNotificationEnabled(cursor.getInt(cursor.getColumnIndex(
+                        DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_ENABLED)) == 1);
+                workouts[i].setNotificationVibrate(cursor.getInt(cursor.getColumnIndex(
+                        DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_VIBRATE)) == 1);
+                workouts[i].setNotificationMinutesInAdvance(cursor.getInt(cursor.getColumnIndex(
+                        DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_ADVANCE)));
+                String uriString = (cursor.getString(cursor.getColumnIndex(
+                        DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_TONE)));
+                try {
+                    workouts[i].setNotificationTone(Uri.parse(uriString));
+                } catch (NullPointerException ex) {
+                    workouts[i].setNotificationTone(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+                }
+            }
 
             i++;
         }

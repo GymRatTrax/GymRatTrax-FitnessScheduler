@@ -3,33 +3,31 @@ package com.gymrattrax.scheduler.activity;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.RadioButton;
-import android.widget.EditText;
 import android.content.*;
 import android.app.*;
 import android.os.*;
 
-import com.gymrattrax.scheduler.model.CardioWorkoutItem;
+import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.model.WorkoutItem;
+import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
 
-/** TO-DO convert chronometer time into an estimation
- *  Complete cardioworkouts
+/** TODO: convert chronometer time into an estimation
+ *  Complete cardio workouts
  *  if calories have been calculated, inform user workout is completed
  *
  */
-
 public class CardioWorkoutActivity extends ActionBarActivity {
-
+    private final static String TAG = "CardioWorkoutActivity";
     private long lastPause;
     double timeScheduled;
     double time;
@@ -102,8 +100,9 @@ public class CardioWorkoutActivity extends ActionBarActivity {
         Bundle b = getIntent().getExtras();
         ID = b.getInt("ID");
         w = dbh.getWorkoutById(ID);
+        Log.d(TAG, "ID = " + ID);
 
-        String name = ((CardioWorkoutItem) w).getName().toString();
+        String name = w.getName().toString();
         double minutesDbl = w.getTimeScheduled();
         int secondsTotal = (int) (minutesDbl * 60);
         int seconds = secondsTotal % 60;
@@ -164,7 +163,7 @@ public class CardioWorkoutActivity extends ActionBarActivity {
 //                    editTime.show();
 //                }
 
-                }else if ((timer.getText().toString() == timeString)) {
+                }else if ((timer.getText().toString().equals(timeString))) {
                     //prompt user input
                     final AlertDialog.Builder builder = new AlertDialog.Builder(CardioWorkoutActivity.this);
                     updateCompletedWorkout();
@@ -223,7 +222,7 @@ public class CardioWorkoutActivity extends ActionBarActivity {
         //set
         WorkoutItem w = dbh.getWorkoutById(ID);
         w.setExertionLevel(exertionLvl);
-        double mets = ((CardioWorkoutItem)w).calculateMETs();
+        double mets = w.calculateMETs();
         double seconds = getSecondsFromDurationString(timer.getText().toString());
         double timeRecorded = seconds/60;
         w.setTimeSpent(timeRecorded);
@@ -236,6 +235,8 @@ public class CardioWorkoutActivity extends ActionBarActivity {
         w.setCaloriesBurned(caloriesBurned);
         dbh.completeWorkout(w);
         dbh.close();
+        if (BuildConfig.DEBUG_MODE) Log.d(TAG, "Closing ongoing notification, if applicable.");
+        NotifyReceiver.cancelOngoing(this, ID);
 
         completedTime.setText(String.format("You have logged this workout. Time Spent: %s\nCalories Burned: %f", timer.getText().toString(),
                 w.getCaloriesBurned()));
@@ -263,7 +264,5 @@ public class CardioWorkoutActivity extends ActionBarActivity {
 
         return seconds + (minutes*60) + (hours*3600);
     }
-
-
 }
 

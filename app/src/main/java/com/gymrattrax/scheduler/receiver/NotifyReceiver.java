@@ -11,12 +11,15 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.gymrattrax.scheduler.BuildConfig;
+import com.gymrattrax.scheduler.data.DatabaseContract;
 import com.gymrattrax.scheduler.service.NotifyService;
 import com.gymrattrax.scheduler.activity.SettingsActivity;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
+import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Set all alarms again when the device restarts or a broadcast is manually sent.
@@ -34,10 +37,19 @@ public class NotifyReceiver extends BroadcastReceiver {
         cancelNotifications(context);
 
         DatabaseHelper dbh = new DatabaseHelper(context);
-
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
 
         if (sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_ENABLED_ALL, true)) {
+            Calendar lastWorkoutNotify = Calendar.getInstance();
+            try {
+                String dateString = dbh.getProfileInfo(DatabaseContract.ProfileTable.KEY_LAST_NOTIFY_WORKOUT);
+                Date lastWorkoutNotifyDate = dbh.convertDate(dateString);
+                if (BuildConfig.DEBUG_MODE) Log.d(TAG, "The latest workout notification was on " + dateString + ".");
+                lastWorkoutNotify.setTime(lastWorkoutNotifyDate);
+            } catch (ParseException e) {
+                Log.d(TAG, "Date parsing failed. Something unexpected has happened. " +
+                        "You should have a date if notifications are on. Resetting to today.");
+            }
             boolean defaultEnabled = sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_ENABLED, true);
             boolean defaultVibrate = sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_VIBRATE, true);
             int defaultMinutes = Integer.parseInt(
@@ -46,12 +58,13 @@ public class NotifyReceiver extends BroadcastReceiver {
 
             Calendar lastWeek = Calendar.getInstance();
             lastWeek.add(Calendar.DAY_OF_MONTH, -7);
-            Calendar today = Calendar.getInstance();
             Calendar nextYear = Calendar.getInstance();
             nextYear.add(Calendar.YEAR, 1);
             WorkoutItem[] workouts = dbh.getWorkoutsInRange(lastWeek.getTime(), nextYear.getTime());
+            if (BuildConfig.DEBUG_MODE) Log.d(TAG, "workouts.length = " + workouts.length);
 
             for (WorkoutItem workoutItem : workouts) {
+                if (BuildConfig.DEBUG_MODE) Log.d(TAG, "Looking into workout ID: " + workoutItem.getID() + "...");
                 if (workoutItem.isNotificationDefault()) {
                     if (defaultEnabled) {
                         workoutItem.setNotificationEnabled(true);
@@ -67,13 +80,14 @@ public class NotifyReceiver extends BroadcastReceiver {
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(workoutItem.getDateScheduled());
                     calendar.add(Calendar.MINUTE, -workoutItem.getNotificationMinutesInAdvance());
-                    //TODO: Remove this 'quick fix' later. (Past due dates are fine, we just need to know they've been previously set.
-                    if (calendar.after(today)) {
+                    if (calendar.after(lastWorkoutNotify)) {
                         if (BuildConfig.DEBUG_MODE) Log.d(TAG, "About to set notification (ID: " + workoutItem.getID() + ").");
                         setNotification(context, calendar, pIntent);
                     } else {
                         if (BuildConfig.DEBUG_MODE) Log.d(TAG, "Notification (ID: " + workoutItem.getID() + ") not set.");
                     }
+                } else {
+                    if (BuildConfig.DEBUG_MODE) Log.d(TAG, "Notification (ID: " + workoutItem.getID() + ") ignored.");
                 }
             }
             dbh.close();
@@ -95,8 +109,8 @@ public class NotifyReceiver extends BroadcastReceiver {
                             defaultVibrate, defaultTone);
                 } else {
                     pIntent = createPendingIntent(context, 999, "Time to weigh-in", calendar,
-                            sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_VIBRATE, true),
-                            Uri.parse(sharedPref.getString(SettingsActivity.PREF_NOTIFY_TONE, "")));
+                            sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_WEIGH_VIBRATE, true),
+                            Uri.parse(sharedPref.getString(SettingsActivity.PREF_NOTIFY_WEIGH_TONE, "")));
                 }
                 if (BuildConfig.DEBUG_MODE) Log.d(TAG, "About to set weight notification.");
                 setNotification(context, calendar, pIntent);
@@ -140,7 +154,7 @@ public class NotifyReceiver extends BroadcastReceiver {
     private static PendingIntent createPendingIntent(Context context, WorkoutItem workoutItem) {
         Intent intent = new Intent(context, NotifyService.class);
         intent.putExtra(NotifyService.ID, workoutItem.getID());
-        intent.putExtra(NotifyService.NAME, workoutItem.getName());
+        intent.putExtra(NotifyService.NAME, workoutItem.getName().toString());
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(workoutItem.getDateScheduled());
         calendar.add(Calendar.MINUTE, -workoutItem.getNotificationMinutesInAdvance());
@@ -183,5 +197,22 @@ public class NotifyReceiver extends BroadcastReceiver {
         intent.putExtra(NotifyService.VIBRATE, vibrate);
         intent.putExtra(NotifyService.TONE, tone.toString());
         return PendingIntent.getService(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    public static void cancelOngoing(Context context, int id) {
+        Intent intent = new Intent(context, NotifyService.class);
+        intent.putExtra(NotifyService.ID, id);
+        intent.putExtra(NotifyService.NAME, "CANCEL");
+        PendingIntent pIntent = PendingIntent.getService(context, id, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Calendar calendar = Calendar.getInstance();
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Log.d(TAG, "Notification set to be canceled.");
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pIntent);
+        } else {
+            alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pIntent);
+        }
     }
 }

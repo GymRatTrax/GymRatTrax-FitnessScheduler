@@ -201,6 +201,7 @@ public class SelectTimeActivity extends ActionBarActivity {
         cItem.setTimeScheduled(Double.parseDouble(duration));
 
         // Add cardio workout to db
+        cItem.setNotificationDefault(true);
         dbh.addWorkout(cItem);
         Toast.makeText(this, name + " added to schedule", Toast.LENGTH_SHORT).show();
         dbh.close();
@@ -240,7 +241,7 @@ public class SelectTimeActivity extends ActionBarActivity {
         sItem.setRepsScheduled(Integer.parseInt(reps));
         sItem.setSetsScheduled(Integer.parseInt(sets));
 
-        NotifyReceiver.cancelNotifications(this);
+        sItem.setNotificationDefault(true);
         dbh.addWorkout(sItem);
         Toast.makeText(this, name + " added to schedule", Toast.LENGTH_SHORT).show();
         dbh.close();

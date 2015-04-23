@@ -3,6 +3,7 @@ package com.gymrattrax.scheduler.activity;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,16 +20,20 @@ import android.app.AlertDialog;
 import android.text.*;
 import android.content.DialogInterface;
 
+import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.ProfileItem;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
 import com.gymrattrax.scheduler.model.WorkoutItem;
+import com.gymrattrax.scheduler.receiver.NotifyReceiver;
+
 import android.net.Uri;
 
 // april 11: added functionality that informs user that workout item has been logged.
-// TO-DO: display calories burned after workout has been logged
+// TODO: display calories burned after workout has been logged
 public class StrengthWorkoutActivity extends ActionBarActivity {
+    private final static String TAG = "StrengthWorkoutActivity";
     int sets;
     int reps;
     double weight;
@@ -372,6 +377,8 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
         w.setCaloriesBurned(caloriesBurned);
         dbh.completeWorkout(w);
         dbh.close();
+        if (BuildConfig.DEBUG_MODE) Log.d(TAG, "Closing ongoing notification, if applicable.");
+        NotifyReceiver.cancelOngoing(this, ID);
         status.setText(String.format("You have logged this workout. Calories burned: %f", w.getCaloriesBurned()));
     }
 

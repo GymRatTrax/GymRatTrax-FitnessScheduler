@@ -1,6 +1,5 @@
 package com.gymrattrax.scheduler.service;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -24,10 +23,13 @@ import com.gymrattrax.scheduler.activity.CardioWorkoutActivity;
 import com.gymrattrax.scheduler.activity.DailyWorkoutActivity;
 import com.gymrattrax.scheduler.activity.SettingsActivity;
 import com.gymrattrax.scheduler.activity.StrengthWorkoutActivity;
+import com.gymrattrax.scheduler.data.DatabaseContract;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.CardioWorkoutItem;
 import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
 import com.gymrattrax.scheduler.model.WorkoutItem;
+
+import java.util.Calendar;
 
 /**
  * Receive Alarm and create the notification itself.
@@ -35,7 +37,8 @@ import com.gymrattrax.scheduler.model.WorkoutItem;
 public class NotifyService extends Service {
     private static final String TAG ="NotifyService";
 
-    public static final int NOTIFICATION = 7010;
+    public static final int NOTIFICATION = 6010;
+    public static final int NOTIFY_ID_WORKOUT = 7010;
     public static final int NOTIFY_ID_WEIGH = 7020;
 
     public static final String ID = "id";
@@ -82,21 +85,25 @@ public class NotifyService extends Service {
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (BuildConfig.DEBUG_MODE) Log.i("TAG", "Received start id " + startId + ": " + intent);
+        if (BuildConfig.DEBUG_MODE) Log.i(TAG, "Received start id " + startId + ": " + intent);
 
         id = intent.getIntExtra(ID, -1);
         name = intent.getStringExtra(NAME);
-        hour = intent.getIntExtra(HOUR, -1);
-        minute = intent.getIntExtra(MINUTE, -1);
-        if (intent.getBooleanExtra(VIBRATE, true)) vibrate = 300;
+        if (name.equals("CANCEL")) {
+            cancelNotification();
+        } else {
+            hour = intent.getIntExtra(HOUR, -1);
+            minute = intent.getIntExtra(MINUTE, -1);
+            if (intent.getBooleanExtra(VIBRATE, true)) vibrate = 300;
 
-        long wid = intent.getIntExtra(ID, -1);
-        if (wid > 0) {
-            DatabaseHelper dbh = new DatabaseHelper(getApplicationContext());
-            workoutItem = dbh.getWorkoutById(wid);
-            dbh.close();
+            long wid = intent.getIntExtra(ID, -1);
+            if (wid > 0) {
+                DatabaseHelper dbh = new DatabaseHelper(getApplicationContext());
+                workoutItem = dbh.getWorkoutById(wid);
+                dbh.close();
+            }
+            showNotification();
         }
-        showNotification();
 
         return START_NOT_STICKY;
     }
@@ -112,15 +119,14 @@ public class NotifyService extends Service {
     /**
      * Creates a notification and shows it in the OS drag-down status bar
      */
-
     private void showNotification() {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_stat_name)
                 .setAutoCancel(true)
                 .setOngoing(false)
                 .setColor(getResources().getColor(R.color.primary));
-        mBuilder.setPriority(Notification.PRIORITY_HIGH);
-
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+            mBuilder.setPriority(Notification.PRIORITY_HIGH);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             mBuilder.setCategory(Notification.CATEGORY_EVENT);
 
@@ -193,16 +199,36 @@ public class NotifyService extends Service {
             mBuilder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
             mBuilder.setVibrate(new long[]{0, 300, 0});
         }
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, id, intent, 0);
         mBuilder.setContentIntent(contentIntent);
 
         NotificationManager mNotificationManager =
                 (NotificationManager)this.getSystemService(Context.NOTIFICATION_SERVICE);
         if (BuildConfig.DEBUG_MODE && workoutItem != null)
             Log.d(TAG, "Displaying notification for workout item (ID: " + workoutItem.getID() + ").");
+
+        DatabaseHelper dbh = new DatabaseHelper(this);
+        Calendar now = Calendar.getInstance();
+        if (id == NOTIFY_ID_WORKOUT) {
+            dbh.setProfileInfo(DatabaseContract.ProfileTable.KEY_LAST_NOTIFY_WORKOUT, dbh.convertDate(now.getTime()));
+        } else if (id == NOTIFY_ID_WEIGH) {
+            dbh.setProfileInfo(DatabaseContract.ProfileTable.KEY_LAST_NOTIFY_WEIGHT, dbh.convertDate(now.getTime()));
+        }
+        dbh.close();
+
         mNotificationManager.notify(NOTIFICATION, mBuilder.build());
 
         // Stop the service when we are finished
+        stopSelf();
+    }
+
+    private void cancelNotification() {
+        NotificationManager mNotificationManager =
+                (NotificationManager)this.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (BuildConfig.DEBUG_MODE) Log.d(TAG, "Canceling notification.");
+
+        mNotificationManager.cancel(NOTIFICATION);
+
         stopSelf();
     }
 }

@@ -22,11 +22,12 @@ public final class DatabaseContract {
         public static final String COLUMN_NAME_KEY   = "key";
         public static final String COLUMN_NAME_VALUE = "value";
 
-        public static final String KEY_NAME           = "NAME";
-        public static final String KEY_BIRTH_DATE     = "BIRTH_DATE";
-        public static final String KEY_SEX            = "SEX";
-        public static final String KEY_HEIGHT_INCHES  = "HEIGHT";
-        public static final String KEY_DATE_FORMAT    = "DATE_FORMAT";
+        public static final String KEY_NAME                = "NAME";
+        public static final String KEY_BIRTH_DATE          = "BIRTH_DATE";
+        public static final String KEY_SEX                 = "SEX";
+        public static final String KEY_HEIGHT_INCHES       = "HEIGHT";
+        public static final String KEY_LAST_NOTIFY_WORKOUT = "LAST_NOTIFY_WORKOUT";
+        public static final String KEY_LAST_NOTIFY_WEIGHT  = "LAST_NOTIFY_WEIGHT";
 
         public static final String VAL_SEX_MALE   = "M";
         public static final String VAL_SEX_FEMALE = "F";
