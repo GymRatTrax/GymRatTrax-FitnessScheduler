@@ -79,6 +79,10 @@
             android:label="Database Debug" >
         </activity>
         <activity
+            android:name=".activity.HelpActivity"
+            android:label="Help">
+        </activity>
+        <activity
             android:name=".activity.EditCardioWorkoutActivity"
             android:label="Edit Cardio Workout Activity" >
         </activity>

@@ -194,6 +194,10 @@ public class HomeScreenActivity extends Activity implements
                 intent = new Intent (HomeScreenActivity.this, SettingsActivity.class);
                 startActivity(intent);
                 return true;
+            case R.id.help:
+                intent = new Intent (HomeScreenActivity.this, HelpActivity.class);
+                startActivity(intent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
