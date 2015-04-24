@@ -119,7 +119,7 @@ public class CalorieNegationActivity extends ActionBarActivity {
 
                 double BMR = p.getBMR();
 
-                //TODO: Resolve above comment
+                //TODO: Resolve following comment
                 /*
                 NOTE: Also, now that I understand more of how we determine METs values, I feel like
                 there is a more efficient and more accurate way to do it. Until I figure that out

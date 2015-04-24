@@ -21,6 +21,7 @@ import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.activity.CardioWorkoutActivity;
 import com.gymrattrax.scheduler.activity.DailyWorkoutActivity;
+import com.gymrattrax.scheduler.activity.ProfileActivity;
 import com.gymrattrax.scheduler.activity.SettingsActivity;
 import com.gymrattrax.scheduler.activity.StrengthWorkoutActivity;
 import com.gymrattrax.scheduler.data.DatabaseContract;
@@ -189,15 +190,17 @@ public class NotifyService extends Service {
             intent.putExtras(b);
 
         } else if (name.toLowerCase().contains("weigh")) {
-            mBuilder.setContentTitle("Time to weigh-in");
-            mBuilder.setContentText("Weigh yourself and update here");
-            mBuilder.setSound(Uri.parse(tone));
-            mBuilder.setVibrate(new long[]{0, vibrate, 0});
+            mBuilder.setContentTitle("Time to weigh-in")
+                    .setContentText("Weigh yourself and update here")
+                    .setSound(Uri.parse(tone))
+                    .setVibrate(new long[]{0, vibrate, 0});
+            intent = new Intent(this, ProfileActivity.class);
+            id = NOTIFY_ID_WEIGH;
         } else {
-            mBuilder.setContentTitle("Time to work out!");
-            mBuilder.setContentText("Let's go!");
-            mBuilder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
-            mBuilder.setVibrate(new long[]{0, 300, 0});
+            mBuilder.setContentTitle("Time to work out!")
+                    .setContentText("Let's go!")
+                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                    .setVibrate(new long[]{0, 300, 0});
         }
         PendingIntent contentIntent = PendingIntent.getActivity(this, id, intent, 0);
         mBuilder.setContentIntent(contentIntent);
@@ -209,9 +212,9 @@ public class NotifyService extends Service {
 
         DatabaseHelper dbh = new DatabaseHelper(this);
         Calendar now = Calendar.getInstance();
-        if (id == NOTIFY_ID_WORKOUT) {
+        if (workoutItem != null) {
             dbh.setProfileInfo(DatabaseContract.ProfileTable.KEY_LAST_NOTIFY_WORKOUT, dbh.convertDate(now.getTime()));
-        } else if (id == NOTIFY_ID_WEIGH) {
+        } else if (name.toLowerCase().contains("weigh")) {
             dbh.setProfileInfo(DatabaseContract.ProfileTable.KEY_LAST_NOTIFY_WEIGHT, dbh.convertDate(now.getTime()));
         }
         dbh.close();

@@ -58,8 +58,6 @@ public final class DatabaseContract {
         public static final String DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
     }
 
-    //TODO: Spin Notifications into their own table, with WORKOUT ID as a foreign key.
-    //This way, past-due notifications will still appear, and rows are deleted as they are enabled.
     public static abstract class WorkoutTable implements BaseColumns {
         public static final String TABLE_NAME = "workout";
         public static final String COLUMN_NAME_EXERCISE                  = "exercise";

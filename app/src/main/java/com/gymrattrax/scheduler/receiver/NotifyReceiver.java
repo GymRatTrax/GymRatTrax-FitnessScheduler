@@ -50,6 +50,17 @@ public class NotifyReceiver extends BroadcastReceiver {
                 Log.d(TAG, "Date parsing failed. Something unexpected has happened. " +
                         "You should have a date if notifications are on. Resetting to today.");
             }
+            Calendar lastWeightNotify = Calendar.getInstance();
+            try {
+                String dateString = dbh.getProfileInfo(DatabaseContract.ProfileTable.KEY_LAST_NOTIFY_WEIGHT);
+                Date lastWeightNotifyDate = dbh.convertDate(dateString);
+                if (BuildConfig.DEBUG_MODE) Log.d(TAG, "The latest weight notification was on " + dateString + ".");
+                lastWeightNotify.setTime(lastWeightNotifyDate);
+            } catch (ParseException e) {
+                Log.d(TAG, "Date parsing failed. Something unexpected has happened. " +
+                        "You should have a date if notifications are on. Resetting to today.");
+            }
+
             boolean defaultEnabled = sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_ENABLED, true);
             boolean defaultVibrate = sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_VIBRATE, true);
             int defaultMinutes = Integer.parseInt(
@@ -112,8 +123,12 @@ public class NotifyReceiver extends BroadcastReceiver {
                             sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_WEIGH_VIBRATE, true),
                             Uri.parse(sharedPref.getString(SettingsActivity.PREF_NOTIFY_WEIGH_TONE, "")));
                 }
-                if (BuildConfig.DEBUG_MODE) Log.d(TAG, "About to set weight notification.");
-                setNotification(context, calendar, pIntent);
+                if (calendar.after(lastWeightNotify)) {
+                    if (BuildConfig.DEBUG_MODE) Log.d(TAG, "About to set weight notification.");
+                    setNotification(context, calendar, pIntent);
+                } else {
+                    if (BuildConfig.DEBUG_MODE) Log.d(TAG, "Notification (weight) not set.");
+                }
             }
         }
     }
