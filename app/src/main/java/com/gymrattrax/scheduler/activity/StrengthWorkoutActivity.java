@@ -24,7 +24,6 @@ import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.ProfileItem;
 import com.gymrattrax.scheduler.R;
-import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
@@ -71,11 +70,11 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
 
         DatabaseHelper dbh = new DatabaseHelper(this);
         w = dbh.getWorkoutById(ID);
-        title.setText(w.getName().toString());
-        sets = ((StrengthWorkoutItem)w).getSetsScheduled();
-        reps = ((StrengthWorkoutItem)w).getRepsScheduled();
-        weight = ((StrengthWorkoutItem)w).getWeightUsed();
-        counter = ((StrengthWorkoutItem)w).getSetsCompleted();
+        title.setText(w.getName());
+        sets = w.getSetsScheduled();
+        reps = w.getRepsScheduled();
+        weight = w.getWeightUsed();
+        counter = w.getSetsCompleted();
 
         if (w.getCaloriesBurned() > 0){
             status.setText(String.format("You have logged this workout. Calories burned: %f", w.getCaloriesBurned()));
@@ -115,7 +114,7 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
                     });
                     exertBuild.show();
                 }
-                else if (((StrengthWorkoutItem)w).getSetsCompleted() != ((StrengthWorkoutItem) w).getSetsScheduled()){
+                else if (w.getSetsCompleted() != w.getSetsScheduled()){
                     //prompt user input
                     AlertDialog.Builder builder = new AlertDialog.Builder(StrengthWorkoutActivity.this);
                     builder.setTitle("Attention");
@@ -238,7 +237,7 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
 
         //populate screen with number of sets
         for (int i = 0; i < sets; i++) {
-            ((StrengthWorkoutItem)w).getSetsCompleted();
+            w.getSetsCompleted();
 
             final TableRow row = new TableRow(StrengthWorkoutActivity.this);
             LinearLayout main = new LinearLayout(StrengthWorkoutActivity.this);
@@ -311,11 +310,11 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
                                 double timeInHours = Double.parseDouble(input.getText().toString()) / 60;
                                 w.setTimeSpent(w.getTimeSpent() + timeInHours);
 
-                                ((StrengthWorkoutItem) w).setSetsCompleted(counter);
-                                ((StrengthWorkoutItem)w).setRepsCompleted(counter * reps);
+                                w.setSetsCompleted(counter);
+                                w.setRepsCompleted(counter * reps);
                                 //setRepsCompleted
 
-                                setsCompleted.setText("Sets Completed: " + Integer.toString(((StrengthWorkoutItem) w).getSetsCompleted()));
+                                setsCompleted.setText("Sets Completed: " + Integer.toString(w.getSetsCompleted()));
 
                                 DatabaseHelper dbh = new DatabaseHelper(StrengthWorkoutActivity.this);
                                 dbh.completeWorkout(w);

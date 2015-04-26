@@ -44,7 +44,7 @@ public class EditCardioWorkoutActivity extends ActionBarActivity {
         final DatabaseHelper dbh = new DatabaseHelper(this);
         final WorkoutItem w = dbh.getWorkoutById(id);
 
-        double oldDistance = ((CardioWorkoutItem)w).getDistance();
+        double oldDistance = ((CardioWorkoutItem)w).getDistanceScheduled();
         double oldDuration = w.getTimeScheduled();
 
         String oldDistanceString;

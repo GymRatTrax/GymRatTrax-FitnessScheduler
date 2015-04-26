@@ -9,6 +9,8 @@ import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.TextView;
 import com.gymrattrax.scheduler.R;
+import com.gymrattrax.scheduler.model.ExerciseName;
+
 import java.util.Calendar;
 
 public class SelectDateActivity extends ActionBarActivity {
@@ -44,8 +46,7 @@ public class SelectDateActivity extends ActionBarActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             name = extras.getString("name");
-            if (name.equals("Walking") || name.equals("Jogging")
-                    || name.equals("Running")) {
+            if (ExerciseName.Cardio.fromString(name) != null) {
                 distance = extras.getString("distance");
                 duration = extras.getString("duration");
             } else {
@@ -55,8 +56,7 @@ public class SelectDateActivity extends ActionBarActivity {
             }
             // Display cardio details in text view
             String newDetails;
-            if (name.equals("Walking") || name.equals("Jogging")
-                    || name.equals("Running")) {
+            if (ExerciseName.Cardio.fromString(name) != null) {
                 String distanceString;
                 if (Double.parseDouble(distance) == 1) {
                     distanceString = distance + " mile";
@@ -135,7 +135,7 @@ public class SelectDateActivity extends ActionBarActivity {
         String dateStr =  dateText.getText().toString();
         extras.putString("date", dateStr);
         extras.putString("name", name);
-        if(name.equals("Walking") || name.equals("Jogging") ||name.equals("Running")){
+        if (ExerciseName.Cardio.fromString(name) != null) {
             extras.putString("distance", distance);
             extras.putString("duration", duration);
         } else {

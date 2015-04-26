@@ -2,6 +2,17 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
     android:layout_width="match_parent">
+    <Preference
+        android:title="Some Title"
+        android:summary="Some Description">
+
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.gymrattrax.scheduler"
+            android:targetClass="com.gymrattrax.scheduler.activity.LoginActivity"
+            />
+
+    </Preference>
     <ListPreference
         android:key="pref_date_format"
         android:title="Date format"

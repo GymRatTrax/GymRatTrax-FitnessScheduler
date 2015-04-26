@@ -1,14 +1,16 @@
 package com.gymrattrax.scheduler.model;
 
 public enum ExerciseType {
+    ARMS     ("A"),
+    ABS      ("B"),
     CARDIO   ("C"),
-    STRENGTH ("S");
-    private final String type;
+    LEGS     ("L");
+    private final String typeChar;
 
-    ExerciseType(String type) {
-        this.type = type;
+    ExerciseType(String typeChar) {
+        this.typeChar = typeChar;
     }
-    String getType() {
-        return type;
+    public String getChar() {
+        return typeChar;
     }
 }

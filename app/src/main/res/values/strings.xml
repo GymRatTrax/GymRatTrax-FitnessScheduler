@@ -133,4 +133,13 @@
     <string name="sign_in_failed">Sign in failed</string>
     <string name="license_failed">License failed</string>
     <string name="signin_failure">Sign in failed</string>
+    <string name="stats_overall">Overall</string>
+    <string name="stats_overall_planned">Workouts Planned</string>
+    <string name="stats_overall_completed">Workouts Completed</string>
+    <string name="stats_overall_commitment">Commitment Rate</string>
+    <string name="stats_arms">Arms</string>
+    <string name="stats_percent">Percent of Total</string>
+    <string name="stats_legs">Legs</string>
+    <string name="stats_cardio">Cardio</string>
+    <string name="stats_abs">Abs</string>
 </resources>

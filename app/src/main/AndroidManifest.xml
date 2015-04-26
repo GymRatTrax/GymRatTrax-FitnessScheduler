@@ -79,16 +79,21 @@
             android:label="Database Debug" >
         </activity>
         <activity
-            android:name=".activity.HelpActivity"
-            android:label="Help">
-        </activity>
-        <activity
             android:name=".activity.EditCardioWorkoutActivity"
             android:label="Edit Cardio Workout Activity" >
         </activity>
         <activity
             android:name=".activity.EditStrengthWorkoutActivity"
             android:label="Edit Strength Workout Activity" >
+        </activity>
+        <activity
+            android:name=".activity.HelpActivity"
+            android:label="Help">
+        </activity>
+        <activity
+            android:name=".activity.LoginActivity"
+            android:label="@string/title_activity_fitness_profile"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".activity.ProfileActivity"
@@ -125,6 +130,11 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.HomeScreenActivity" />
+        </activity>
+        <activity
+            android:name=".activity.StatisticsActivity"
+            android:label="@string/title_activity_fitness_profile"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".activity.StrengthWorkoutActivity"

@@ -1,63 +1,55 @@
 package com.gymrattrax.scheduler.model;
 
+/**
+ * @deprecated WorkoutItem is no longer an abstract class and should be used for all workouts now.
+ */
+@Deprecated
 public class StrengthWorkoutItem extends WorkoutItem {
-    private double weightUsed;
-    private int repsScheduled;
-    private int repsCompleted;
-    private int setsScheduled;
-    private int setsCompleted;
-
     public StrengthWorkoutItem() {
-        super();
-        this.setType(ExerciseType.STRENGTH);
+        super(ExerciseName.Arms.BICEPS_CURL);
     }
 
     public int getSetsScheduled() {
-        return setsScheduled;
+        return super.getSetsScheduled();
     }
 
     public void setSetsScheduled(int setsScheduled) {
-        this.setsScheduled = setsScheduled;
+        super.setSetsScheduled(setsScheduled);
     }
 
     public int getRepsScheduled() {
-        return repsScheduled;
+        return super.getRepsScheduled();
     }
 
     public void setRepsScheduled(int repsScheduled) {
-        this.repsScheduled = repsScheduled;
+        super.setRepsScheduled(repsScheduled);
     }
 
     public double getWeightUsed() {
-        return weightUsed;
+        return super.getWeightUsed();
     }
 
     public void setWeightUsed(double weightUsed) {
-        this.weightUsed = weightUsed;
+        super.setWeightUsed(weightUsed);
     }
 
     public int getSetsCompleted() {
-        return setsCompleted;
+        return super.getSetsCompleted();
     }
 
     public void setSetsCompleted(int setsCompleted) {
-        this.setsCompleted = setsCompleted;
+        super.setSetsCompleted(setsCompleted);
     }
 
     public int getRepsCompleted() {
-        return repsCompleted;
+        return super.getRepsCompleted();
     }
 
     public void setRepsCompleted(int repsCompleted) {
-        this.repsCompleted = repsCompleted;
+        super.setRepsCompleted(repsCompleted);
     }
 
     public double calculateMETs() {
-        double METs = -1;
-        double exertionLevel = getExertionLevel();
-        if (exertionLevel > 0 && exertionLevel <= 3) {
-            METs = (exertionLevel * 1.25) + 2.25;
-        }
-        return METs;
+        return super.calculateMETs();
     }
 }

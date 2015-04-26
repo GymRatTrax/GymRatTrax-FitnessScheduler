@@ -11,7 +11,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 22
         versionCode 1
-        versionName "0.1"
+        versionName "0.9"
     }
     buildTypes {
         release {
@@ -43,7 +43,6 @@ dependencies {
     compile 'com.google.apis:google-api-services-calendar:v3-rev120-1.19.1'
     compile 'com.google.android.gms:play-services:7.0.0'
     compile files('src/main/libs/gson-2.2.4.jar')
-    compile project(':BaseGameUtils')
 }
 
 //def props = new Properties()

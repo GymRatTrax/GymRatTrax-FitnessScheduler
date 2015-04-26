@@ -1,13 +1,10 @@
 package com.gymrattrax.scheduler.activity;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -39,7 +36,11 @@ public class CalorieNegationActivity extends ActionBarActivity {
     LinearLayout linearContainer;
     Button[] buttons;
     double[] times;
-    ExerciseName[] exName;
+    ExerciseName.Abs[] exName1;
+    ExerciseName.Arms[] exName2;
+    ExerciseName.Cardio[] exName3;
+    ExerciseName.Legs[] exName4;
+    String[] exNameStr;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,7 +56,11 @@ public class CalorieNegationActivity extends ActionBarActivity {
             buttons[i] = new Button(CalorieNegationActivity.this);
         }
         times = new double[5];
-        exName = new ExerciseName[5];
+        exName1 = new ExerciseName.Abs[1];
+        exName2 = new ExerciseName.Arms[1];
+        exName3 = new ExerciseName.Cardio[2];
+        exName4 = new ExerciseName.Legs[1];
+        exNameStr = new String[5];
 
 //        notifyScheduler = new NotifyScheduler(this);
 //        notifyScheduler.doBindService();
@@ -164,16 +169,20 @@ public class CalorieNegationActivity extends ActionBarActivity {
                     stack.setOrientation(LinearLayout.VERTICAL);
 
                     if (i <= 1) {
-                        exName[i] = ExerciseName.getRandomStrength();
+                        exName3[i] = ExerciseName.Cardio.getRandom();
+                        exNameStr[i] = exName3[i].toString();
                     } else if (i == 2) {
-                        exName[2] = ExerciseName.WALK;
+                        exName1[0] = ExerciseName.Abs.getRandom();
+                        exNameStr[i] = exName1[0].toString();
                     } else if (i == 3) {
-                        exName[3] = ExerciseName.JOG;
+                        exName2[0] = ExerciseName.Arms.getRandom();
+                        exNameStr[i] = exName2[0].toString();
                     } else if (i == 4) {
-                        exName[4] = ExerciseName.RUN;
+                        exName4[0] = ExerciseName.Legs.getRandom();
+                        exNameStr[i] = exName4[0].toString();
                     }
 
-                    viewTitle.setText(exName[i].toString());
+                    viewTitle.setText(exNameStr[i]);
                     viewTitle.setTextSize(20);
                     String time = minutes + " minutes, " + seconds + " seconds";
                     if (i == 0) {
@@ -217,7 +226,7 @@ public class CalorieNegationActivity extends ActionBarActivity {
                 item.setRepsScheduled(12);
                 item.setSetsScheduled(4);
                 item.setWeightUsed(10);
-                item.setName(exName[0]);
+                item.setName(exNameStr[0]);
                 item.setTimeScheduled(times[0]);
 
                 addThisWorkout(item);
@@ -234,7 +243,7 @@ public class CalorieNegationActivity extends ActionBarActivity {
                 item.setRepsScheduled(20);
                 item.setSetsScheduled(6);
                 item.setWeightUsed(20);
-                item.setName(exName[1]);
+                item.setName(exNameStr[1]);
                 item.setTimeScheduled(times[1]);
 
                 addThisWorkout(item);
@@ -248,8 +257,8 @@ public class CalorieNegationActivity extends ActionBarActivity {
             public void onClick(View view) {
                 //Create walking workout item and store it in today's schedule
                 CardioWorkoutItem item = new CardioWorkoutItem();
-                item.setDistance(2);
-                item.setName(ExerciseName.WALK);
+                item.setDistanceScheduled(2);
+                item.setName(exNameStr[2]);
                 item.setTimeScheduled(times[2]);
 
                 addThisWorkout(item);
@@ -263,8 +272,8 @@ public class CalorieNegationActivity extends ActionBarActivity {
             public void onClick(View view) {
                 //Create jogging workout item and store it in today's schedule
                 CardioWorkoutItem item = new CardioWorkoutItem();
-                item.setDistance(2);
-                item.setName(ExerciseName.JOG);
+                item.setDistanceScheduled(2);
+                item.setName(exNameStr[3]);
                 item.setTimeScheduled(times[3]);
 
                 addThisWorkout(item);
@@ -278,8 +287,8 @@ public class CalorieNegationActivity extends ActionBarActivity {
             public void onClick(View view) {
                 //Create running workout item and store it in today's schedule
                 CardioWorkoutItem item = new CardioWorkoutItem();
-                item.setDistance(2);
-                item.setName(ExerciseName.RUN);
+                item.setDistanceScheduled(2);
+                item.setName(exNameStr[4]);
                 item.setTimeScheduled(times[4]);
 
                 addThisWorkout(item);

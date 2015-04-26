@@ -1,19 +1,14 @@
 package com.gymrattrax.scheduler.activity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.ImageView;
 import android.widget.Button;
 import android.view.animation.Animation;
@@ -21,45 +16,24 @@ import android.view.animation.AnimationUtils;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.games.Games;
-import com.google.example.games.basegameutils.BaseGameUtils;
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterView;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.CardioWorkoutItem;
+import com.gymrattrax.scheduler.model.ExerciseType;
 import com.gymrattrax.scheduler.model.ProfileItem;
-import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class HomeScreenActivity extends Activity implements
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener{
+public class HomeScreenActivity extends Activity {
     private static final String TAG = "HomeScreenActivity";
-    private static final int REQUEST_OAUTH = 1;
 
-    /**
-     *  Track whether an authorization activity is stacking over the current activity, i.e. when
-     *  a known auth error is being resolved, such as showing the account chooser or presenting a
-     *  consent dialog. This avoids common duplications as might happen on screen rotations, etc.
-     */
-    private static final String AUTH_PENDING = "auth_state_pending";
-    private boolean authInProgress = false;
-
-    private static final int RC_SIGN_IN = 9001;
     private GoogleApiClient mGoogleApiClient = null;
-    private boolean mResolvingConnectionFailure = false;
-    private boolean mSignInClicked = false;
-    private boolean mAutoStartSignInflow = true;
     private ArrayList<String> workoutItems = new ArrayList<>();
 
     @Override
@@ -74,8 +48,6 @@ public class HomeScreenActivity extends Activity implements
             initiateNewUserProfileSetup();
         }
         setContentView(R.layout.activity_home_screen);
-
-        connectToGooglePlayServices();
 
         displayUpcomingWorkouts();
 
@@ -100,8 +72,7 @@ public class HomeScreenActivity extends Activity implements
             gymRat.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    Intent intent = new Intent(HomeScreenActivity.this, DatabaseDebugActivity.class);
-                    startActivity(intent);
+                    loadActivity(DatabaseDebugActivity.class);
                     return true;
                 }
             });
@@ -115,10 +86,9 @@ public class HomeScreenActivity extends Activity implements
             }
         });
         viewProgressButton.setOnClickListener(new Button.OnClickListener() {
-
             @Override
             public void onClick(View view) {
-                loadProgress(view);
+                loadActivity(ProgressActivity.class);
             }
         });
 
@@ -126,7 +96,7 @@ public class HomeScreenActivity extends Activity implements
 
             @Override
             public void onClick(View view) {
-                loadSchedules(view);
+                loadActivity(ScheduleActivity.class);
             }
         });
 
@@ -134,7 +104,7 @@ public class HomeScreenActivity extends Activity implements
 
             @Override
             public void onClick(View view) {
-                loadFitnessProfile(view);
+                loadActivity(ProfileActivity.class);
             }
         });
 
@@ -142,7 +112,7 @@ public class HomeScreenActivity extends Activity implements
 
             @Override
             public void onClick(View view) {
-                loadDailyWorkout(view);
+                loadActivity(DailyWorkoutActivity.class);
             }
         });
 
@@ -150,7 +120,7 @@ public class HomeScreenActivity extends Activity implements
 
             @Override
             public void onClick(View view) {
-                loadCalorieNegation(view);
+                loadActivity(CalorieNegationActivity.class);
             }
         });
 
@@ -158,7 +128,7 @@ public class HomeScreenActivity extends Activity implements
 
             @Override
             public void onClick(View view) {
-                loadSettings(view);
+                loadActivity(SettingsActivity.class);
             }
         });
 
@@ -187,66 +157,30 @@ public class HomeScreenActivity extends Activity implements
                 startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleApiClient), REQUEST_ACHIEVEMENTS);
                 return true;
             case R.id.menu_add_templates:
-                intent = new Intent (HomeScreenActivity.this, AddTemplatesActivity.class);
-                startActivity(intent);
+                loadActivity(AddTemplatesActivity.class);
                 return true;
             case R.id.menu_settings:
-                intent = new Intent (HomeScreenActivity.this, SettingsActivity.class);
-                startActivity(intent);
+                loadActivity(SettingsActivity.class);
                 return true;
             case R.id.help:
-                intent = new Intent (HomeScreenActivity.this, HelpActivity.class);
-                startActivity(intent);
+                loadActivity(HelpActivity.class);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    //the following method is triggered when user selects "Begin Workout" button from main page
-    //if no workout is schedule, display message instructing user to "Create New Plan"
-    public void loadDailyWorkout(View view){
-
-        //load current workout schedule for current date
-
-        Intent intent = new Intent (HomeScreenActivity.this, DailyWorkoutActivity.class);
-        startActivity(intent);
-    }
-
-    //the following method is triggered when user selects "Calorie Negation" button from the main page
-    public void loadCalorieNegation(View view){
-
-        Intent intent = new Intent (HomeScreenActivity.this, CalorieNegationActivity.class);
-        startActivity(intent);
-    }
-
-    //the following method is triggered when user selects "Fitness Profile" button from the main page
-    final public void loadFitnessProfile(View view){
-
-        Intent intent = new Intent (HomeScreenActivity.this, ProfileActivity.class);
-        startActivity(intent);
-    }
-
-
-    public void loadSettings(View view){
-        Intent intent = new Intent (HomeScreenActivity.this, SettingsActivity.class);
-        startActivity(intent);
-    }
-
-    //this method is triggered when user selects "View Progress" button from the main page
-    public void loadProgress(View view){
-
-        Intent intent = new Intent (HomeScreenActivity.this, ProgressActivity.class);
-        startActivity(intent);
-    }
-
-    public void loadSchedules(View view){
-        Intent intent = new Intent (HomeScreenActivity.this, ScheduleActivity.class);
+    /**
+     * Launches activity from button on home screen.
+     * @param className Name of activity to launch in the form of {@code ActivityToLaunch.class}.
+     */
+    public void loadActivity(Class className){
+        Intent intent = new Intent (HomeScreenActivity.this, className);
         startActivity(intent);
     }
 
     /**
-     * pull workouts (current day) from database and then populate ScrollView child
+     * Pulls workouts (current day) from database and then populate ScrollView child.
      */
     private void displayUpcomingWorkouts() {
         String[] scheduledWorkouts = getWorkoutsString();
@@ -265,160 +199,10 @@ public class HomeScreenActivity extends Activity implements
                         "Please set up your personal fitness profile.", Toast.LENGTH_LONG);
         toast.setDuration(Toast.LENGTH_LONG);
         toast.show();
-        Intent intent = new Intent(HomeScreenActivity.this, ProfileSetupActivity.class);
-        startActivity(intent);
+        loadActivity(ProfileSetupActivity.class);
         finish();
     }
-    /**
-     *  Build a {@link GoogleApiClient} that will authenticate the user and allow the application
-     *  to connect to Fitness APIs. The scopes included should match the scopes your app needs
-     *  (see documentation for details). Authentication will occasionally fail intentionally,
-     *  and in those cases, there will be a known resolution, which the OnConnectionFailedListener()
-     *  can address. Examples of this include the user never having signed in before, or having
-     *  multiple accounts on the device and needing to specify which account to use, etc.
-     */
-    private void connectToGooglePlayServices() {
-        // Create the Google API Client
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Fitness.HISTORY_API).addScope(Fitness.SCOPE_ACTIVITY_READ_WRITE)
-                .addApi(Games.API).addScope(Games.SCOPE_GAMES)
-                .build();
-    }
-    @Override
-    protected void onStart() {
-        super.onStart();
-        // Connect to the Fitness API
-        if (BuildConfig.DEBUG_MODE) Log.i(TAG, "Connecting...");
-        mGoogleApiClient.connect();
-    }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
-        }
-    }
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(AUTH_PENDING, authInProgress);
-    }
-
-    /**
-     * The user is signed in. Hide the sign-in button and allow user to proceed.
-     * @param bundle Also referred to as "connectionHint".
-     */
-    @Override
-    public void onConnected(Bundle bundle) {
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        if (mResolvingConnectionFailure) {
-            // already resolving
-            return;
-        }
-
-        // if the sign-in button was clicked or if auto sign-in is enabled,
-        // launch the sign-in flow
-        if (mSignInClicked || mAutoStartSignInflow) {
-            mAutoStartSignInflow = false;
-            mSignInClicked = false;
-            mResolvingConnectionFailure = true;
-
-            // Attempt to resolve the connection failure using BaseGameUtils.
-            // The R.string.signin_other_error value should reference a generic
-            // error string in your strings.xml file, such as "There was
-            // an issue with sign-in, please try again later."
-            if (!BaseGameUtils.resolveConnectionFailure(this,
-                    mGoogleApiClient, connectionResult,
-                    RC_SIGN_IN, getString(R.string.signin_other_error))) {
-                mResolvingConnectionFailure = false;
-            }
-        }
-        SignInButton signInButton = new SignInButton(this);
-
-        LinearLayout parentLayout = (LinearLayout)findViewById(R.id.home_screen);
-        parentLayout.addView(signInButton, 4);
-    }
-
-    /**
-     * Attempts to reconnect.
-     */
-    @Override
-    public void onConnectionSuspended(int i) {
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == RC_SIGN_IN) {
-            mSignInClicked = false;
-            mResolvingConnectionFailure = false;
-            authInProgress = false;
-            if (resultCode == RESULT_OK) {
-                // Make sure the app is not already connected or attempting to connect
-                if (!mGoogleApiClient.isConnecting() && !mGoogleApiClient.isConnected()) {
-                    mGoogleApiClient.connect();
-                }
-            } else {
-                // Bring up an error dialog to alert the user that sign-in
-                // failed. The R.string.signin_failure should reference an error
-                // string in your strings.xml file that tells the user they
-                // could not be signed in, such as "Unable to sign in."
-                BaseGameUtils.showActivityResultError(this,
-                        requestCode, resultCode, R.string.signin_failure);
-            }
-        }
-    }
-
-    // Call when the sign-in button is clicked
-    private void signInClicked() {
-        mSignInClicked = true;
-        mGoogleApiClient.connect();
-    }
-
-    // Call when the sign-out button is clicked
-    private void signOutclicked() {
-        mSignInClicked = false;
-        Games.signOut(mGoogleApiClient);
-    }
-    public static boolean resolveConnectionFailure(Activity activity,
-                                                   GoogleApiClient client, ConnectionResult result, int requestCode,
-                                                   String fallbackErrorMessage) {
-
-        if (result.hasResolution()) {
-            try {
-                result.startResolutionForResult(activity, requestCode);
-                return true;
-            } catch (IntentSender.SendIntentException e) {
-                // The intent was canceled before it was sent.  Return to the default
-                // state and attempt to connect to get an updated ConnectionResult.
-                client.connect();
-                return false;
-            }
-        } else {
-            // not resolvable... so show an error message
-            int errorCode = result.getErrorCode();
-            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(errorCode,
-                    activity, requestCode);
-            if (dialog != null) {
-                dialog.show();
-            } else {
-                // no built-in dialog: show the fallback error message
-                showAlert(activity, fallbackErrorMessage);
-            }
-            return false;
-        }
-    }
-    public static void showAlert(Activity activity, String message) {
-        (new AlertDialog.Builder(activity)).setMessage(message)
-                .setNeutralButton(android.R.string.ok, null).create().show();
-    }
     public String[] getWorkoutsString() {
         DatabaseHelper dbh = new DatabaseHelper(this);
         int i = 0;
@@ -427,17 +211,15 @@ public class HomeScreenActivity extends Activity implements
         String[] workoutsArray = new String[workouts.length];
 
         for (final WorkoutItem w : workouts) {
-            workoutsArray[i] = w.getName().toString();
+            workoutsArray[i] = w.getName();
 
-            if (workoutsArray[i].equals("Walking")
-                    || workoutsArray[i].equals("Jogging")
-                    || workoutsArray[i].equals("Running"))
+            if (w.getType() == ExerciseType.CARDIO)
             {
                 double minutesDbl = w.getTimeScheduled();
                 int secondsTotal = (int) (minutesDbl * 60);
                 int seconds = secondsTotal % 60;
                 int minutes = (secondsTotal - seconds) / 60;
-                double distanceDbl = ((CardioWorkoutItem)w).getDistance();
+                double distanceDbl = w.getDistanceScheduled();
                 String distanceStr;
                 String minString;
                 String secString;
@@ -459,12 +241,12 @@ public class HomeScreenActivity extends Activity implements
 
                 String details = "" + distanceStr + minString + secString;
                 details = "" + dbh.displayDateTime(this, w.getDateScheduled()) + "!" + details;
-                String infoString = "" + w.getName().toString() + "!" + details;
+                String infoString = "" + w.getName() + "!" + details;
                 workoutsArray[i] = infoString;
             } else {
-                String weightUsed = "" + ((StrengthWorkoutItem)w).getWeightUsed();
-                String reps = "" + ((StrengthWorkoutItem)w).getRepsScheduled();
-                String sets = "" + ((StrengthWorkoutItem)w).getSetsScheduled();
+                String weightUsed = "" + w.getWeightUsed();
+                String reps = "" + w.getRepsScheduled();
+                String sets = "" + w.getSetsScheduled();
                 String dateTime = dbh.displayDateTime(this, w.getDateScheduled());
                 if (Double.parseDouble(weightUsed) == 1) {
                     weightUsed = weightUsed + " lb x ";
@@ -481,7 +263,7 @@ public class HomeScreenActivity extends Activity implements
                 } else {
                     reps = reps + " reps";
                 }
-                String infoString = "" + w.getName().toString() + "!" + dateTime + "!" + weightUsed + sets + reps;
+                String infoString = "" + w.getName() + "!" + dateTime + "!" + weightUsed + sets + reps;
                 workoutsArray[i] = infoString;
             }
             i++;
