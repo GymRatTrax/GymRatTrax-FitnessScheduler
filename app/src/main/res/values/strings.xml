@@ -142,4 +142,5 @@
     <string name="stats_legs">Legs</string>
     <string name="stats_cardio">Cardio</string>
     <string name="stats_abs">Abs</string>
+    <string name="fitness_intro_text">Fitness History</string>
 </resources>

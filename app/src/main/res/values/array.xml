@@ -15,11 +15,16 @@
         <item>Weekly Calories</item>
         <item>Strength Suggestions</item>
         <item>Cardio Suggestions</item>
-
     </string-array>
 
     <string-array name="date_format_array">
         <item>MM/dd/yyyy</item>
         <item>dd/MM/yyyy</item>
+    </string-array>
+
+    <string-array name="progress_array">
+        <item>Graphs</item>
+        <item>Statistics</item>
+        <item>Achievements</item>
     </string-array>
 </resources>

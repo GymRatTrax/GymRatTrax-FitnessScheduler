@@ -40,6 +40,7 @@ public class LoginActivity extends LoginBaseActivity {
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .addApi(Fitness.HISTORY_API).addScope(Fitness.SCOPE_ACTIVITY_READ_WRITE)
+                    .addApi(Fitness.SESSIONS_API).addScope(Fitness.SCOPE_LOCATION_READ_WRITE)
                     .addApi(Games.API).addScope(Games.SCOPE_GAMES)
                     .build();
         }

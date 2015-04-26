@@ -43,6 +43,16 @@ public class WorkoutItem {
         this.exercise = exercise;
     }
 
+    /**
+     * @deprecated Please use {@link WorkoutItem#WorkoutItem(ExerciseItem)} to prevent issues
+     * resulting from incorrect Strings. This was created to ease backwards compatibility issues.
+     */
+     @Deprecated
+    public WorkoutItem(String exerciseName) {
+        this();
+        setName(exerciseName);
+    }
+
     public WorkoutItem(ExerciseName.Abs abs) {
         exercise = new ExerciseItem(abs);
     }
@@ -151,38 +161,36 @@ public class WorkoutItem {
     }
 
     public double calculateMETs() {
-        double METs = -1;
         switch (exercise.getType()) {
             case CARDIO:
                 switch (exercise.getCardio()) {
                     case BIKE:
                     case ELLIPTICAL:
-                        if (exertionLevel < 2) {
-                            METs = 5.5;
-                        } else if (exertionLevel > 2) {
-                            METs = 10.5;
-                        } else {
-                            METs = 7;
-                        }
-                        return METs;
+                        if (exertionLevel < 2)
+                            return 5.5;
+                        else if (exertionLevel > 2)
+                            return 10.5;
+                        else
+                            return 7;
                     case RUN:
                     case JOG:
                     case WALK:
                     default:
                         //miles per hour, multiplied by a factor of 1.6529
-                        if (getTimeSpent() > 0 && distanceCompleted > 0) {
-                            METs = 1.6529 * distanceScheduled / (getTimeSpent() / 60);
-                        }
+                        if (getTimeSpent() > 0 && distanceCompleted > 0)
+                            return 1.6529 * distanceScheduled / (getTimeSpent() / 60);
+                        else
+                            return -1;
                 }
             case ARMS:
             case LEGS:
             case ABS:
-                if (exertionLevel > 0 && exertionLevel <= 3) {
-                    METs = (exertionLevel * 1.25) + 2.25;
-                }
-                return METs;
+                if (exertionLevel > 0 && exertionLevel <= 3)
+                    return (exertionLevel * 1.25) + 2.25;
+                else
+                    return -1;
             default:
-                return METs;
+                return -1;
         }
     }
 

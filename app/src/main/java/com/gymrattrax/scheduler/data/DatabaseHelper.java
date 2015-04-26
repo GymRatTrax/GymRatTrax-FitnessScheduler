@@ -674,7 +674,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_WEIGHT)));
                     break;
                 default:
-                    Log.e(TAG, "Error getting workout in storeWorkouts. COLUMN_NAME_EXERCISE_TYPE = " + cursor.getString(cursor.getColumnIndex(
+                    workouts[i] = new WorkoutItem(cursor.getString(cursor.getColumnIndex(
+                            DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_NAME)));
+                    switch (workouts[i].getType()) {
+                        case CARDIO:
+                            workouts[i].setDistanceScheduled(cursor.getDouble(cursor.getColumnIndex(
+                                    DatabaseContract.WorkoutTable.COLUMN_NAME_CARDIO_DISTANCE_SCHEDULED)));
+                            workouts[i].setDistanceCompleted(cursor.getDouble(cursor.getColumnIndex(
+                                    DatabaseContract.WorkoutTable.COLUMN_NAME_CARDIO_DISTANCE_COMPLETED)));
+                            break;
+                        case ARMS:
+                        case ABS:
+                        case LEGS:
+                            workouts[i].setRepsScheduled(cursor.getInt(cursor.getColumnIndex(
+                                    DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_REPS_SCHEDULED)));
+                            workouts[i].setRepsCompleted(cursor.getInt(cursor.getColumnIndex(
+                                    DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_REPS_COMPLETED)));
+                            workouts[i].setSetsScheduled(cursor.getInt(cursor.getColumnIndex(
+                                    DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_SETS_SCHEDULED)));
+                            workouts[i].setSetsCompleted(cursor.getInt(cursor.getColumnIndex(
+                                    DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_SETS_COMPLETED)));
+                            workouts[i].setWeightUsed(cursor.getDouble(cursor.getColumnIndex(
+                                    DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_WEIGHT)));
+                            break;
+                    }
+                    Log.e(TAG, "Error getting workout in storeWorkouts. COLUMN_NAME_EXERCISE_TYPE = "
+                            + cursor.getString(cursor.getColumnIndex(
                             DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE)));
             }
 

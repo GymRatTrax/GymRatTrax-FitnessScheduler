@@ -16,13 +16,11 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.gymrattrax.scheduler.model.CardioWorkoutItem;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.ExerciseName;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 import com.gymrattrax.scheduler.model.ProfileItem;
 import com.gymrattrax.scheduler.R;
-import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
 import java.util.Calendar;
@@ -221,12 +219,10 @@ public class CalorieNegationActivity extends ActionBarActivity {
             @Override
             public void onClick(View view) {
                 //Create light strength workout item and store it in today's schedule
-
-                StrengthWorkoutItem item = new StrengthWorkoutItem();
+                WorkoutItem item = new WorkoutItem(ExerciseName.Cardio.fromString(exNameStr[0]));
                 item.setRepsScheduled(12);
                 item.setSetsScheduled(4);
                 item.setWeightUsed(10);
-                item.setName(exNameStr[0]);
                 item.setTimeScheduled(times[0]);
 
                 addThisWorkout(item);
@@ -239,11 +235,10 @@ public class CalorieNegationActivity extends ActionBarActivity {
             @Override
             public void onClick(View view) {
                 //Create vigorous strength workout item and store it in today's schedule
-                StrengthWorkoutItem item = new StrengthWorkoutItem();
+                WorkoutItem item = new WorkoutItem(ExerciseName.Cardio.fromString(exNameStr[1]));
                 item.setRepsScheduled(20);
                 item.setSetsScheduled(6);
                 item.setWeightUsed(20);
-                item.setName(exNameStr[1]);
                 item.setTimeScheduled(times[1]);
 
                 addThisWorkout(item);
@@ -256,9 +251,8 @@ public class CalorieNegationActivity extends ActionBarActivity {
             @Override
             public void onClick(View view) {
                 //Create walking workout item and store it in today's schedule
-                CardioWorkoutItem item = new CardioWorkoutItem();
+                WorkoutItem item = new WorkoutItem(ExerciseName.Abs.fromString(exNameStr[2]));
                 item.setDistanceScheduled(2);
-                item.setName(exNameStr[2]);
                 item.setTimeScheduled(times[2]);
 
                 addThisWorkout(item);
@@ -271,9 +265,8 @@ public class CalorieNegationActivity extends ActionBarActivity {
             @Override
             public void onClick(View view) {
                 //Create jogging workout item and store it in today's schedule
-                CardioWorkoutItem item = new CardioWorkoutItem();
+                WorkoutItem item = new WorkoutItem(ExerciseName.Arms.fromString(exNameStr[3]));
                 item.setDistanceScheduled(2);
-                item.setName(exNameStr[3]);
                 item.setTimeScheduled(times[3]);
 
                 addThisWorkout(item);
@@ -286,9 +279,8 @@ public class CalorieNegationActivity extends ActionBarActivity {
             @Override
             public void onClick(View view) {
                 //Create running workout item and store it in today's schedule
-                CardioWorkoutItem item = new CardioWorkoutItem();
+                WorkoutItem item = new WorkoutItem(ExerciseName.Legs.fromString(exNameStr[4]));
                 item.setDistanceScheduled(2);
-                item.setName(exNameStr[4]);
                 item.setTimeScheduled(times[4]);
 
                 addThisWorkout(item);

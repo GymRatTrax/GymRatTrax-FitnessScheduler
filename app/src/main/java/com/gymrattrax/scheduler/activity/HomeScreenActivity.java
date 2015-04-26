@@ -1,6 +1,7 @@
 package com.gymrattrax.scheduler.activity;
 
-import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.preference.PreferenceManager;
@@ -30,10 +31,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class HomeScreenActivity extends Activity {
+public class HomeScreenActivity extends LoginActivity {
     private static final String TAG = "HomeScreenActivity";
 
-    private GoogleApiClient mGoogleApiClient = null;
     private ArrayList<String> workoutItems = new ArrayList<>();
 
     @Override
@@ -88,7 +88,26 @@ public class HomeScreenActivity extends Activity {
         viewProgressButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) {
-                loadActivity(ProgressActivity.class);
+                AlertDialog.Builder builder = new AlertDialog.Builder(HomeScreenActivity.this);
+                builder.setTitle(R.string.title_activity_view_progress)
+                        .setItems(R.array.progress_array, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which) {
+                                    case 0:
+                                        loadActivity(ProgressActivity.class);
+                                        break;
+                                    case 1:
+                                        loadActivity(StatisticsActivity.class);
+                                        break;
+                                    case 2:
+                                        int REQUEST_ACHIEVEMENTS = 991;
+                                        mGoogleApiClient.connect();
+                                        startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleApiClient), REQUEST_ACHIEVEMENTS);
+                                        break;
+                                }
+                            }
+                        });
+                builder.show();
             }
         });
 
@@ -152,10 +171,6 @@ public class HomeScreenActivity extends Activity {
                 intent.setData(Uri.parse(url));
                 startActivity(intent);
                 return true;
-            case R.id.menu_achievements:
-                int REQUEST_ACHIEVEMENTS = 991;
-                startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleApiClient), REQUEST_ACHIEVEMENTS);
-                return true;
             case R.id.menu_add_templates:
                 loadActivity(AddTemplatesActivity.class);
                 return true;
@@ -175,7 +190,7 @@ public class HomeScreenActivity extends Activity {
      * @param className Name of activity to launch in the form of {@code ActivityToLaunch.class}.
      */
     public void loadActivity(Class className){
-        Intent intent = new Intent (HomeScreenActivity.this, className);
+        Intent intent = new Intent (this, className);
         startActivity(intent);
     }
 
@@ -189,7 +204,7 @@ public class HomeScreenActivity extends Activity {
         workoutItems.addAll(tempItems);
 
         ListView listView = (ListView) findViewById(R.id.schedule_upcoming_workouts);
-        ListViewAdapterView adapter = new ListViewAdapterView(HomeScreenActivity.this, workoutItems);
+        ListViewAdapterView adapter = new ListViewAdapterView(this, workoutItems);
         listView.setAdapter(adapter);
     }
 

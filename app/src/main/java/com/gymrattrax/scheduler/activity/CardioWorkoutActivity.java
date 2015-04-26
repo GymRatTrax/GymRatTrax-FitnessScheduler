@@ -1,8 +1,8 @@
 package com.gymrattrax.scheduler.activity;
 
 import android.net.Uri;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.Chronometer;
@@ -14,19 +14,18 @@ import android.content.*;
 import android.app.*;
 import android.os.*;
 
+import com.google.android.gms.games.Games;
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
-
 /** TODO: convert chronometer time into an estimation
  *  Complete cardio workouts
  *  if calories have been calculated, inform user workout is completed
- *
  */
-public class CardioWorkoutActivity extends ActionBarActivity {
+public class CardioWorkoutActivity extends LoginActivity {
     private final static String TAG = "CardioWorkoutActivity";
     private long lastPause;
     double timeScheduled;
@@ -48,7 +47,7 @@ public class CardioWorkoutActivity extends ActionBarActivity {
     ImageButton link;
 
     @Override
-    protected void onSaveInstanceState(Bundle savedInstanceState){
+    protected void onSaveInstanceState(@NonNull Bundle savedInstanceState){
         savedInstanceState.putLong(TIMER_STATE, timerState);
         super.onSaveInstanceState(savedInstanceState);
     }
@@ -102,7 +101,7 @@ public class CardioWorkoutActivity extends ActionBarActivity {
         w = dbh.getWorkoutById(ID);
         Log.d(TAG, "ID = " + ID);
 
-        String name = w.getName().toString();
+        String name = w.getName();
         double minutesDbl = w.getTimeScheduled();
         int secondsTotal = (int) (minutesDbl * 60);
         int seconds = secondsTotal % 60;
@@ -235,6 +234,10 @@ public class CardioWorkoutActivity extends ActionBarActivity {
         w.setCaloriesBurned(caloriesBurned);
         dbh.completeWorkout(w);
         dbh.close();
+        Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_working_hard), 1);
+        Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_keep_it_100), 1);
+        Games.Events.increment(mGoogleApiClient, getString(R.string.event_workouts_completed), 1);
+        Games.Events.increment(mGoogleApiClient, getString(R.string.event_time_spent_tracking_workouts), (int)time);
         if (BuildConfig.DEBUG_MODE) Log.d(TAG, "Closing ongoing notification, if applicable.");
         NotifyReceiver.cancelOngoing(this, ID);
 
