@@ -40,6 +40,7 @@ public class ListViewAdapterEdit extends ArrayAdapter<String> {
     public class ViewHolder {
         TextView workout_name;
         TextView workout_details;
+        TextView workoutId;
         Button button;
     }
 

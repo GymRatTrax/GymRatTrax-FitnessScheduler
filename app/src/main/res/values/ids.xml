@@ -27,4 +27,6 @@
     <item name="notifications_text" type="id">NotifText</item>
     <item name="ex_date" type="id">ExerciseDate</item>
     <item name="menu_feedback" type="id">menu_feedback</item>
+    <item name="calorie_list_name" type="id" />
+    <item name="calorie_list" type="id" />
 </resources>

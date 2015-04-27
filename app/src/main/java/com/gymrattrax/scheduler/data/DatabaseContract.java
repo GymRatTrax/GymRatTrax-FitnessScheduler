@@ -3,7 +3,7 @@ package com.gymrattrax.scheduler.data;
 import android.provider.BaseColumns;
 
 public final class DatabaseContract {
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "grt.db";
     private static final String TYPE_TEXT = " TEXT";
     private static final String TYPE_INTEGER = " INTEGER";
@@ -60,7 +60,7 @@ public final class DatabaseContract {
 
     public static abstract class WorkoutTable implements BaseColumns {
         public static final String TABLE_NAME = "workout";
-        public static final String COLUMN_NAME_EXERCISE_NAME             = "exercise";
+        public static final String COLUMN_NAME_EXERCISE                  = "exercise";
         public static final String COLUMN_NAME_DATE_SCHEDULED            = "date_scheduled";
         public static final String COLUMN_NAME_DATE_COMPLETED            = "date_completed";
         public static final String COLUMN_NAME_CARDIO_DISTANCE_SCHEDULED = "cardio_distance_scheduled";
@@ -79,17 +79,11 @@ public final class DatabaseContract {
         public static final String COLUMN_NAME_NOTIFY_VIBRATE            = "notify_vibrate";
         public static final String COLUMN_NAME_NOTIFY_TONE               = "notify_tone";
         public static final String COLUMN_NAME_NOTIFY_ADVANCE            = "notify_advance";
-        public static final String COLUMN_NAME_EXERCISE_TYPE             = "exercise_type";
-        public static final String COLUMN_NAME_COMPLETE                  = "complete";
-        public static final String COLUMN_NAME_DATE_MODIFIED             = "date_modified";
 
         public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + L_PAREN +
                 BaseColumns._ID                       + TYPE_INTEGER + PRIMARY_KEY_AUTO+ COMMA_SEP +
-                COLUMN_NAME_COMPLETE                  + TYPE_INTEGER + NOT_NULL        + COMMA_SEP +
-                COLUMN_NAME_EXERCISE_NAME             + TYPE_TEXT    + NOT_NULL        + COMMA_SEP +
-                COLUMN_NAME_EXERCISE_TYPE             + TYPE_TEXT    + NOT_NULL        + COMMA_SEP +
+                COLUMN_NAME_EXERCISE                  + TYPE_TEXT    + NOT_NULL        + COMMA_SEP +
                 COLUMN_NAME_DATE_SCHEDULED            + TYPE_TEXT    + NOT_NULL        + COMMA_SEP +
-                COLUMN_NAME_DATE_MODIFIED             + TYPE_TEXT    + NOT_NULL        + COMMA_SEP +
                 COLUMN_NAME_DATE_COMPLETED            + TYPE_TEXT                      + COMMA_SEP +
                 COLUMN_NAME_CARDIO_DISTANCE_SCHEDULED + TYPE_REAL                      + COMMA_SEP +
                 COLUMN_NAME_CARDIO_DISTANCE_COMPLETED + TYPE_REAL                      + COMMA_SEP +

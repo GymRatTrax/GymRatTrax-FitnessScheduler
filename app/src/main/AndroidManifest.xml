@@ -79,21 +79,16 @@
             android:label="Database Debug" >
         </activity>
         <activity
+            android:name=".activity.HelpActivity"
+            android:label="Help">
+        </activity>
+        <activity
             android:name=".activity.EditCardioWorkoutActivity"
             android:label="Edit Cardio Workout Activity" >
         </activity>
         <activity
             android:name=".activity.EditStrengthWorkoutActivity"
             android:label="Edit Strength Workout Activity" >
-        </activity>
-        <activity
-            android:name=".activity.HelpActivity"
-            android:label="Help">
-        </activity>
-        <activity
-            android:name=".activity.LoginActivity"
-            android:label="@string/title_activity_fitness_profile"
-            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".activity.ProfileActivity"
@@ -110,7 +105,7 @@
             android:screenOrientation="landscape" >
         </activity>
         <activity
-            android:name=".activity.ViewScheduleActivity"
+            android:name=".activity.ScheduleActivity"
             android:label="@string/title_activity_schedule" >
         </activity>
         <activity
@@ -132,13 +127,13 @@
                 android:value=".activity.HomeScreenActivity" />
         </activity>
         <activity
-            android:name=".activity.StatisticsActivity"
-            android:label="@string/title_activity_fitness_profile"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
             android:name=".activity.StrengthWorkoutActivity"
             android:label="@string/title_activity_strength_workout" >
+        </activity>
+        <activity
+            android:name=".activity.ViewScheduleActivity"
+            android:label="@string/title_activity_view_schedule"
+            android:screenOrientation="portrait" >
         </activity>
 
         <receiver android:name=".receiver.NotifyReceiver">

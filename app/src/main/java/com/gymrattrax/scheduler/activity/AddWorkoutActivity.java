@@ -67,9 +67,18 @@ public class AddWorkoutActivity extends ActionBarActivity implements custButtonL
 
     @Override
     public void onButtonClickListener(int position, String value) {
-        if (ExerciseName.Cardio.fromString(value) != null)
-            displayCardioDetails(value);
-        else
-            displayStrengthDetails(value);
+        switch (ExerciseName.fromString(value)) {
+            case WALK:
+                displayCardioDetails(value);
+                break;
+            case JOG:
+                displayCardioDetails(value);
+                break;
+            case RUN:
+                displayCardioDetails(value);
+                break;
+            default:
+                displayStrengthDetails(value);
+        }
     }
 }

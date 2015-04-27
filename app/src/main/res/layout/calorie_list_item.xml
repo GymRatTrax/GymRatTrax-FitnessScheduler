@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
@@ -8,23 +9,28 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:textStyle="bold"
-        android:layout_marginLeft="10dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
         android:textSize="@dimen/abc_text_size_large_material" />
 
     <TextView
         android:id="@+id/calorie_list_details"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:layout_marginLeft="10dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
         android:textSize="@dimen/abc_text_size_medium_material" />
 
     <Button
-        android:id="@+id/addWorkoutToScheduleButton"
+        android:id="@+id/addCalorieNegationButton"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:background="@drawable/add_default"
-        android:layout_margin="10dp" />
+        android:background="@drawable/selector"
+        android:onClick=""
+        android:layout_margin="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true" />
 
-</LinearLayout>
+</RelativeLayout>

@@ -1,55 +1,63 @@
 package com.gymrattrax.scheduler.model;
 
-/**
- * @deprecated WorkoutItem is no longer an abstract class and should be used for all workouts now.
- */
-@Deprecated
 public class StrengthWorkoutItem extends WorkoutItem {
+    private double weightUsed;
+    private int repsScheduled;
+    private int repsCompleted;
+    private int setsScheduled;
+    private int setsCompleted;
+
     public StrengthWorkoutItem() {
-        super(ExerciseName.Arms.BICEPS_CURL);
+        super();
+        this.setType(ExerciseType.STRENGTH);
     }
 
     public int getSetsScheduled() {
-        return super.getSetsScheduled();
+        return setsScheduled;
     }
 
     public void setSetsScheduled(int setsScheduled) {
-        super.setSetsScheduled(setsScheduled);
+        this.setsScheduled = setsScheduled;
     }
 
     public int getRepsScheduled() {
-        return super.getRepsScheduled();
+        return repsScheduled;
     }
 
     public void setRepsScheduled(int repsScheduled) {
-        super.setRepsScheduled(repsScheduled);
+        this.repsScheduled = repsScheduled;
     }
 
     public double getWeightUsed() {
-        return super.getWeightUsed();
+        return weightUsed;
     }
 
     public void setWeightUsed(double weightUsed) {
-        super.setWeightUsed(weightUsed);
+        this.weightUsed = weightUsed;
     }
 
     public int getSetsCompleted() {
-        return super.getSetsCompleted();
+        return setsCompleted;
     }
 
     public void setSetsCompleted(int setsCompleted) {
-        super.setSetsCompleted(setsCompleted);
+        this.setsCompleted = setsCompleted;
     }
 
     public int getRepsCompleted() {
-        return super.getRepsCompleted();
+        return repsCompleted;
     }
 
     public void setRepsCompleted(int repsCompleted) {
-        super.setRepsCompleted(repsCompleted);
+        this.repsCompleted = repsCompleted;
     }
 
     public double calculateMETs() {
-        return super.calculateMETs();
+        double METs = -1;
+        double exertionLevel = getExertionLevel();
+        if (exertionLevel > 0 && exertionLevel <= 3) {
+            METs = (exertionLevel * 1.25) + 2.25;
+        }
+        return METs;
     }
 }

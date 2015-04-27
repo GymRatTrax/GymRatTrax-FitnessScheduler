@@ -133,19 +133,19 @@ public class NotifyService extends Service {
 
         Intent intent = new Intent(this, DailyWorkoutActivity.class);
         if (workoutItem != null) {
-            mBuilder.setContentTitle(workoutItem.getName());
+            mBuilder.setContentTitle(workoutItem.getName().toString());
             switch (workoutItem.getType()) {
                 case CARDIO:
-                    mBuilder.setContentText(String.valueOf(workoutItem.getDistanceScheduled()) +
-                            " miles");
+                    mBuilder.setContentText(String.valueOf(((CardioWorkoutItem)workoutItem).
+                            getDistance()) + " miles");
                     intent = new Intent(this, CardioWorkoutActivity.class);
                     break;
-                case ABS:
-                case ARMS:
-                case LEGS:
-                    mBuilder.setContentText(String.valueOf(workoutItem.getSetsScheduled()) +
-                            " sets of " + String.valueOf(workoutItem.getRepsScheduled()) +
-                            " reps with " + String.valueOf(workoutItem.getWeightUsed()) +
+                case STRENGTH:
+                    mBuilder.setContentText(String.valueOf(((StrengthWorkoutItem)workoutItem).
+                            getSetsScheduled()) + " sets of " +
+                            String.valueOf(((StrengthWorkoutItem)workoutItem).getRepsScheduled()) +
+                            " reps with " +
+                            String.valueOf(((StrengthWorkoutItem)workoutItem).getWeightUsed()) +
                             " lb weights");
                     intent = new Intent(this, StrengthWorkoutActivity.class);
                     break;

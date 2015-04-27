@@ -1,51 +1,36 @@
 package com.gymrattrax.scheduler.model;
 
-/**
- * @deprecated WorkoutItem is no longer an abstract class and should be used for all workouts now.
- */
-@Deprecated
 public class CardioWorkoutItem extends WorkoutItem {
+    private double distance;
+    private double completedDistance;
+
     public CardioWorkoutItem() {
-        super(ExerciseName.Cardio.WALK);
+        super();
+        this.setType(ExerciseType.CARDIO);
     }
 
-    /**
-     * @deprecated Please use {@link WorkoutItem#getDistanceScheduled()} instead.
-     */
-    @Deprecated
-    public double getDistanceScheduled() {
-        return super.getDistanceScheduled();
+    public double getDistance() {
+        return distance;
     }
 
-    /**
-     * @deprecated Please use {@link WorkoutItem#setDistanceScheduled(double)} instead.
-     */
-    @Deprecated
-    public void setDistanceScheduled(double distance) {
-        super.setDistanceScheduled(distance);
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 
-    /**
-     * @deprecated Please use {@link WorkoutItem#getDistanceCompleted()} instead.
-     */
-    @Deprecated
-    public double getDistanceCompleted() {
-        return super.getDistanceCompleted();
+    public double getCompletedDistance() {
+        return completedDistance;
     }
 
-    /**
-     * @deprecated Please use {@link WorkoutItem#setDistanceCompleted(double)} instead.
-     */
-    @Deprecated
-    public void setDistanceCompleted(double distance) {
-        super.setDistanceCompleted(distance);
+    public void setCompletedDistance(double distance) {
+        this.completedDistance += distance;
     }
 
-    /**
-     * @deprecated Please use {@link WorkoutItem#calculateMETs()} instead.
-     */
-    @Deprecated
     public double calculateMETs() {
-        return super.calculateMETs();
+        //miles per hour, multiplied by a factor of 1.6529
+        double METs = -1;
+        if (getTimeSpent() > 0 && completedDistance > 0) {
+            METs = 1.6529 * distance / (getTimeSpent() / 60);
+        }
+        return METs;
     }
 }

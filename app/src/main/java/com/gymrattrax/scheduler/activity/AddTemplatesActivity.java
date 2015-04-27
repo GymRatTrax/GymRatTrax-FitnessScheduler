@@ -2,10 +2,9 @@ package com.gymrattrax.scheduler.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gymrattrax.scheduler.BuildConfig;
+import com.gymrattrax.scheduler.model.CardioWorkoutItem;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.ExerciseName;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
@@ -119,12 +119,11 @@ public class AddTemplatesActivity extends Activity {
             main.addView(stack);
             buttons[i].setHeight(20);
             buttons[i].setWidth(20);
-            buttons[i].setId(6000 + i);
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-                buttons[i].setBackground(getResources().getDrawable(R.drawable.add_button_press));
-            else {
+            buttons[i].setId(6000+i);
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
                 buttons[i].setBackgroundDrawable(getResources().getDrawable(R.drawable.add_button_press));
-            }
+            else
+                buttons[i].setBackground(getResources().getDrawable(R.drawable.add_button_press));
             main.addView(buttons[i]);
             row.addView(main);
             a.addView(row);
@@ -136,46 +135,47 @@ public class AddTemplatesActivity extends Activity {
             public void onClick(View view) {
                 final WorkoutItem[] workoutItems = new WorkoutItem[12];
                 for (int i = 0; i < workoutItems.length; i++) {
+                    workoutItems[i] = new CardioWorkoutItem();
                     switch (i) {
                         case 0:
                         case 1:
                         case 3:
                         case 4:
-                            workoutItems[i] = new WorkoutItem(ExerciseName.Cardio.WALK);
-                            workoutItems[i].setDistanceScheduled(1);
+                            ((CardioWorkoutItem)workoutItems[i]).setDistance(1);
                             workoutItems[i].setTimeScheduled(20);
+                            workoutItems[i].setName(ExerciseName.WALK);
                             break;
                         case 2:
-                            workoutItems[i] = new WorkoutItem(ExerciseName.Cardio.JOG);
-                            workoutItems[i].setDistanceScheduled(2);
+                            ((CardioWorkoutItem)workoutItems[i]).setDistance(2);
                             workoutItems[i].setTimeScheduled(15);
+                            workoutItems[i].setName(ExerciseName.JOG);
                             break;
                         case 5:
                         case 6:
-                            workoutItems[i] = new WorkoutItem(ExerciseName.Cardio.JOG);
-                            workoutItems[i].setDistanceScheduled(2);
+                            ((CardioWorkoutItem)workoutItems[i]).setDistance(2);
                             workoutItems[i].setTimeScheduled(20);
+                            workoutItems[i].setName(ExerciseName.JOG);
                             break;
                         case 7:
-                            workoutItems[i] = new WorkoutItem(ExerciseName.Cardio.WALK);
-                            workoutItems[i].setDistanceScheduled(1.5);
+                            ((CardioWorkoutItem)workoutItems[i]).setDistance(1.5);
                             workoutItems[i].setTimeScheduled(30);
+                            workoutItems[i].setName(ExerciseName.WALK);
                             break;
                         case 8:
-                            workoutItems[i] = new WorkoutItem(ExerciseName.Cardio.RUN);
-                            workoutItems[i].setDistanceScheduled(1.5);
+                            ((CardioWorkoutItem)workoutItems[i]).setDistance(1.5);
                             workoutItems[i].setTimeScheduled(20);
+                            workoutItems[i].setName(ExerciseName.RUN);
                             break;
                         case 9:
                         case 10:
-                            workoutItems[i] = new WorkoutItem(ExerciseName.Cardio.JOG);
-                            workoutItems[i].setDistanceScheduled(2);
+                            ((CardioWorkoutItem)workoutItems[i]).setDistance(2);
                             workoutItems[i].setTimeScheduled(30);
+                            workoutItems[i].setName(ExerciseName.JOG);
                             break;
                         case 11:
-                            workoutItems[i] = new WorkoutItem(ExerciseName.Cardio.RUN);
-                            workoutItems[i].setDistanceScheduled(3.1);
+                            ((CardioWorkoutItem)workoutItems[i]).setDistance(3.1);
                             workoutItems[i].setTimeScheduled(35);
+                            workoutItems[i].setName(ExerciseName.RUN);
                             break;
                     }
 

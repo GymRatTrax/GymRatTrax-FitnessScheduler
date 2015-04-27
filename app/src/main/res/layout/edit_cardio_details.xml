@@ -14,14 +14,14 @@
         android:textStyle="bold"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/cardio_details"
-        android:text="@string/editcardio"
+        android:text="@string/currCardioex"
         android:layout_gravity="center_horizontal" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="@string/curr_goal"
+        android:text="@string/CurrEx"
         android:textStyle="bold"
         android:layout_margin="5dp"
         android:id="@+id/textView16" />
