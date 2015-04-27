@@ -77,7 +77,7 @@ public class HomeScreenActivity extends Activity implements
 
 //        connectToGooglePlayServices();
 
-//        displayUpcomingWorkouts();
+        displayUpcomingWorkouts();
 
         final Animation animTranslate = AnimationUtils.loadAnimation(this, R.anim.anim_rotate);
 
@@ -458,7 +458,7 @@ public class HomeScreenActivity extends Activity implements
                 }
 
                 String details = "" + distanceStr + minString + secString;
-                details = "" + dbh.displayDateTime(this, w.getDateScheduled()) + "!" + details;
+                details = details + "!" + dbh.displayDateTime(this, w.getDateScheduled());
                 String infoString = "" + w.getName().toString() + "!" + details;
                 workoutsArray[i] = infoString;
             } else {
@@ -481,7 +481,7 @@ public class HomeScreenActivity extends Activity implements
                 } else {
                     reps = reps + " reps";
                 }
-                String infoString = "" + w.getName().toString() + "!" + dateTime + "!" + weightUsed + sets + reps;
+                String infoString = "" + w.getName().toString() + "!" + weightUsed + sets + reps + "!" + dateTime;
                 workoutsArray[i] = infoString;
             }
             i++;

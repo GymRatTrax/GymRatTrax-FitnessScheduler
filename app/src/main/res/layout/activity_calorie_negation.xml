@@ -16,31 +16,26 @@
         android:textSize="20dp"
         android:textStyle="bold" />
 
+
+
     <RelativeLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
->
+        android:layout_margin="5dp"
+        android:layout_gravity="center">
 
-        <RelativeLayout
+        <EditText
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_gravity="center_vertical">
-
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:inputType="numberSigned"
-                android:ems="10"
-                android:id="@+id/negate_calories"
-                android:gravity="center"
-                android:background="@color/primary100"
-                android:textCursorDrawable="@null"
-                android:textAlignment="center"
-                android:textSize="18dp"
-                android:layout_gravity="center_vertical" />
-
-        </RelativeLayout>
+            android:layout_height="50dp"
+            android:inputType="numberSigned"
+            android:ems="10"
+            android:id="@+id/negate_calories"
+            android:gravity="center"
+            android:background="@color/primary100"
+            android:textCursorDrawable="@null"
+            android:textAlignment="center"
+            android:textSize="20dp"
+            android:layout_gravity="center_vertical" />
 
     </RelativeLayout>
 

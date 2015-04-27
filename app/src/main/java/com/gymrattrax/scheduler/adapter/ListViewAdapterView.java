@@ -17,7 +17,7 @@ public class ListViewAdapterView extends ArrayAdapter<String> {
     private Context context;
 
     public ListViewAdapterView(Context context, ArrayList<String> workoutItems) {
-        super(context, R.layout.edit_list_item, workoutItems);
+        super(context, R.layout.view_list_item, workoutItems);
         this.item = workoutItems;
         this.context = context;
     }
