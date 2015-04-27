@@ -14,16 +14,16 @@
         android:layout_gravity="center_horizontal"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/strength_details"
-        android:text="@string/set_goal_add"/>
+        android:text="@string/add_cardio"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/exercise_name"
         android:layout_marginLeft="10dp"
         android:layout_marginStart="10dp"
-        android:textStyle="bold"
+        android:textStyle="italic"
         android:id="@+id/ex_name" />
 
     <RelativeLayout

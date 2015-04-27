@@ -116,7 +116,7 @@ public class SelectTimeActivity extends ActionBarActivity {
     }
 
     private void loadSchedule() {
-        Intent intent = new Intent(SelectTimeActivity.this, ScheduleActivity.class);
+        Intent intent = new Intent(SelectTimeActivity.this, ViewScheduleActivity.class);
         addThisWorkout();
         startActivity(intent);
     }

@@ -11,13 +11,13 @@ import android.net.Uri;
 import android.provider.CalendarContract;
 import android.text.format.DateUtils;
 
-import com.gymrattrax.scheduler.activity.ScheduleActivity;
+import com.gymrattrax.scheduler.activity.ViewScheduleActivity;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-public class CalendarService extends ScheduleActivity {
+public class CalendarService extends ViewScheduleActivity {
     private static long eventID;
     private Date currentDay;
     private double time;

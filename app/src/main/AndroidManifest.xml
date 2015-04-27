@@ -110,7 +110,7 @@
             android:screenOrientation="landscape" >
         </activity>
         <activity
-            android:name=".activity.ScheduleActivity"
+            android:name=".activity.ViewScheduleActivity"
             android:label="@string/title_activity_schedule" >
         </activity>
         <activity
@@ -139,11 +139,6 @@
         <activity
             android:name=".activity.StrengthWorkoutActivity"
             android:label="@string/title_activity_strength_workout" >
-        </activity>
-        <activity
-            android:name=".activity.ViewScheduleActivity"
-            android:label="@string/title_activity_view_schedule"
-            android:screenOrientation="portrait" >
         </activity>
 
         <receiver android:name=".receiver.NotifyReceiver">

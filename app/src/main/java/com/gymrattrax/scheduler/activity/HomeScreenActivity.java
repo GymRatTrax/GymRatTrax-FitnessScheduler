@@ -185,12 +185,54 @@ public class HomeScreenActivity extends LoginActivity {
         }
     }
 
+<<<<<<< Updated upstream
     /**
      * Launches activity from button on home screen.
      * @param className Name of activity to launch in the form of {@code ActivityToLaunch.class}.
      */
     public void loadActivity(Class className){
         Intent intent = new Intent (this, className);
+=======
+    //the following method is triggered when user selects "Begin Workout" button from main page
+    //if no workout is schedule, display message instructing user to "Create New Plan"
+    public void loadDailyWorkout(View view){
+
+        //load current workout schedule for current date
+
+        Intent intent = new Intent (HomeScreenActivity.this, DailyWorkoutActivity.class);
+        startActivity(intent);
+    }
+
+    //the following method is triggered when user selects "Calorie Negation" button from the main page
+    public void loadCalorieNegation(View view){
+
+        Intent intent = new Intent (HomeScreenActivity.this, CalorieNegationActivity.class);
+        startActivity(intent);
+    }
+
+    //the following method is triggered when user selects "Fitness Profile" button from the main page
+    final public void loadFitnessProfile(View view){
+
+        Intent intent = new Intent (HomeScreenActivity.this, ProfileActivity.class);
+        startActivity(intent);
+    }
+
+
+    public void loadSettings(View view){
+        Intent intent = new Intent (HomeScreenActivity.this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    //this method is triggered when user selects "View Progress" button from the main page
+    public void loadProgress(View view){
+
+        Intent intent = new Intent (HomeScreenActivity.this, ProgressActivity.class);
+        startActivity(intent);
+    }
+
+    public void loadSchedules(View view){
+        Intent intent = new Intent (HomeScreenActivity.this, ViewScheduleActivity.class);
+>>>>>>> Stashed changes
         startActivity(intent);
     }
 

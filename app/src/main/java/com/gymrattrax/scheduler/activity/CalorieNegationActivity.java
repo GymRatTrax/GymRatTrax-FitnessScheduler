@@ -1,44 +1,66 @@
 package com.gymrattrax.scheduler.activity;
 
 import android.content.Context;
+<<<<<<< Updated upstream
 import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
+=======
+import android.content.Intent;
+>>>>>>> Stashed changes
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.TextView;
+import android.widget.ListView;
 import android.widget.Toast;
 
-import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.ExerciseName;
-import com.gymrattrax.scheduler.receiver.NotifyReceiver;
-import com.gymrattrax.scheduler.model.ProfileItem;
+<<<<<<< Updated upstream
+=======
 import com.gymrattrax.scheduler.R;
+import com.gymrattrax.scheduler.adapter.ListViewAdapterAdd;
+>>>>>>> Stashed changes
+import com.gymrattrax.scheduler.data.DatabaseHelper;
+import com.gymrattrax.scheduler.model.CardioWorkoutItem;
+import com.gymrattrax.scheduler.model.ExerciseName;
+import com.gymrattrax.scheduler.model.ProfileItem;
+<<<<<<< Updated upstream
+import com.gymrattrax.scheduler.R;
+=======
+import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
+>>>>>>> Stashed changes
 import com.gymrattrax.scheduler.model.WorkoutItem;
+import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
-public class CalorieNegationActivity extends ActionBarActivity {
+public class CalorieNegationActivity extends ActionBarActivity implements ListViewAdapterAdd.custButtonListener {
 
     private static final String TAG = "CalorieNegationActivity";
     Button SuggestWorkoutButton;
     EditText NegateEditText;
+    private ArrayList<String> workoutItems = new ArrayList<>();
     LinearLayout linearContainer;
     Button[] buttons;
     double[] times;
+<<<<<<< Updated upstream
     ExerciseName.Abs[] exName1;
     ExerciseName.Arms[] exName2;
     ExerciseName.Cardio[] exName3;
     ExerciseName.Legs[] exName4;
     String[] exNameStr;
+=======
+    String time, name;
+    ExerciseName[] exName;
+>>>>>>> Stashed changes
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -80,16 +102,6 @@ public class CalorieNegationActivity extends ActionBarActivity {
                     inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                             InputMethodManager.HIDE_NOT_ALWAYS);
 
-                //Remove button views if they have already been used
-                for (Button b : buttons) {
-                    if((b.getParent() != null)){
-                        ((LinearLayout)b.getParent()).removeView(b);
-                    }
-                }
-                linearContainer.removeAllViewsInLayout();
-                TableLayout a = new TableLayout(CalorieNegationActivity.this);
-                a.removeAllViews();
-
                 int caloriesToNegate;
                 try {
                     caloriesToNegate = Integer.parseInt(NegateEditText.getText().toString());
@@ -118,16 +130,22 @@ public class CalorieNegationActivity extends ActionBarActivity {
                     t.show();
                     return;
                 }
-                ProfileItem p = new ProfileItem(CalorieNegationActivity.this);
+                displayWorkouts(caloriesToNegate, exName);
+            }
+        });
+    }
 
-                double BMR = p.getBMR();
+    private void displayWorkouts(int caloriesToNegate, ExerciseName[] name) {
+        ProfileItem p = new ProfileItem(CalorieNegationActivity.this);
 
-                //TODO: Resolve following comment
+        double BMR = p.getBMR();
+
                 /*
                 NOTE: Also, now that I understand more of how we determine METs values, I feel like
                 there is a more efficient and more accurate way to do it. Until I figure that out
                 completely, I am just using some local variables here. -CS
                  */
+<<<<<<< Updated upstream
                 double cardio_walk = 3.0;
                 double cardio_jog = 7.0;
                 double cardio_run = 11.0;
@@ -224,14 +242,47 @@ public class CalorieNegationActivity extends ActionBarActivity {
                 item.setSetsScheduled(4);
                 item.setWeightUsed(10);
                 item.setTimeScheduled(times[0]);
+=======
+        double cardio_walk = 3.0;
+        double cardio_jog = 7.0;
+        double cardio_run = 11.0;
+        double strength_light = 3.5;
+        double strength_vigorous = 6.0;
 
-                addThisWorkout(item);
-                BackToHomeScreen(view);
+        double[] METsValues = new double[]{strength_light, strength_vigorous,
+                cardio_walk, cardio_jog, cardio_run};
+
+        for (int i = 0; i < METsValues.length; i++) {
+            double minutesDbl = ((60 * 24 * caloriesToNegate) / (METsValues[i] * BMR));
+            int secondsTotal = (int) (minutesDbl * 60);
+            int seconds = secondsTotal % 60;
+            int minutes = (secondsTotal - seconds) / 60;
+            times[i] = minutesDbl;
+
+            if (i <= 1) {
+                exName[i] = ExerciseName.getRandomStrength();
+            } else if (i == 2) {
+                exName[2] = ExerciseName.WALK;
+            } else if (i == 3) {
+                exName[3] = ExerciseName.JOG;
+            } else if (i == 4) {
+                exName[4] = ExerciseName.RUN;
             }
-        });
+>>>>>>> Stashed changes
 
-        buttons[1].setOnClickListener(new Button.OnClickListener() {
+            time = minutes + " minutes, " + seconds + " seconds";
+            if (i == 0) {
+                time = time.replaceAll("minutes", "mins");
+                time = time.replaceAll("seconds", "secs");
+                time += ": 12 reps, 4 sets, 10 lb weights";
+            } else if (i == 1) {
+                time = time.replaceAll("minutes", "mins");
+                time = time.replaceAll("seconds", "secs");
+                time += ": 20 reps, 6 sets, 20 lb weights";
+            }
+        }
 
+<<<<<<< Updated upstream
             @Override
             public void onClick(View view) {
                 //Create vigorous strength workout item and store it in today's schedule
@@ -245,9 +296,19 @@ public class CalorieNegationActivity extends ActionBarActivity {
                 BackToHomeScreen(view);
             }
         });
+=======
+        String[] workoutsArray = new String[5];
+        for (int i = 0; i <= 4; i++) {
+            String infoString;
+            infoString = exName[i].toString() + ":\n" + time;
+            workoutsArray[i] = infoString;
+        }
+>>>>>>> Stashed changes
 
-        buttons[2].setOnClickListener(new Button.OnClickListener() {
+        List<String> tempItems = Arrays.asList(workoutsArray);
+        workoutItems.addAll(tempItems);
 
+<<<<<<< Updated upstream
             @Override
             public void onClick(View view) {
                 //Create walking workout item and store it in today's schedule
@@ -259,10 +320,17 @@ public class CalorieNegationActivity extends ActionBarActivity {
                 BackToHomeScreen(view);
             }
         });
+=======
+        ListView listView = (ListView) findViewById(R.id.calorie_list);
+>>>>>>> Stashed changes
 
-        buttons[3].setOnClickListener(new Button.OnClickListener() {
+        ListViewAdapterAddNegation adapter = new ListViewAdapterAdd(CalorieNegationActivity.this, workoutItems);
+        adapter.setCustButtonListener(CalorieNegationActivity.this);
+        listView.setAdapter(adapter);
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
+<<<<<<< Updated upstream
             public void onClick(View view) {
                 //Create jogging workout item and store it in today's schedule
                 WorkoutItem item = new WorkoutItem(ExerciseName.Arms.fromString(exNameStr[3]));
@@ -285,6 +353,10 @@ public class CalorieNegationActivity extends ActionBarActivity {
 
                 addThisWorkout(item);
                 BackToHomeScreen(view);
+=======
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+>>>>>>> Stashed changes
             }
         });
     }
@@ -309,5 +381,46 @@ public class CalorieNegationActivity extends ActionBarActivity {
         dbh.close();
         Log.d(TAG, "setNotifications called.");
         NotifyReceiver.setNotifications(this);
+        Toast.makeText(this, "Workout successfully added to current schedule.", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onButtonClickListener(int position, String value) {
+        if (position <= 1) {
+            addStrengthWorkout(exName);
+        } else {
+            addCardioWorkout(exName);
+        }
+    }
+
+    // add exName and time params
+    private void addCardioWorkout(ExerciseName[] exName) {
+        CardioWorkoutItem item = new CardioWorkoutItem();
+        item.setDistance(2);
+        item.setName(exName[0]);
+        item.setTimeScheduled(times[4]);
+
+        addThisWorkout(item);
+        loadHomeScreen();
+    }
+
+    private void loadHomeScreen() {
+        Intent intent = new Intent(CalorieNegationActivity.this, HomeScreenActivity.class);
+        startActivity(intent);
+    }
+
+    // add exName and time params
+    private void addStrengthWorkout(ExerciseName[] exName) {
+
+        StrengthWorkoutItem item = new StrengthWorkoutItem();
+        item.setRepsScheduled(12);
+        item.setSetsScheduled(4);
+        item.setWeightUsed(10);
+        item.setName(exName[0]);
+        item.setTimeScheduled(times[0]);
+
+        addThisWorkout(item);
+        loadHomeScreen();
+
     }
 }

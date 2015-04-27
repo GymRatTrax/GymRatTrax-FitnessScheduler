@@ -14,7 +14,7 @@
         android:textStyle="bold"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/strength_title"
-        android:text="@string/editStrength"
+        android:text="@string/edit_str"
         android:layout_gravity="center_horizontal" />
 
     <TextView
@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:layout_margin="5dp"
-        android:text="@string/current_goal_text"
+        android:text="@string/curr_goal"
         android:id="@+id/textView15" />
 
     <TextView

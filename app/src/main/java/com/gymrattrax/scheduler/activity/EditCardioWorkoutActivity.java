@@ -47,6 +47,8 @@ public class EditCardioWorkoutActivity extends ActionBarActivity {
         double oldDistance = ((CardioWorkoutItem)w).getDistanceScheduled();
         double oldDuration = w.getTimeScheduled();
 
+        distanceText.setText("" + oldDistance);
+        timeText.setText("" + oldDuration);
         String oldDistanceString;
         if (oldDistance == 1) {
             oldDistanceString = oldDistance + " mile";
@@ -70,7 +72,7 @@ public class EditCardioWorkoutActivity extends ActionBarActivity {
             public void onClick(View v) {
                 dbh.deleteWorkout(w);
                 dbh.close();
-                EditCardioWorkoutActivity.this.loadDateTime();
+                EditCardioWorkoutActivity.this.loadSelectDate();
             }
         });
 
@@ -87,7 +89,7 @@ public class EditCardioWorkoutActivity extends ActionBarActivity {
     }
 
     private void loadSchedule() {
-        Intent intent = new Intent(EditCardioWorkoutActivity.this, ScheduleActivity.class);
+        Intent intent = new Intent(EditCardioWorkoutActivity.this, ViewScheduleActivity.class);
         showToast("" + name + " removed from schedule.");
         startActivity(intent);
     }
@@ -96,7 +98,7 @@ public class EditCardioWorkoutActivity extends ActionBarActivity {
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
 
-    private void loadDateTime() {
+    private void loadSelectDate() {
         Intent intent = new Intent(EditCardioWorkoutActivity.this, SelectDateActivity.class);
         Bundle extras = new Bundle();
 //        if (Integer.parseInt(distanceText.getText().toString()) <= 0) {

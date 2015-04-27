@@ -43,6 +43,9 @@ public class EditStrengthWorkoutActivity extends ActionBarActivity {
         double weightD = ((StrengthWorkoutItem) workout).getWeightUsed();
         int setsInt = ((StrengthWorkoutItem) workout).getSetsScheduled();
         int repsInt = ((StrengthWorkoutItem) workout).getRepsScheduled();
+        weight.setText("" + weightD);
+        sets.setText("" + setsInt);
+        reps.setText("" + repsInt);
         String weightStr;
         if (weightD == 1) {
             weightStr = "" + weightD + " lb x ";
@@ -70,7 +73,7 @@ public class EditStrengthWorkoutActivity extends ActionBarActivity {
 
             @Override
             public void onClick(View v) {
-                EditStrengthWorkoutActivity.this.loadSelectDateTime();
+                EditStrengthWorkoutActivity.this.loadSelectDate();
             }
         });
 
@@ -87,13 +90,13 @@ public class EditStrengthWorkoutActivity extends ActionBarActivity {
     }
 
     private void loadSchedule() {
-        Intent intent = new Intent(EditStrengthWorkoutActivity.this, ScheduleActivity.class);
+        Intent intent = new Intent(EditStrengthWorkoutActivity.this, ViewScheduleActivity.class);
         showToast("" + name + " removed from schedule.");
         startActivity(intent);
     }
 
 
-    private void loadSelectDateTime() {
+    private void loadSelectDate() {
         Intent intent = new Intent(EditStrengthWorkoutActivity.this, SelectDateActivity.class);
         Bundle extras = new Bundle();
 //        if (Integer.parseInt(weight.getText().toString()) < 0) {

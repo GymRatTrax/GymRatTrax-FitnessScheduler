@@ -36,12 +36,12 @@ public class AddStrengthWorkoutActivity extends ActionBarActivity {
 
             @Override
             public void onClick(View v) {
-                AddStrengthWorkoutActivity.this.loadDateTime();
+                AddStrengthWorkoutActivity.this.loadSelectDate();
             }
         });
     }
 
-    private void loadDateTime() {
+    private void loadSelectDate() {
         Intent intent = new Intent(AddStrengthWorkoutActivity.this, SelectDateActivity.class);
         Bundle extras = new Bundle();
         String weightStr = weight.getText().toString();
