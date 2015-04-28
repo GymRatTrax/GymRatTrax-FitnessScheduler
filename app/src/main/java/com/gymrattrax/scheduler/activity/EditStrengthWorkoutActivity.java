@@ -10,7 +10,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
 public class EditStrengthWorkoutActivity extends ActionBarActivity {
@@ -40,9 +39,9 @@ public class EditStrengthWorkoutActivity extends ActionBarActivity {
         exName.setText(name);
 
         final WorkoutItem workout = dbh.getWorkoutById(id);
-        double weightD = ((StrengthWorkoutItem) workout).getWeightUsed();
-        int setsInt = ((StrengthWorkoutItem) workout).getSetsScheduled();
-        int repsInt = ((StrengthWorkoutItem) workout).getRepsScheduled();
+        double weightD = workout.getWeightUsed();
+        int setsInt = workout.getSetsScheduled();
+        int repsInt = workout.getRepsScheduled();
         weight.setText("" + weightD);
         sets.setText("" + setsInt);
         reps.setText("" + repsInt);

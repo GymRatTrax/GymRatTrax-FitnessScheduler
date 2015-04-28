@@ -9,6 +9,8 @@ import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.TextView;
 import com.gymrattrax.scheduler.R;
+import com.gymrattrax.scheduler.model.ExerciseName;
+
 import java.util.Calendar;
 
 public class SelectDateActivity extends ActionBarActivity {
@@ -44,8 +46,7 @@ public class SelectDateActivity extends ActionBarActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             name = extras.getString("name");
-            if (name.equals("Walking") || name.equals("Jogging")
-                    || name.equals("Running")) {
+            if (ExerciseName.Cardio.fromString(name) != null) {
                 distance = extras.getString("distance");
                 duration = extras.getString("duration");
             } else {
@@ -55,8 +56,7 @@ public class SelectDateActivity extends ActionBarActivity {
             }
             // Display cardio details in text view
             String newDetails;
-            if (name.equals("Walking") || name.equals("Jogging")
-                    || name.equals("Running")) {
+            if (ExerciseName.Cardio.fromString(name) != null) {
                 String distanceString;
                 if (Double.parseDouble(distance) == 1) {
                     distanceString = distance + " mile";
@@ -107,6 +107,23 @@ public class SelectDateActivity extends ActionBarActivity {
 
             @Override
             public void onClick(View v) {
+//                Context ctx = getApplicationContext();
+////                CalendarService.addEvent(ctx, "GymRatTrax", "Cardio Workout", "");
+//                StrengthWorkoutItem item = new StrengthWorkoutItem();
+//                item.setRepsScheduled(12);
+//                item.setSetsScheduled(4);
+//                item.setWeightUsed(10);
+//
+//                ArrayList<String> arrayList = new ArrayList<>();
+//                for (String str: dateString.split("/", 3)) {
+//                    arrayList.add(str);
+//                }
+//                String dString = "" + arrayList.get(0) + arrayList.get(1) + arrayList.get(2);
+//                double dItem = Double.parseDouble(dString);
+//                item.setTimeScheduled(dItem);
+//                long id = dbh.addWorkout(item);
+//                addThisWorkout(item);
+
                 loadSelectTime();
             }
         });
@@ -118,7 +135,7 @@ public class SelectDateActivity extends ActionBarActivity {
         String dateStr =  dateText.getText().toString();
         extras.putString("date", dateStr);
         extras.putString("name", name);
-        if(name.equals("Walking") || name.equals("Jogging") ||name.equals("Running")){
+        if (ExerciseName.Cardio.fromString(name) != null) {
             extras.putString("distance", distance);
             extras.putString("duration", duration);
         } else {

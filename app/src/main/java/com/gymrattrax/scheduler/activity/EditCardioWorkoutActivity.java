@@ -1,7 +1,5 @@
 package com.gymrattrax.scheduler.activity;
 
-
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -13,7 +11,6 @@ import android.widget.Toast;
 
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.CardioWorkoutItem;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
 public class EditCardioWorkoutActivity extends ActionBarActivity {
@@ -44,7 +41,7 @@ public class EditCardioWorkoutActivity extends ActionBarActivity {
         final DatabaseHelper dbh = new DatabaseHelper(this);
         final WorkoutItem w = dbh.getWorkoutById(id);
 
-        double oldDistance = ((CardioWorkoutItem)w).getDistance();
+        double oldDistance = w.getDistanceScheduled();
         double oldDuration = w.getTimeScheduled();
 
         distanceText.setText("" + oldDistance);

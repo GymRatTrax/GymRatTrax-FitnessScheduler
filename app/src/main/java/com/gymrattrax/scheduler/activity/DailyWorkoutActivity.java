@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.R;
-import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
+import com.gymrattrax.scheduler.model.ExerciseType;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
 
@@ -90,9 +90,9 @@ public class DailyWorkoutActivity extends ActionBarActivity {
             main.setOrientation(LinearLayout.HORIZONTAL);
             stack.setOrientation(LinearLayout.VERTICAL);
 
-            viewTitle.setText(w.getName().toString());
+            viewTitle.setText(w.getName());
             viewTitle.setTextSize(20);
-            if (w.getType().toString() == "CARDIO") {
+            if (w.getType() == ExerciseType.CARDIO) {
                 double minutesDbl = w.getTimeScheduled();
                 int secondsTotal = (int) (minutesDbl * 60);
                 int seconds = secondsTotal % 60;
@@ -101,8 +101,8 @@ public class DailyWorkoutActivity extends ActionBarActivity {
                 time = dbh.displayDateTime(this, w.getDateScheduled()) + ": " + time;
                 viewTime.setText(time);
             } else {
-                int sets = ((StrengthWorkoutItem)w).getSetsScheduled();
-                int reps = ((StrengthWorkoutItem)w).getRepsScheduled();
+                int sets = w.getSetsScheduled();
+                int reps = w.getRepsScheduled();
                 String info = sets + " Sets " + reps + " Reps";
                 viewTime.setText(info);
             }
@@ -124,15 +124,14 @@ public class DailyWorkoutActivity extends ActionBarActivity {
                 @Override
                 public void onClick(View v){
 
-                    if (w.getType().toString() == "STRENGTH"){
+                    if (w.getType() == ExerciseType.CARDIO) {
+                        int ID = w.getID();
+                        startCardioWorkoutActivity(ID);
+                    }
+                    else {
                         //get parameters for strength workout
                         int ID = w.getID();
                         startStrengthWorkoutActivity(ID);
-
-                    }
-                    else if (w.getType().toString() == "CARDIO"){
-                        int ID = w.getID();
-                        startCardioWorkoutActivity(ID);
                     }
                 }
             });

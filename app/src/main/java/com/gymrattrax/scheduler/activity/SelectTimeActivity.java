@@ -56,8 +56,7 @@ public class SelectTimeActivity extends ActionBarActivity {
             name = extras.getString("name");
             date = extras.getString("date");
 
-            if (name.equals("Walking") || name.equals("Jogging")
-                    || name.equals("Running")) {
+            if (ExerciseName.Cardio.fromString(name) != null) {
                 distance = extras.getString("distance");
                 duration = extras.getString("duration");
                 String dStr;
@@ -117,7 +116,7 @@ public class SelectTimeActivity extends ActionBarActivity {
     }
 
     private void loadSchedule() {
-        Intent intent = new Intent(SelectTimeActivity.this, ViewScheduleActivity.class);
+        Intent intent = new Intent(SelectTimeActivity.this, ScheduleActivity.class);
         addThisWorkout();
         startActivity(intent);
     }
@@ -155,19 +154,10 @@ public class SelectTimeActivity extends ActionBarActivity {
     }
 
     private void addThisWorkout() {
-        switch (name) {
-            case "Walking":
-                addThisCardioWorkout();
-                break;
-            case "Jogging":
-                addThisCardioWorkout();
-                break;
-            case "Running":
-                addThisCardioWorkout();
-                break;
-            default:
-                addThisStrengthWorkout();
-        }
+        if (ExerciseName.Cardio.fromString(name) != null)
+            addThisCardioWorkout();
+        else
+            addThisStrengthWorkout();
     }
 
     public void addThisCardioWorkout( ) {
@@ -186,16 +176,16 @@ public class SelectTimeActivity extends ActionBarActivity {
         int minInt = timepicker.getCurrentMinute();
 
         Calendar cal = Calendar.getInstance();
-        cal.set(year, month-2, day, hourInt, minInt);
+        cal.set(year, month - 1, day, hourInt, minInt);
         Date d = cal.getTime();
         cItem.setDateScheduled(d);
 
         // Set cardio item name
-        ExerciseName exName = ExerciseName.fromString(name);
-        cItem.setName(exName);
+//        ExerciseName exName = ExerciseName.fromString(name);
+        cItem.setName(name);
 
         // Set cardio item distance
-        cItem.setDistance(Double.parseDouble(distance));
+        cItem.setDistanceScheduled(Double.parseDouble(distance));
 
         // Set cardio item duration
         cItem.setTimeScheduled(Double.parseDouble(duration));
@@ -226,15 +216,15 @@ public class SelectTimeActivity extends ActionBarActivity {
         int minute = timepicker.getCurrentMinute();
 
         Calendar cal = Calendar.getInstance();
-        cal.set(year, month-2, day, hour, minute);
+        cal.set(year, month-1, day, hour, minute);
         Date d = cal.getTime();
         sItem.setDateScheduled(d);
 
         sItem.setNotificationDefault(true);
 
         // Set Strength name
-        ExerciseName exName = ExerciseName.fromString(name);
-        sItem.setName(exName);
+//        ExerciseName exName = ExerciseName.fromString(name);
+        sItem.setName(name);
 
         // Set strength details
         sItem.setWeightUsed(Double.parseDouble(weight));

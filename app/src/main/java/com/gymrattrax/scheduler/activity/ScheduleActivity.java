@@ -14,8 +14,7 @@ import android.widget.ListView;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterEdit;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.CardioWorkoutItem;
-import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
+import com.gymrattrax.scheduler.model.ExerciseName;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class ViewScheduleActivity extends ActionBarActivity implements ListViewAdapterEdit.custButtonListener {
+public class ScheduleActivity extends ActionBarActivity implements ListViewAdapterEdit.custButtonListener {
 
     private ArrayList<String> workoutItems = new ArrayList<>();
     private String name;
@@ -43,7 +42,7 @@ public class ViewScheduleActivity extends ActionBarActivity implements ListViewA
 
             @Override
             public void onClick(View v) {
-                ViewScheduleActivity.this.loadAddWorkout();
+                ScheduleActivity.this.loadAddWorkout();
             }
         });
 
@@ -59,7 +58,7 @@ public class ViewScheduleActivity extends ActionBarActivity implements ListViewA
     }
 
     private void loadEditStrengthWorkout() {
-        Intent intent = new Intent(ViewScheduleActivity.this, EditStrengthWorkoutActivity.class);
+        Intent intent = new Intent(ScheduleActivity.this, EditStrengthWorkoutActivity.class);
         Bundle extras = new Bundle();
         extras.putString("name", name);
         extras.putInt("id", id);
@@ -77,8 +76,8 @@ public class ViewScheduleActivity extends ActionBarActivity implements ListViewA
         ListView listView = (ListView) findViewById(R.id.workouts_list);
 
         // custom listView adapter
-        ListViewAdapterEdit adapter = new ListViewAdapterEdit(ViewScheduleActivity.this, workoutItems);
-        adapter.setCustButtonListener(ViewScheduleActivity.this);
+        ListViewAdapterEdit adapter = new ListViewAdapterEdit(ScheduleActivity.this, workoutItems);
+        adapter.setCustButtonListener(ScheduleActivity.this);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -94,7 +93,7 @@ public class ViewScheduleActivity extends ActionBarActivity implements ListViewA
     }
 
     private void loadHomeScreen() {
-        Intent intent = new Intent(ViewScheduleActivity.this, HomeScreenActivity.class);
+        Intent intent = new Intent(ScheduleActivity.this, HomeScreenActivity.class);
         startActivity(intent);
     }
 //    private void loadViewWorkoutEvent() {
@@ -103,7 +102,7 @@ public class ViewScheduleActivity extends ActionBarActivity implements ListViewA
 //    }
 
     private void loadAddWorkout() {
-        Intent intent = new Intent(ViewScheduleActivity.this, AddWorkoutActivity.class);
+        Intent intent = new Intent(ScheduleActivity.this, AddWorkoutActivity.class);
         startActivity(intent);
     }
 
@@ -140,7 +139,7 @@ public class ViewScheduleActivity extends ActionBarActivity implements ListViewA
     }
 
     private void loadEditCardioWorkout() {
-        Intent intent = new Intent(ViewScheduleActivity.this, EditCardioWorkoutActivity.class);
+        Intent intent = new Intent(ScheduleActivity.this, EditCardioWorkoutActivity.class);
         Bundle extras = new Bundle();
         extras.putString("name", name);
         extras.putInt("id", id);
@@ -161,10 +160,7 @@ public class ViewScheduleActivity extends ActionBarActivity implements ListViewA
         for (final WorkoutItem w : workouts) {
             workoutsArray[i] = w.getName();
             id = w.getID();
-            if (workoutsArray[i].equals("Walking")
-                    || workoutsArray[i].equals("Jogging")
-                    || workoutsArray[i].equals("Running"))
-            {
+            if (ExerciseName.Cardio.fromString(workoutsArray[i]) != null) {
                 double minutesDbl = w.getTimeScheduled();
                 int secondsTotal = (int) (minutesDbl * 60);
                 int seconds = secondsTotal % 60;
@@ -194,9 +190,9 @@ public class ViewScheduleActivity extends ActionBarActivity implements ListViewA
                 String infoString = "" + id + ":" + w.getName() + ": \n" + time;
                 workoutsArray[i] = infoString;
             } else {
-                String weightUsed = "" + ((StrengthWorkoutItem)w).getWeightUsed();
-                String reps = "" + ((StrengthWorkoutItem)w).getRepsScheduled();
-                String sets = "" + ((StrengthWorkoutItem)w).getSetsScheduled();
+                String weightUsed = "" + w.getWeightUsed();
+                String reps = "" + w.getRepsScheduled();
+                String sets = "" + w.getSetsScheduled();
                 String dateTime = dbh.displayDateTime(this, w.getDateScheduled()) + "\n";
                 if (Double.parseDouble(weightUsed) == 1) {
                     weightUsed = weightUsed + " lb x ";

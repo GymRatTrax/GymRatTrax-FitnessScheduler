@@ -2,8 +2,8 @@ package com.gymrattrax.scheduler.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -13,15 +13,15 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterAddNegation;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.CardioWorkoutItem;
 import com.gymrattrax.scheduler.model.ExerciseName;
-import com.gymrattrax.scheduler.model.ProfileItem;
 import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
-import com.gymrattrax.scheduler.model.WorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
+import com.gymrattrax.scheduler.model.ProfileItem;
+import com.gymrattrax.scheduler.R;
+import com.gymrattrax.scheduler.model.WorkoutItem;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +37,7 @@ public class CalorieNegationActivity extends ActionBarActivity implements ListVi
     private ArrayList<String> workoutItems = new ArrayList<>();
     double[] times;
     String time, name;
-    ExerciseName[] exName;
+    ExerciseName.Cardio[] exName;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,7 +48,7 @@ public class CalorieNegationActivity extends ActionBarActivity implements ListVi
         SuggestWorkoutButton = (Button) findViewById(R.id.negate_cal_button);
         NegateEditText = (EditText) findViewById(R.id.negate_calories);
         times = new double[5];
-        exName = new ExerciseName[5];
+        exName = new ExerciseName.Cardio[5];
 
 //        notifyScheduler = new NotifyScheduler(this);
 //        notifyScheduler.doBindService();
@@ -135,7 +135,7 @@ public class CalorieNegationActivity extends ActionBarActivity implements ListVi
         dbh.close();
         Log.d(TAG, "setNotifications called.");
         NotifyReceiver.setNotifications(this);
-        Toast.makeText(this, w.getName().toString() + " successfully added to current schedule.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, w.getName() + " successfully added to current schedule.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -152,8 +152,8 @@ public class CalorieNegationActivity extends ActionBarActivity implements ListVi
     // add exName and time params
     private void addCardioWorkout(String name) {
         CardioWorkoutItem item = new CardioWorkoutItem();
-        item.setDistance(2);
-        item.setName(ExerciseName.fromString(name));
+        item.setDistanceScheduled(2);
+        item.setName(name);
         item.setTimeScheduled(times[4]);
 
         addThisWorkout(item);
@@ -172,7 +172,7 @@ public class CalorieNegationActivity extends ActionBarActivity implements ListVi
         item.setRepsScheduled(12);
         item.setSetsScheduled(4);
         item.setWeightUsed(10);
-        item.setName(ExerciseName.fromString(name));
+        item.setName(name);
         item.setTimeScheduled(times[0]);
 
         addThisWorkout(item);
@@ -209,13 +209,13 @@ public class CalorieNegationActivity extends ActionBarActivity implements ListVi
             times[i] = minutesDbl;
 
             if (i <= 1) {
-                exName[i] = ExerciseName.getRandomStrength();
+                exName[i] = ExerciseName.Cardio.getRandom();
             } else if (i == 2) {
-                exName[2] = ExerciseName.WALK;
+                exName[2] = ExerciseName.Cardio.WALK;
             } else if (i == 3) {
-                exName[3] = ExerciseName.JOG;
+                exName[3] = ExerciseName.Cardio.JOG;
             } else if (i == 4) {
-                exName[4] = ExerciseName.RUN;
+                exName[4] = ExerciseName.Cardio.RUN;
             }
             String details = "";
             time = minutes + " minutes, " + seconds + " seconds";

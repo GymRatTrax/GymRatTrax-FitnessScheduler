@@ -82,7 +82,7 @@ public class ProfileActivity extends ActionBarActivity {
                     editProfileButton.setText("EDIT");
                     setTextFromProfile();
                 } else {
-                    onBackPressed();
+                    finish();
                 }
 
             }
