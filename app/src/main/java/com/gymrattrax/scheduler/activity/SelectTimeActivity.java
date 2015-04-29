@@ -1,6 +1,5 @@
 package com.gymrattrax.scheduler.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -18,7 +17,6 @@ import com.gymrattrax.scheduler.model.CardioWorkoutItem;
 import com.gymrattrax.scheduler.model.ExerciseName;
 import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
-import com.gymrattrax.scheduler.service.CalendarService;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -34,10 +32,9 @@ public class SelectTimeActivity extends ActionBarActivity {
 
     private Date d;
     private String weight;
-    private String date, distance, duration;
+    private String date, distance, duration, details;
     private String sets;
     private String reps;
-    private TextView exDetails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +51,7 @@ public class SelectTimeActivity extends ActionBarActivity {
         timeText = (TextView) findViewById(R.id.TimeSelected);
         updateTimeUI();
         final TextView exName = (TextView) findViewById(R.id.ex_name);
-        exDetails = (TextView) findViewById(R.id.ex_details);
+        TextView exDetails = (TextView) findViewById(R.id.ex_details);
         final TextView exDate = (TextView) findViewById(R.id.ex_date);
 
         Bundle extras = getIntent().getExtras();
@@ -81,6 +78,7 @@ public class SelectTimeActivity extends ActionBarActivity {
                 }
                 exName.setText(name + " ");
                 exDetails.setText(dStr + " in " + tStr);
+                details = (dStr + " in " + tStr);
                 exDate.setText("on " + date);
             } else {
                 // Display strength details
@@ -108,6 +106,7 @@ public class SelectTimeActivity extends ActionBarActivity {
                 }
                 exName.setText(name + " ");
                 exDetails.setText(weightStr + setsStr + repsStr);
+                details = (weightStr + setsStr + repsStr);
                 exDate.setText("on " + date);
             }
         }
@@ -129,13 +128,28 @@ public class SelectTimeActivity extends ActionBarActivity {
     }
 
     private long addEventToGCal() {
-        Context ctx = getApplicationContext();
-        int hour = timepicker.getCurrentHour();
-        int minute = timepicker.getCurrentMinute();
-        String time = "" + hour + ":" + minute;
-        String dateStr = "" + date;
-        String details = exDetails.toString() + "!" + dateStr + "!" + time;
-        eventId = CalendarService.addEvent(ctx, "GymRatTrax", name, details);
+        long startMillis = 0;
+        long endMillis = 0;
+
+        // get workout date time
+        String[] divDate = date.split("/", 3);
+
+        int month = Integer.parseInt(divDate[0]) - 1;
+        int day = Integer.parseInt(divDate[1]);
+        int year = Integer.parseInt(divDate[2]);
+        int hourInt = timepicker.getCurrentHour();
+        int minInt = timepicker.getCurrentMinute();
+
+        Calendar beginTime = Calendar.getInstance();
+        beginTime.set(year, month, day, hourInt, minInt);
+        String title = "" + name + ": " + details;
+        Intent intent = new Intent(Intent.ACTION_EDIT);
+        intent.setType("vnd.android.cursor.item/event");
+        intent.putExtra("beginTime", beginTime.getTimeInMillis());
+        intent.putExtra("allDay", false);
+        intent.putExtra("endTime", beginTime.getTimeInMillis()+60*60*1000);
+        intent.putExtra("title", title);
+        startActivity(intent);
         return eventId;
     }
 
