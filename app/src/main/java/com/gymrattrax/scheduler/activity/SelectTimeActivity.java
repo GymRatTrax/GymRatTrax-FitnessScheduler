@@ -139,10 +139,15 @@ public class SelectTimeActivity extends ActionBarActivity {
         int year = Integer.parseInt(divDate[2]);
         int hourInt = timepicker.getCurrentHour();
         int minInt = timepicker.getCurrentMinute();
-
+        String title;
         Calendar beginTime = Calendar.getInstance();
         beginTime.set(year, month, day, hourInt, minInt);
-        String title = "" + name + ": " + details;
+
+        if(name.equals("Biking")){
+            title = "Workout: Cycling" + "\n" + details;
+        } else {
+            title = "Workout: " + name + "\n" + details;
+        }
         Intent intent = new Intent(Intent.ACTION_EDIT);
         intent.setType("vnd.android.cursor.item/event");
         intent.putExtra("beginTime", beginTime.getTimeInMillis());
