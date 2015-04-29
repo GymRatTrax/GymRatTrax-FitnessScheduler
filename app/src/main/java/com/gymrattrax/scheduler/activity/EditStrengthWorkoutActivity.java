@@ -38,10 +38,11 @@ public class EditStrengthWorkoutActivity extends ActionBarActivity {
 
         exName.setText(name);
 
+        // Format workout details for text view
         final WorkoutItem workout = dbh.getWorkoutById(id);
         double weightD = workout.getWeightUsed();
         int setsInt = workout.getSetsScheduled();
-        int repsInt = workout.getRepsScheduled();
+        final int repsInt = workout.getRepsScheduled();
         weight.setText("" + weightD);
         sets.setText("" + setsInt);
         reps.setText("" + repsInt);
@@ -72,7 +73,20 @@ public class EditStrengthWorkoutActivity extends ActionBarActivity {
 
             @Override
             public void onClick(View v) {
-                EditStrengthWorkoutActivity.this.loadSelectDate();
+                if(weight.getText().length()==0)
+                {
+                    weight.setError("Field cannot be left blank.");
+                } else if(sets.getText().length()==0)
+                {
+                    sets.setError("Field cannot be left blank.");
+                } else if(reps.getText().length()==0)
+                {
+                    reps.setError("Field cannot be left blank.");
+                } else {
+                    dbh.deleteWorkout(workout);
+                    dbh.close();
+                    EditStrengthWorkoutActivity.this.loadSelectDate();
+                }
             }
         });
 
@@ -87,7 +101,11 @@ public class EditStrengthWorkoutActivity extends ActionBarActivity {
             }
         });
     }
+    private void showError() {
+        weight.setError("Weight should be between 0 and 500 lbs.");
+    }
 
+    // Return to schedule after deleting workout
     private void loadSchedule() {
         Intent intent = new Intent(EditStrengthWorkoutActivity.this, ViewScheduleActivity.class);
         showToast("" + name + " removed from schedule.");
@@ -95,29 +113,10 @@ public class EditStrengthWorkoutActivity extends ActionBarActivity {
     }
 
 
+    // Pass workout details to date picker activity
     private void loadSelectDate() {
         Intent intent = new Intent(EditStrengthWorkoutActivity.this, SelectDateActivity.class);
         Bundle extras = new Bundle();
-//        if (Integer.parseInt(weight.getText().toString()) < 0) {
-//            showErrorToast("Weight should be greater than or equal to 0 lbs.");
-//        } else if (Integer.parseInt(weight.getText().toString()) >= 50) {
-//            showErrorToast("Distance should be less than 800 lbs.");
-//        } else if (Integer.parseInt(sets.getText().toString()) <= 0) {
-//            showErrorToast("Sets should be more than 0.");
-//        } else if (Integer.parseInt(sets.getText().toString()) > 50) {
-//            showErrorToast("Sets should be less than 30.");
-//        } else if (Integer.parseInt(reps.getText().toString()) <= 0) {
-//            showErrorToast("Reps should be more than 0.");
-//        } else if (Integer.parseInt(reps.getText().toString()) > 50) {
-//            showErrorToast("Reps should be less than 50.");
-//        }
-//        else if (weight == null) {
-//            showErrorToast("Weight required.");
-//        } else if (sets == null) {
-//            showErrorToast("Sets required.");
-//        } else if (reps == null) {
-//            showErrorToast("Reps required.");
-//        } else {
         String wStr = weight.getText().toString();
         String sStr = sets.getText().toString();
         String rStr =  reps.getText().toString();

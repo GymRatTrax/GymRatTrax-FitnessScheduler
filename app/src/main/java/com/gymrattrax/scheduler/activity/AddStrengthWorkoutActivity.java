@@ -36,11 +36,23 @@ public class AddStrengthWorkoutActivity extends ActionBarActivity {
 
             @Override
             public void onClick(View v) {
-                AddStrengthWorkoutActivity.this.loadDateTime();
+                if(weight.getText().length()==0)
+                {
+                    weight.setError("Field cannot be left blank.");
+                } else if(sets.getText().length()==0)
+                {
+                    sets.setError("Field cannot be left blank.");
+                } else if(reps.getText().length()==0)
+                {
+                    reps.setError("Field cannot be left blank.");
+                } else {
+                    AddStrengthWorkoutActivity.this.loadDateTime();
+                }
             }
         });
     }
 
+    // Pass workout details to Date picker activity
     private void loadDateTime() {
         Intent intent = new Intent(AddStrengthWorkoutActivity.this, SelectDateActivity.class);
         Bundle extras = new Bundle();

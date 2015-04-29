@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
+    android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primary"
     android:baselineAligned="true"
@@ -10,46 +9,46 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
         android:textStyle="bold"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:id="@+id/cardio_details"
-        android:text="@string/editcardio"
+        android:id="@+id/strength_title"
+        android:text="Edit Strength Workout"
         android:layout_gravity="center_horizontal" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="@string/current_goal_text"
-        android:textStyle="bold"
         android:layout_margin="5dp"
-        android:id="@+id/textView16" />
+        android:text="@string/CurrEx"
+        android:id="@+id/textView15" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/exercise_name"
         android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
         android:textStyle="bold"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:id="@+id/ex_name"
-        android:text="@string/exercise_name"/>
+        android:id="@+id/ex_name" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:id="@+id/ex_details"
-        android:text="@string/current_goal"/>
+        android:text="@string/exercise_details"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:id="@+id/ex_details" />
 
     <RelativeLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_margin="5dp"
         android:layout_height="0dp"
+        android:layout_margin="5dp"
         android:background="@color/primary100"
         android:baselineAligned="true"
         android:weightSum="1"
@@ -60,11 +59,35 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/select_cardio_distance"
+            android:text="@string/enterweight"
             android:layout_margin="10dp"
-            android:paddingTop="40dp"
+            android:id="@+id/textView3"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+        <EditText
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:textCursorDrawable="@null"
+
+            android:ems="10"
+            android:id="@+id/editText"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="10dp"
+            android:gravity="center"
+            android:layout_below="@+id/textView3"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/Esets"
+            android:layout_margin="10dp"
             android:id="@+id/entersets"
             android:layout_gravity="center_horizontal"
+            android:layout_below="@+id/editText"
             android:layout_centerHorizontal="true" />
 
         <EditText
@@ -73,9 +96,9 @@
             android:inputType="number"
             android:ems="10"
             android:layout_margin="10dp"
-            android:id="@+id/editText2"
             android:textCursorDrawable="@null"
 
+            android:id="@+id/editText2"
             android:layout_gravity="center_horizontal"
             android:gravity="center"
             android:layout_below="@+id/entersets"
@@ -85,9 +108,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="@string/change_cardio_time"
+            android:text="@string/enterreps"
             android:id="@+id/textView2"
-            android:paddingTop="20dp"
             android:layout_margin="10dp"
             android:layout_below="@+id/editText2"
             android:layout_centerHorizontal="true" />
@@ -98,9 +120,8 @@
             android:inputType="number"
             android:ems="10"
             android:layout_margin="10dp"
-            android:id="@+id/editText3"
             android:textCursorDrawable="@null"
-
+            android:id="@+id/editText3"
             android:layout_gravity="center_horizontal"
             android:gravity="center"
             android:layout_below="@+id/textView2"
@@ -110,21 +131,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="mile(s)"
-            android:id="@+id/textView12"
-            android:layout_alignTop="@+id/editText2"
-            android:layout_alignLeft="@+id/textView13"
-            android:layout_alignStart="@+id/textView13" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="minute(s)"
-            android:id="@+id/textView13"
-            android:layout_alignTop="@+id/editText3"
-            android:layout_toRightOf="@+id/editText3"
-            android:layout_toEndOf="@+id/editText3" />
+            android:text="lb(s)"
+            android:id="@+id/textView14"
+            android:layout_alignTop="@+id/editText"
+            android:layout_toRightOf="@+id/editText"
+            android:layout_toEndOf="@+id/editText" />
 
     </RelativeLayout>
 
@@ -163,5 +174,7 @@
             android:layout_alignTop="@+id/next"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
+
     </RelativeLayout>
+
 </LinearLayout>

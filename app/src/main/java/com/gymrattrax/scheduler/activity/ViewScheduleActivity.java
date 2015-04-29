@@ -94,6 +94,9 @@ public class ViewScheduleActivity extends ActionBarActivity implements ListViewA
 
     private void loadHomeScreen() {
         Intent intent = new Intent(ViewScheduleActivity.this, HomeScreenActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
     }
 

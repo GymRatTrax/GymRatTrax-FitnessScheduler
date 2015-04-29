@@ -54,7 +54,7 @@ public class SelectDateActivity extends ActionBarActivity {
                 reps = extras.getString("reps");
             }
             // Display cardio details in text view
-            String newDetails;
+            String newDetails = "Error: No details";
             if (ExerciseName.Cardio.fromString(name) != null) {
                 String distanceString;
                 if (Double.parseDouble(distance) == 1) {
@@ -78,26 +78,29 @@ public class SelectDateActivity extends ActionBarActivity {
                 weight = extras.getString("weight");
                 sets = extras.getString("sets");
                 reps = extras.getString("reps");
-                if (Double.parseDouble(weight) == 1) {
-                    wString = weight + " lb ";
-                } else {
-                    wString = weight + " lbs x ";
+                if (weight != null && sets != null && reps != null) {
+                    if (Double.parseDouble(weight) == 1) {
+                        wString = weight + " lb ";
+                    } else {
+                        wString = weight + " lbs x ";
+                    }
+                    if (Integer.parseInt(sets) == 1) {
+                        setsStr = sets + " set ";
+                    } else {
+                        setsStr = sets + " sets x ";
+                    }
+                    if (Integer.parseInt(reps) == 1) {
+                        repsStr = reps + "  rep ";
+                    } else {
+                        repsStr = reps + " reps ";
+                    }
+                    newDetails = ("" + wString + setsStr + repsStr);
                 }
-                if (Integer.parseInt(sets) == 1) {
-                    setsStr = sets + " set ";
-                } else {
-                    setsStr = sets + " sets x ";
-                }
-                if (Integer.parseInt(reps) == 1) {
-                    repsStr = reps + "  rep ";
-                } else {
-                    repsStr = reps + " reps ";
-                }
-                newDetails = ("" + wString + setsStr + repsStr);
+                exName.setText(name + " ");
+                exDetails.setText(newDetails);
 
             }
-            exName.setText(name + " ");
-            exDetails.setText(newDetails);
+
 
         }
 
@@ -112,6 +115,7 @@ public class SelectDateActivity extends ActionBarActivity {
         });
     }
 
+    // Pass workout details and date to time pivker activity
     private void loadSelectTime() {
         Intent intent = new Intent(SelectDateActivity.this, SelectTimeActivity.class);
         Bundle extras = new Bundle();
@@ -127,10 +131,11 @@ public class SelectDateActivity extends ActionBarActivity {
             extras.putString("reps", reps);
         }
         intent.putExtras(extras);
+
         startActivity(intent);
     }
 
-    //  sets calendar details and returns date selected from calendar in String
+    //  Set calendar details and displays and returns date selected from calendar
     private void initializeCalendar(CalendarView calendar) {
         calendar.setShowWeekNumber(false);
         calendar.setFirstDayOfWeek(1);

@@ -63,13 +63,20 @@ public class EditCardioWorkoutActivity extends ActionBarActivity {
 
         exDetails.setText(oldDetails);
 
+        // Delete previous workout and pass new details to date picker activity
         nextButton.setOnClickListener(new Button.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                dbh.deleteWorkout(w);
-                dbh.close();
-                EditCardioWorkoutActivity.this.loadSelectDate();
+                if(distanceText.getText().length() == 0) {
+                    distanceText.setError("Field cannot be left blank.");
+                } else if(timeText.getText().length() == 0) {
+                    timeText.setError("Field cannot be left blank.");
+                } else {
+                    dbh.deleteWorkout(w);
+                    dbh.close();
+                    EditCardioWorkoutActivity.this.loadSelectDate();
+                }
             }
         });
 
@@ -85,6 +92,7 @@ public class EditCardioWorkoutActivity extends ActionBarActivity {
         });
     }
 
+    // Return to schedule after deleting a workout
     private void loadSchedule() {
         Intent intent = new Intent(EditCardioWorkoutActivity.this, ViewScheduleActivity.class);
         showToast("" + name + " removed from schedule.");
@@ -95,27 +103,10 @@ public class EditCardioWorkoutActivity extends ActionBarActivity {
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
 
+    // Pass workout details to Date picker activity
     private void loadSelectDate() {
         Intent intent = new Intent(EditCardioWorkoutActivity.this, SelectDateActivity.class);
         Bundle extras = new Bundle();
-//        if (Integer.parseInt(distanceText.getText().toString()) <= 0) {
-//            showErrorToast("Distance should be greater than 0 miles.");
-//        }
-//        else if(Integer.parseInt(distanceText.getText().toString()) >= 50) {
-//            showErrorToast("Distance should be less than 50 miles.");
-//        }
-//        else if(Integer.parseInt(timeText.getText().toString()) <= 0) {
-//            showErrorToast("Time should be more than 0 minutes.");
-//        }
-//        else if(Integer.parseInt(timeText.getText().toString()) >= 360) {
-//            showErrorToast("Time should be less than 360 minutes (6 hours).");
-//        }
-//        else if(distanceText == null) {
-//            showErrorToast("Distance required.");
-//        }
-//        else if(timeText == null) {
-//            showErrorToast("Time required.");
-//        } else {
         String distance = distanceText.getText().toString();
         String duration = timeText.getText().toString();
         extras.putString("name", name);

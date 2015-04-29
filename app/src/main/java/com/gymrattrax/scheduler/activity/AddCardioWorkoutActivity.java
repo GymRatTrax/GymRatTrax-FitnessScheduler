@@ -36,11 +36,18 @@ public class AddCardioWorkoutActivity extends ActionBarActivity {
 
             @Override
             public void onClick(View v) {
-                AddCardioWorkoutActivity.this.loadDateTime();
+                if(distanceText.getText().length() == 0) {
+                    distanceText.setError("Field cannot be left blank.");
+                } else if(timeText.getText().length() == 0) {
+                    timeText.setError("Field cannot be left blank.");
+                } else {
+                    AddCardioWorkoutActivity.this.loadDateTime();
+                }
             }
         });
     }
 
+    // Pass workout details to date picker activity
     private void loadDateTime() {
         Intent intent = new Intent(AddCardioWorkoutActivity.this, SelectDateActivity.class);
         Bundle extras = new Bundle();
