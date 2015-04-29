@@ -76,6 +76,7 @@ public class SelectTimeActivity extends ActionBarActivity {
                 } else {
                     tStr = duration + " minutes";
                 }
+                duration = "" + (Integer.parseInt(duration) * 60 * 1000);
                 exName.setText(name + " ");
                 exDetails.setText(dStr + " in " + tStr);
                 details = (dStr + " in " + tStr);
@@ -85,6 +86,10 @@ public class SelectTimeActivity extends ActionBarActivity {
                 weight = extras.getString("weight");
                 sets = extras.getString("sets");
                 reps = extras.getString("reps");
+                int setsInt = Integer.parseInt(sets);
+                int repsInt = Integer.parseInt(reps);
+                int durationInt = ((repsInt * 10 ) + (setsInt * 5 * 60)) * 1000;
+                duration = "" + durationInt;
                 String weightStr;
                 String setsStr;
                 String repsStr;
@@ -128,8 +133,7 @@ public class SelectTimeActivity extends ActionBarActivity {
     }
 
     private long addEventToGCal() {
-        long startMillis = 0;
-        long endMillis = 0;
+
 
         // get workout date time
         String[] divDate = date.split("/", 3);
@@ -142,6 +146,7 @@ public class SelectTimeActivity extends ActionBarActivity {
         String title;
         Calendar beginTime = Calendar.getInstance();
         beginTime.set(year, month, day, hourInt, minInt);
+        int eventDuration = Integer.parseInt(duration);
 
         if(name.equals("Biking")){
             title = "Workout: Cycling" + "\n" + details;
@@ -152,7 +157,7 @@ public class SelectTimeActivity extends ActionBarActivity {
         intent.setType("vnd.android.cursor.item/event");
         intent.putExtra("beginTime", beginTime.getTimeInMillis());
         intent.putExtra("allDay", false);
-        intent.putExtra("endTime", beginTime.getTimeInMillis()+60*60*1000);
+        intent.putExtra("endTime", beginTime.getTimeInMillis()+eventDuration);
         intent.putExtra("title", title);
         startActivity(intent);
         return eventId;

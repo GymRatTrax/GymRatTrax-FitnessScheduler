@@ -54,7 +54,7 @@ public class SelectDateActivity extends ActionBarActivity {
                 reps = extras.getString("reps");
             }
             // Display cardio details in text view
-            String newDetails = "Error: No details";
+            String newDetails = "";
             if (ExerciseName.Cardio.fromString(name) != null) {
                 String distanceString;
                 if (Double.parseDouble(distance) == 1) {
@@ -69,6 +69,8 @@ public class SelectDateActivity extends ActionBarActivity {
                     timeString = " in " + duration + " minutes";
                 }
                 newDetails = (distanceString + timeString);
+                exName.setText(name + " ");
+                exDetails.setText(newDetails);
             } else
             // Display strength details
             {
