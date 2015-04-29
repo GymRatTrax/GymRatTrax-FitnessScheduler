@@ -26,7 +26,8 @@
         android:layout_margin="5dp"
         android:layout_above="@+id/addWorkoutButton"
         android:layout_below="@+id/schedule_upcoming_workouts"
-        android:layout_centerHorizontal="true">
+        android:layout_centerHorizontal="true"
+        android:id="@+id/relativeLayout">
 
         <ListView
             android:layout_width="match_parent"
@@ -41,21 +42,10 @@
             android:layout_gravity="center"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true" />
 
     </RelativeLayout>
-
-    <TextView
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/new_workout"
-        android:id="@+id/add_new_workout"
-        android:textStyle="bold"
-        android:paddingBottom="28dp"
-        android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/addWorkoutButton"
-        android:layout_toStartOf="@+id/addWorkoutButton" />
 
     <Button
         android:layout_width="60dp"
@@ -69,5 +59,25 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="View in Google Calendar"
+        android:id="@+id/google_edit_cal"
+        android:layout_alignBottom="@+id/addWorkoutButton"
+        android:layout_alignLeft="@+id/relativeLayout"
+        android:layout_alignStart="@+id/relativeLayout" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/AddAWorkout"
+        android:id="@+id/textView14"
+        android:layout_below="@+id/relativeLayout"
+        android:layout_toLeftOf="@+id/addWorkoutButton"
+        android:layout_toStartOf="@+id/addWorkoutButton" />
 
 </RelativeLayout>

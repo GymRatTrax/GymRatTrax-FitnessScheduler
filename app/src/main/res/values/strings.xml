@@ -79,7 +79,7 @@
     <string name="select_cardio_distance">Set Distance:</string>
     <string name="edit_workout_activity">Edit Workout</string>
     <string name="Edit">Edit</string>
-    <string name="AddAWorkout">Add a Workout</string>
+    <string name="AddAWorkout">Add a Workout:</string>
     <string name="new_workout">New Workout</string>
     <string name="edit_strength_workout_activity">Edit Strength</string>
     <string name="edit_cardio_workout_activity">Edit Cardio</string>
@@ -145,4 +145,6 @@
     <string name="fitness_intro_text">Fitness History</string>
     <string name="currCardioex">Edit Cardio Workout</string>
     <string name="add">ADD</string>
+    <string name="add_to_google_cal">Add to Google Calendar</string>
+    <string name="edit_cal">Edit Google Calendar</string>
 </resources>

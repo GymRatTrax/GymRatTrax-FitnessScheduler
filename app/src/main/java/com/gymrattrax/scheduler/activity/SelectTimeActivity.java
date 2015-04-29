@@ -1,5 +1,6 @@
 package com.gymrattrax.scheduler.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -17,6 +18,7 @@ import com.gymrattrax.scheduler.model.CardioWorkoutItem;
 import com.gymrattrax.scheduler.model.ExerciseName;
 import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
+import com.gymrattrax.scheduler.service.CalendarService;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -28,11 +30,14 @@ public class SelectTimeActivity extends ActionBarActivity {
 
     private int selectedHour = 0, selectedMinutes = 0;
     private TimePicker timepicker;
+    private long eventId;
 
+    private Date d;
     private String weight;
     private String date, distance, duration;
     private String sets;
     private String reps;
+    private TextView exDetails;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,11 +49,12 @@ public class SelectTimeActivity extends ActionBarActivity {
         this.selectedHour = cal.get(Calendar.HOUR_OF_DAY);
         this.selectedMinutes = cal.get(Calendar.MINUTE);
         Button doneButton = (Button) findViewById(R.id.doneButton);
+        Button addToGoogle = (Button) findViewById(R.id.addGoogleCalButton);
         TextView notifText = (TextView) findViewById(R.id.notifications_text);
         timeText = (TextView) findViewById(R.id.TimeSelected);
         updateTimeUI();
         final TextView exName = (TextView) findViewById(R.id.ex_name);
-        final TextView exDetails = (TextView) findViewById(R.id.ex_details);
+        exDetails = (TextView) findViewById(R.id.ex_details);
         final TextView exDate = (TextView) findViewById(R.id.ex_date);
 
         Bundle extras = getIntent().getExtras();
@@ -113,10 +119,28 @@ public class SelectTimeActivity extends ActionBarActivity {
                 SelectTimeActivity.this.loadSchedule();
             }
         });
+
+        addToGoogle.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                eventId = addEventToGCal();
+            }
+        });
+    }
+
+    private long addEventToGCal() {
+        Context ctx = getApplicationContext();
+        int hour = timepicker.getCurrentHour();
+        int minute = timepicker.getCurrentMinute();
+        String time = "" + hour + ":" + minute;
+        String dateStr = "" + date;
+        String details = exDetails.toString() + "!" + dateStr + "!" + time;
+        eventId = CalendarService.addEvent(ctx, "GymRatTrax", name, details);
+        return eventId;
     }
 
     private void loadSchedule() {
-        Intent intent = new Intent(SelectTimeActivity.this, ScheduleActivity.class);
+        Intent intent = new Intent(SelectTimeActivity.this, ViewScheduleActivity.class);
         addThisWorkout();
         startActivity(intent);
     }
@@ -177,7 +201,7 @@ public class SelectTimeActivity extends ActionBarActivity {
 
         Calendar cal = Calendar.getInstance();
         cal.set(year, month - 1, day, hourInt, minInt);
-        Date d = cal.getTime();
+        d = cal.getTime();
         cItem.setDateScheduled(d);
 
         // Set cardio item name
@@ -217,7 +241,7 @@ public class SelectTimeActivity extends ActionBarActivity {
 
         Calendar cal = Calendar.getInstance();
         cal.set(year, month-1, day, hour, minute);
-        Date d = cal.getTime();
+        d = cal.getTime();
         sItem.setDateScheduled(d);
 
         sItem.setNotificationDefault(true);

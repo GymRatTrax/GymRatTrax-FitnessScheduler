@@ -6,10 +6,12 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.CalendarContract;
 import android.text.format.DateUtils;
+import android.widget.Toast;
 
 import com.gymrattrax.scheduler.activity.ViewScheduleActivity;
 
@@ -19,9 +21,12 @@ import java.util.TimeZone;
 
 public class CalendarService extends ViewScheduleActivity {
     private static long eventID;
+    private static byte[] details;
     private Date currentDay;
     private double time;
     private long ID;
+    private static final String DATE_TIME_FORMAT = "yyyy MMM dd, HH:mm:ss";
+
 
     public CalendarService() {
     }
@@ -84,46 +89,66 @@ public class CalendarService extends ViewScheduleActivity {
         values.put(CalendarContract.Calendars.CAN_PARTIALLY_UPDATE, 1);
         values.put(CalendarContract.Calendars.ALLOWED_REMINDERS, CalendarContract.Reminders.METHOD_DEFAULT);
         values.put(CalendarContract.Calendars.CAL_SYNC8, System.currentTimeMillis());
-
-        return ctx.getContentResolver().insert(target, values);
+        Uri uri = ctx.getContentResolver().insert(target, values);
+        return uri;
     }
 
     public long id = getID();
 
     // insert GTR workout event
-    public static Uri addEvent(Context ctx, String accountName, String name, String data) {
-        Uri target = Uri.parse(CalendarContract.Calendars.CONTENT_URI.toString());
+    public static long addEvent(Context ctx, String accountName, String name, String data) {
+        Uri target = Uri.parse("content://com.android.calendar/events");
+// Uri target = Uri.parse(CalendarContract.Calendars.CONTENT_URI.toString());
         target = target.buildUpon().appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
                 .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, accountName)
                 .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, "ACCOUNT_TYPE_LOCAL").build();
 
         long startMillis = 0;
         long endMillis = 0;
-        String[] div = data.split("/");
+
+        // get workout details
+        String[] divData = data.split("!", 3);
+        String details = divData[0];
+        String[] divDate = divData[1].split("/", 3);
+        String[] divTime = divData[2].split(":", 2);
+
+        int month = Integer.parseInt(divDate[0]);
+        int day = Integer.parseInt(divDate[1]);
+        int year = Integer.parseInt(divDate[2]);
+        int hour =  Integer.parseInt(divTime[0]);
+        int minute =  Integer.parseInt(divTime[1]);
+
         Calendar beginTime = Calendar.getInstance();
-        beginTime.set(2015, Integer.parseInt(div[0]) - 1, Integer.parseInt(div[1]));
+        beginTime.set(year, month, day, hour, minute);
         startMillis = beginTime.getTimeInMillis();
         Calendar endTime = Calendar.getInstance();
-        endTime.set(2015, Integer.parseInt(div[0]) - 1, Integer.parseInt(div[1]));
+        endTime.set(year, month, day, hour, minute + 10);
         endMillis = endTime.getTimeInMillis();
 
+        // set event details
         ContentValues cv = new ContentValues();
-        cv.put(CalendarContract.Events.TITLE, name);
-        cv.put(CalendarContract.Events.DTSTART, startMillis);
-        cv.put(CalendarContract.Events.DTEND, endMillis);
-        cv.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().toString());
+        cv.put("calendar_id", 0);
+        cv.put("dtstart", startMillis);
+        cv.put("dtend", endMillis + 1800*1000);
+        cv.put("title", name);
+        cv.put("description", details);
+        cv.put("eventStatus", 1);
+        cv.put("hasAlarm", 0);
+
+        cv.put("eventTimezone", TimeZone.getDefault().toString());
+        cv.put("eventEndTimezone", TimeZone.getDefault().toString());
 
         Uri newEvent = ctx.getContentResolver().insert(target, cv);
         CalendarService.eventID = Long.parseLong(newEvent.getLastPathSegment());
 
-        return newEvent;
+        return Long.parseLong(newEvent.getLastPathSegment());
     }
 
-
-    public static boolean deleteEvent(Context ctx, String accountName, String name, long eventID) {
-
-        return true;
-    }
+//
+//    public static boolean deleteEvent(Context ctx, String accountName, String name, long eventID) {
+//
+//        return true;
+//    }
 
     public Uri.Builder getAllEvents() {
         Uri.Builder builder = Uri.parse(getCalendarUriBase() + "/instances/when").buildUpon();
@@ -148,7 +173,7 @@ public class CalendarService extends ViewScheduleActivity {
 
         return null;
     }
-//
+
 //    public static Intent viewEvent() {
 //    public Intent viewEvent() {
 //        long eventID = 208;
@@ -161,20 +186,29 @@ public class CalendarService extends ViewScheduleActivity {
     public long getID() {
         return ID;
     }
-    //    private void addWorkout(String exercise1, Calendar begin, Calendar end) {
-//        Calendar dateToShow = Calendar.getInstance();
-//        dateToShow.set(2015, Calendar.MARCH, 12, 17, 00);
-//        long epochMillis = dateToShow.getTimeInMillis();
-//
-//        String data = "" + begin.toString() + "" + end.toString();
-//        Uri eventUri = CalendarService.addEvent(ctx, accountName, "EXERCISE 1", data);
-//        Uri.Builder uriBuilder = eventUri.buildUpon();
-//        uriBuilder.appendPath("time");
-//        ContentUris.appendId(uriBuilder, epochMillis);
-//        Uri uri = uriBuilder.build();
-//
-//        Intent intent = new Intent(Intent.ACTION_VIEW);
-//        intent.setData(uri);
-//        startActivity(intent);
-//    }
+
+    public void addEvent2(Context ctx, String gymRatTrax, String name, String details) {
+        Intent l_intent = new Intent(Intent.ACTION_EDIT);
+        l_intent.setType("vnd.android.cursor.item/event");
+        //l_intent.putExtra("calendar_id", m_selectedCalendarId);  //this doesn't work
+        l_intent.putExtra("title", "roman10 calendar tutorial test");
+        l_intent.putExtra("description", "This is a simple test for calendar api");
+        l_intent.putExtra("eventLocation", "@home");
+        l_intent.putExtra("beginTime", System.currentTimeMillis());
+        l_intent.putExtra("endTime", System.currentTimeMillis() + 1800*1000);
+        l_intent.putExtra("allDay", 0);
+        //status: 0~ tentative; 1~ confirmed; 2~ canceled
+        l_intent.putExtra("eventStatus", 1);
+        //0~ default; 1~ confidential; 2~ private; 3~ public
+        l_intent.putExtra("visibility", 0);
+        //0~ opaque, no timing conflict is allowed; 1~ transparency, allow overlap of scheduling
+        l_intent.putExtra("transparency", 0);
+        //0~ false; 1~ true
+        l_intent.putExtra("hasAlarm", 1);
+        try {
+            startActivity(l_intent);
+        } catch (Exception e) {
+            Toast.makeText(this.getApplicationContext(), "Sorry, no compatible calendar is found!", Toast.LENGTH_LONG).show();
+        }
+    }
 }

@@ -56,7 +56,6 @@
             android:layout_height="wrap_content"
             android:id="@+id/time_picker"
             android:textCursorDrawable="@null"
-
             android:layout_gravity="center_horizontal"
             android:background="@color/primary100"
             android:headerBackground="@color/primary" >
@@ -80,16 +79,32 @@
         android:text="@string/time"
         android:visibility="gone" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@id/doneButton"
-        android:text="@string/add"
-        android:clickable="true"
-        android:textStyle="bold"
-        android:textSize="25sp"
-        android:background="@drawable/button_shp_rvrs_press"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@id/addGoogleCalButton"
+            android:text="@string/add_to_google_cal"
+            android:clickable="true"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp" />
+
+        <Button
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:id="@id/doneButton"
+            android:text="@string/Done"
+            android:clickable="true"
+            android:layout_margin="5dp"
+            android:textStyle="bold"
+            android:textSize="25sp"
+            android:background="@drawable/button_shp_rvrs_press"
+            android:layout_gravity="center_horizontal" />
+    </LinearLayout>
+
 
 </LinearLayout>

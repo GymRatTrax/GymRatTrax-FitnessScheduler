@@ -14,8 +14,6 @@ import android.widget.ListView;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterEdit;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.CardioWorkoutItem;
-import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
 import java.util.ArrayList;
@@ -38,7 +36,7 @@ public class ViewScheduleActivity extends ActionBarActivity implements ListViewA
         displayUpcomingWorkouts();
 
         Button addWorkoutButton = (Button) findViewById(R.id.addWorkoutButton);
-
+        Button editCalendar = (Button) findViewById(R.id.google_edit_cal);
         addWorkoutButton.setOnClickListener(new Button.OnClickListener() {
 
             @Override
@@ -47,15 +45,17 @@ public class ViewScheduleActivity extends ActionBarActivity implements ListViewA
             }
         });
 
-//        openGoogleCalendarButton.setOnClickListener(new Button.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View view) {
-//                Calendar dateToShow = Calendar.getInstance();
-//                dateToShow.set(2015, Calendar.MARCH, 25, 17, 0);
-//                loadViewSchedule(dateToShow);
-//            }
-//        });
+        editCalendar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loadGoogleCalendar();
+            }
+        });
+    }
+
+    private void loadGoogleCalendar() {
+        Calendar dateToShow = Calendar.getInstance();
+        loadViewSchedule(dateToShow);
     }
 
     private void loadEditStrengthWorkout() {
@@ -66,7 +66,6 @@ public class ViewScheduleActivity extends ActionBarActivity implements ListViewA
         intent.putExtras(extras);
         startActivity(intent);
     }
-
 
     private void displayUpcomingWorkouts() {
         String[] scheduledWorkouts = getWorkoutsString();
@@ -97,10 +96,6 @@ public class ViewScheduleActivity extends ActionBarActivity implements ListViewA
         Intent intent = new Intent(ViewScheduleActivity.this, HomeScreenActivity.class);
         startActivity(intent);
     }
-//    private void loadViewWorkoutEvent() {
-//        Intent intent = new Intent(CalendarService.viewEvent());
-//        startActivity(intent);
-//    }
 
     private void loadAddWorkout() {
         Intent intent = new Intent(ViewScheduleActivity.this, AddWorkoutActivity.class);
@@ -134,6 +129,12 @@ public class ViewScheduleActivity extends ActionBarActivity implements ListViewA
             case "Running":
                 loadEditCardioWorkout();
                 break;
+            case "Elliptical":
+                loadEditCardioWorkout();
+                break;
+            case "Biking":
+                loadEditCardioWorkout();
+                break;
             default:
                 loadEditStrengthWorkout();
         }
@@ -163,7 +164,9 @@ public class ViewScheduleActivity extends ActionBarActivity implements ListViewA
             id = w.getID();
             if (workoutsArray[i].equals("Walking")
                     || workoutsArray[i].equals("Jogging")
-                    || workoutsArray[i].equals("Running"))
+                    || workoutsArray[i].equals("Running")
+                    || workoutsArray[i].equals("Elliptical")
+                    || workoutsArray[i].equals("Biking"))
             {
                 double minutesDbl = w.getTimeScheduled();
                 int secondsTotal = (int) (minutesDbl * 60);
@@ -194,9 +197,9 @@ public class ViewScheduleActivity extends ActionBarActivity implements ListViewA
                 String infoString = "" + id + ":" + w.getName() + ": \n" + time;
                 workoutsArray[i] = infoString;
             } else {
-                String weightUsed = "" + ((StrengthWorkoutItem)w).getWeightUsed();
-                String reps = "" + ((StrengthWorkoutItem)w).getRepsScheduled();
-                String sets = "" + ((StrengthWorkoutItem)w).getSetsScheduled();
+                String weightUsed = "" + w.getWeightUsed();
+                String reps = "" + w.getRepsScheduled();
+                String sets = "" + w.getSetsScheduled();
                 String dateTime = dbh.displayDateTime(this, w.getDateScheduled()) + "\n";
                 if (Double.parseDouble(weightUsed) == 1) {
                     weightUsed = weightUsed + " lb x ";

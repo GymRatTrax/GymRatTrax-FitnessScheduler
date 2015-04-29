@@ -29,4 +29,5 @@
     <item name="menu_feedback" type="id">menu_feedback</item>
     <item name="calorie_list_name" type="id" />
     <item name="calorie_list" type="id" />
+    <item name="addGoogleCalButton" type="id">Gcalupdate</item>
 </resources>

@@ -114,7 +114,7 @@ public class HomeScreenActivity extends LoginActivity {
 
             @Override
             public void onClick(View view) {
-                loadActivity(ScheduleActivity.class);
+                loadActivity(ViewScheduleActivity.class);
             }
         });
 
@@ -258,7 +258,7 @@ public class HomeScreenActivity extends LoginActivity {
 
                 String details = "" + distanceStr + minString + secString;
                 details = details + "!" + dbh.displayDateTime(this, w.getDateScheduled());
-                String infoString = "" + w.getName().toString() + "!" + details;
+                String infoString = "" + w.getName() + "!" + details;
                 workoutsArray[i] = infoString;
             } else {
                 String weightUsed = "" + w.getWeightUsed();
@@ -280,7 +280,7 @@ public class HomeScreenActivity extends LoginActivity {
                 } else {
                     reps = reps + " reps";
                 }
-                String infoString = "" + w.getName().toString() + "!" + weightUsed + sets + reps + "!" + dateTime;
+                String infoString = "" + w.getName() + "!" + weightUsed + sets + reps + "!" + dateTime;
                 workoutsArray[i] = infoString;
             }
             i++;

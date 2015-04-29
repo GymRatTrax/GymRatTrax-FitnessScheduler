@@ -27,7 +27,6 @@ public class SelectDateActivity extends ActionBarActivity {
         setContentView(R.layout.activity_select_date);
         CalendarView calendar = (CalendarView) findViewById(R.id.calendar);
         final Calendar cal = Calendar.getInstance();
-
         int monthSelected = cal.get(Calendar.MONTH);
         int daySelected = cal.get(Calendar.DAY_OF_MONTH);
         int yearSelected = cal.get(Calendar.YEAR);
@@ -107,22 +106,6 @@ public class SelectDateActivity extends ActionBarActivity {
 
             @Override
             public void onClick(View v) {
-//                Context ctx = getApplicationContext();
-////                CalendarService.addEvent(ctx, "GymRatTrax", "Cardio Workout", "");
-//                StrengthWorkoutItem item = new StrengthWorkoutItem();
-//                item.setRepsScheduled(12);
-//                item.setSetsScheduled(4);
-//                item.setWeightUsed(10);
-//
-//                ArrayList<String> arrayList = new ArrayList<>();
-//                for (String str: dateString.split("/", 3)) {
-//                    arrayList.add(str);
-//                }
-//                String dString = "" + arrayList.get(0) + arrayList.get(1) + arrayList.get(2);
-//                double dItem = Double.parseDouble(dString);
-//                item.setTimeScheduled(dItem);
-//                long id = dbh.addWorkout(item);
-//                addThisWorkout(item);
 
                 loadSelectTime();
             }
