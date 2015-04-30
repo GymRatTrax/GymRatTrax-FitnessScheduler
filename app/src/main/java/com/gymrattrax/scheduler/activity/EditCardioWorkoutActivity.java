@@ -68,10 +68,25 @@ public class EditCardioWorkoutActivity extends ActionBarActivity {
 
             @Override
             public void onClick(View v) {
+                double dDouble = 0;
+                double timeDouble = 0;
                 if(distanceText.getText().length() == 0) {
-                    distanceText.setError("Field cannot be left blank.");
+                    distanceText.setError("Distance field cannot be left blank.");
                 } else if(timeText.getText().length() == 0) {
-                    timeText.setError("Field cannot be left blank.");
+                    timeText.setError("Time field cannot be left blank.");
+                } else {
+                    dDouble = Double.parseDouble(distanceText.getText().toString());
+                    timeDouble = Double.parseDouble(timeText.getText().toString());
+                }
+
+                if(dDouble == 0) {
+                    distanceText.setError("Distance must be greater than 0.");
+                } else if(timeDouble == 0) {
+                    timeText.setError("Time must be greater than 0.");
+                } else if(dDouble >= 200) {
+                    distanceText.setError("Distance must be less than 200 miles.");
+                } else if(timeDouble >= 1440) {
+                    timeText.setError("Time must be less than 1440 minutes (24 hrs).");
                 } else {
                     dbh.deleteWorkout(w);
                     dbh.close();

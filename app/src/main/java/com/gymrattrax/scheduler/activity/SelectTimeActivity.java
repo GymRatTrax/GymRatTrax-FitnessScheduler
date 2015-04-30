@@ -239,7 +239,7 @@ public class SelectTimeActivity extends ActionBarActivity {
         cItem.setDistanceScheduled(Double.parseDouble(distance));
 
         // Set cardio item duration
-        cItem.setTimeScheduled(Double.parseDouble(duration));
+        cItem.setTimeScheduled(Double.parseDouble(duration) / 60 / 1000);
 
         // Add cardio workout to db
         cItem.setNotificationDefault(true);

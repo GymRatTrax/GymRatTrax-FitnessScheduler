@@ -36,15 +36,25 @@ public class AddStrengthWorkoutActivity extends ActionBarActivity {
 
             @Override
             public void onClick(View v) {
-                if(weight.getText().length()==0)
-                {
+                double wDouble = Double.parseDouble(weight.getText().toString());
+                int sInt = Integer.parseInt(sets.getText().toString());
+                int rInt =Integer.parseInt(reps.getText().toString());
+                if (weight.getText().length() == 0) {
                     weight.setError("Field cannot be left blank.");
-                } else if(sets.getText().length()==0)
-                {
+                } else if (sets.getText().length() == 0) {
                     sets.setError("Field cannot be left blank.");
-                } else if(reps.getText().length()==0)
-                {
+                } else if (reps.getText().length() == 0) {
                     reps.setError("Field cannot be left blank.");
+                } else if (sInt == 0) {
+                    sets.setError("Sets must be greater than 0.");
+                } else if (rInt == 0) {
+                    reps.setError("Reps must be greater than 0.");
+                } else if (wDouble >= 6000) {
+                    weight.setError("Weight used should be less than 6000 lbs.");
+                } else if (sInt >= 50) {
+                    sets.setError("Too many sets. Try adding more reps or more weight.");
+                } else if (rInt >= 50) {
+                    reps.setError("Too many reps. Try adding more sets or more weight.");
                 } else {
                     AddStrengthWorkoutActivity.this.loadDateTime();
                 }
