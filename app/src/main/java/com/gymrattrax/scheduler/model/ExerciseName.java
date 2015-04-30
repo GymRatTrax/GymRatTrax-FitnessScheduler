@@ -9,7 +9,7 @@ public class ExerciseName {
         WALK("Walking"),
         JOG("Jogging"),
         RUN("Running"),
-        BIKE("Biking"),
+        CYCLING("Cycling"),
         ELLIPTICAL("Elliptical");
         private final String name;
 

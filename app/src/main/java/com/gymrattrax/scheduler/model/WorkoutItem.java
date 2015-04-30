@@ -165,7 +165,7 @@ public class WorkoutItem {
         switch (exercise.getType()) {
             case CARDIO:
                 switch (exercise.getCardio()) {
-                    case BIKE:
+                    case CYCLING:
                     case ELLIPTICAL:
                         if (exertionLevel < 2)
                             return 5.5;
