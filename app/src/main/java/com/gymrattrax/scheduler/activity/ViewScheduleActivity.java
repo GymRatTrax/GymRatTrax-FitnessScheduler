@@ -135,7 +135,7 @@ public class ViewScheduleActivity extends ActionBarActivity implements ListViewA
             case "Elliptical":
                 loadEditCardioWorkout();
                 break;
-            case "Biking":
+            case "Cycling":
                 loadEditCardioWorkout();
                 break;
             default:

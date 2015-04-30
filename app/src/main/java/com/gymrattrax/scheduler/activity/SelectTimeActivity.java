@@ -76,7 +76,9 @@ public class SelectTimeActivity extends ActionBarActivity {
                 } else {
                     tStr = duration + " minutes";
                 }
-                duration = "" + (Integer.parseInt(duration) * 60 * 1000);
+
+                int durInt = (int) Math.round(Double.parseDouble(duration));
+                duration = "" + (durInt * 60 * 1000);
                 exName.setText(name + " ");
                 exDetails.setText(dStr + " in " + tStr);
                 details = (dStr + " in " + tStr);
@@ -148,11 +150,7 @@ public class SelectTimeActivity extends ActionBarActivity {
         beginTime.set(year, month, day, hourInt, minInt);
         int eventDuration = Integer.parseInt(duration);
 
-        if(name.equals("Biking")){
-            title = "Workout: Cycling" + "\n" + details;
-        } else {
-            title = "Workout: " + name + "\n" + details;
-        }
+        title = "Workout: " + name + "\n" + details;
         Intent intent = new Intent(Intent.ACTION_EDIT);
         intent.setType("vnd.android.cursor.item/event");
         intent.putExtra("beginTime", beginTime.getTimeInMillis());
