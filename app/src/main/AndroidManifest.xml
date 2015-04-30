@@ -139,6 +139,15 @@
             android:theme="@android:style/android:Theme.Holo.Panel">
         </activity>
         <activity
+            android:name=".activity.StatisticsActivity"
+            android:label="@string/title_activity_statistics"
+            android:theme="@style/NewTheme"
+            android:parentActivityName=".activity.HomeScreenActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.HomeScreenActivity" />
+        </activity>
+        <activity
             android:name=".activity.ViewScheduleActivity"
             android:label="@string/title_activity_view_schedule"
             android:screenOrientation="portrait" >

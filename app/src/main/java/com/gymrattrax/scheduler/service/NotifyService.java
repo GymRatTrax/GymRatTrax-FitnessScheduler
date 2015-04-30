@@ -121,36 +121,36 @@ public class NotifyService extends Service {
      * Creates a notification and shows it in the OS drag-down status bar
      */
     private void showNotification() {
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
+        NotificationCompat.Builder mNotificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_stat_name)
                 .setAutoCancel(true)
                 .setOngoing(false)
                 .setColor(getResources().getColor(R.color.primary));
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-            mBuilder.setPriority(Notification.PRIORITY_HIGH);
+            mNotificationBuilder.setPriority(Notification.PRIORITY_HIGH);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            mBuilder.setCategory(Notification.CATEGORY_EVENT);
+            mNotificationBuilder.setCategory(Notification.CATEGORY_EVENT);
 
         Intent intent = new Intent(this, DailyWorkoutActivity.class);
         if (workoutItem != null) {
-            mBuilder.setContentTitle(workoutItem.getName());
+            mNotificationBuilder.setContentTitle(workoutItem.getName());
             switch (workoutItem.getType()) {
                 case CARDIO:
-                    mBuilder.setContentText(String.valueOf(workoutItem.getDistanceScheduled()) +
-                            " miles");
+                    mNotificationBuilder.setContentText(String.valueOf(
+                            workoutItem.getDistanceScheduled()) + " miles");
                     intent = new Intent(this, CardioWorkoutActivity.class);
                     break;
                 case ABS:
                 case ARMS:
                 case LEGS:
-                    mBuilder.setContentText(String.valueOf(workoutItem.getSetsScheduled()) +
-                            " sets of " + String.valueOf(workoutItem.getRepsScheduled()) +
-                            " reps with " + String.valueOf(workoutItem.getWeightUsed()) +
-                            " lb weights");
+                    mNotificationBuilder.setContentText(
+                            String.valueOf(workoutItem.getSetsScheduled()) + " sets of " +
+                            String.valueOf(workoutItem.getRepsScheduled()) + " reps with " +
+                            String.valueOf(workoutItem.getWeightUsed()) + " lb weights");
                     intent = new Intent(this, StrengthWorkoutActivity.class);
                     break;
                 default:
-                    mBuilder.setContentText(((int)(workoutItem.getTimeScheduled() * 60) -
+                    mNotificationBuilder.setContentText(((int)(workoutItem.getTimeScheduled() * 60) -
                             ((int)(workoutItem.getTimeScheduled() * 60) % 60) / 60) + " minutes, " +
                             ((int)(workoutItem.getTimeScheduled() * 60) % 60) + " seconds");
                     break;
@@ -171,39 +171,39 @@ public class NotifyService extends Service {
                 }
             }
             if (workoutItem.getNotificationTone() != null) {
-                mBuilder.setSound(workoutItem.getNotificationTone());
+                mNotificationBuilder.setSound(workoutItem.getNotificationTone());
             } else {
-                mBuilder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+                mNotificationBuilder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
             }
             if (workoutItem.isNotificationVibrate()) {
-                mBuilder.setVibrate(new long[]{0, 300, 0});
+                mNotificationBuilder.setVibrate(new long[]{0, 300, 0});
             } else {
-                mBuilder.setVibrate(new long[]{0, 0, 0});
+                mNotificationBuilder.setVibrate(new long[]{0, 0, 0});
             }
 
             if (sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_ONGOING, false)) {
-                mBuilder.setOngoing(true);
-                mBuilder.setAutoCancel(false);
+                mNotificationBuilder.setOngoing(true);
+                mNotificationBuilder.setAutoCancel(false);
             }
             Bundle b = new Bundle();
             b.putInt("ID", workoutItem.getID());
             intent.putExtras(b);
 
         } else if (name.toLowerCase().contains("weigh")) {
-            mBuilder.setContentTitle("Time to weigh-in")
+            mNotificationBuilder.setContentTitle("Time to weigh-in")
                     .setContentText("Weigh yourself and update here")
                     .setSound(Uri.parse(tone))
                     .setVibrate(new long[]{0, vibrate, 0});
             intent = new Intent(this, ProfileActivity.class);
             id = NOTIFY_ID_WEIGH;
         } else {
-            mBuilder.setContentTitle("Time to work out!")
+            mNotificationBuilder.setContentTitle("Time to work out!")
                     .setContentText("Let's go!")
                     .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                     .setVibrate(new long[]{0, 300, 0});
         }
         PendingIntent contentIntent = PendingIntent.getActivity(this, id, intent, 0);
-        mBuilder.setContentIntent(contentIntent);
+        mNotificationBuilder.setContentIntent(contentIntent);
 
         NotificationManager mNotificationManager =
                 (NotificationManager)this.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -219,7 +219,7 @@ public class NotifyService extends Service {
         }
         dbh.close();
 
-        mNotificationManager.notify(NOTIFICATION, mBuilder.build());
+        mNotificationManager.notify(NOTIFICATION, mNotificationBuilder.build());
 
         // Stop the service when we are finished
         stopSelf();

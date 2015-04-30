@@ -189,36 +189,36 @@ public class AddTemplatesActivity extends Activity {
                     workoutItems[i].setDateScheduled(calendar.getTime());
                 }
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(AddTemplatesActivity.this);
-                builder.setMessage("Day 1: Walk 20 minutes\n" +
-                        "Day 3: Walk 20 minutes\n" +
-                        "Day 6: Jog 15 minutes\n" +
-                        "Day 8: Walk 20 minutes\n" +
-                        "Day 10: Walk 20 minutes\n" +
-                        "Day 13: Jog 20 minutes\n" +
-                        "Day 15: Jog 20 minutes\n" +
-                        "Day 17: Walk 30 minutes\n" +
-                        "Day 20: Run 20 minutes\n" +
-                        "Day 22: Jog 30 minutes\n" +
-                        "Day 24: Jog 30 minutes\n" +
-                        "Day 27: Run 35 minutes")
-                        .setTitle("Select Start Date for Prepare for 5K")
-                        .setCancelable(true)
-                        .setPositiveButton("Today", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                addTheseWorkouts(workoutItems, 0);
-                            }
-                        })
-                        .setNeutralButton("Tomorrow", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                addTheseWorkouts(workoutItems, 1);
-                            }
-                        })
-                        .setNegativeButton("Cancel", null);
-                builder.show();
-            }
+            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(AddTemplatesActivity.this);
+            alertBuilder.setMessage("Day 1: Walk 20 minutes\n" +
+                    "Day 3: Walk 20 minutes\n" +
+                    "Day 6: Jog 15 minutes\n" +
+                    "Day 8: Walk 20 minutes\n" +
+                    "Day 10: Walk 20 minutes\n" +
+                    "Day 13: Jog 20 minutes\n" +
+                    "Day 15: Jog 20 minutes\n" +
+                    "Day 17: Walk 30 minutes\n" +
+                    "Day 20: Run 20 minutes\n" +
+                    "Day 22: Jog 30 minutes\n" +
+                    "Day 24: Jog 30 minutes\n" +
+                    "Day 27: Run 35 minutes")
+                    .setTitle("Select Start Date for Prepare for 5K")
+                    .setCancelable(true)
+                    .setPositiveButton("Today", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            addTheseWorkouts(workoutItems, 0);
+                        }
+                    })
+                    .setNeutralButton("Tomorrow", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            addTheseWorkouts(workoutItems, 1);
+                        }
+                    })
+                    .setNegativeButton("Cancel", null);
+            alertBuilder.show();
+        }
         });
     }
 

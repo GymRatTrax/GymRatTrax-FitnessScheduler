@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.gymrattrax.scheduler.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ListViewAdapterAddNegation extends ArrayAdapter<String> {
 
@@ -52,12 +53,9 @@ public class ListViewAdapterAddNegation extends ArrayAdapter<String> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-
         final String nameTemp = getItem(position);
         ArrayList<String> arrayList = new ArrayList<>();
-        for (String str: nameTemp.split(":", 2)){
-            arrayList.add(str);
-        }
+        Collections.addAll(arrayList, nameTemp.split(":", 2));
         viewHolder.workout_name.setText(arrayList.get(0));
         viewHolder.workout_details.setText(arrayList.get(1));
 

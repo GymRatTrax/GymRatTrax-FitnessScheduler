@@ -32,9 +32,7 @@ public class ProgressActivity extends ActionBarActivity {
 
     private Spinner GraphSpin;
     private GraphView graph;
-    private GridLabelRenderer o;
     public DatabaseHelper dbh;
-//    private DateAsXAxisLabelFormatter dateFormatter;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,14 +89,12 @@ public class ProgressActivity extends ActionBarActivity {
                             double weightForDate = weights.get(date);
                             points[i] = new DataPoint(date, weightForDate);
                             i++;
-                            }
+                        }
 
-
-                        LineGraphSeries series = new LineGraphSeries(points);
+                        LineGraphSeries<DataPoint> series = new LineGraphSeries<>(points);
 
                         series.setDrawDataPoints(true);
                         graph.addSeries(series);
-
 
                         graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(ProgressActivity.this));
                         graph.getGridLabelRenderer().setNumHorizontalLabels(points.length); // only 4 because of the space
@@ -155,7 +151,7 @@ public class ProgressActivity extends ActionBarActivity {
                             d7Cal = d7Cal + g.getCaloriesBurned();
                         }
 
-                        BarGraphSeries<DataPoint> series1 = new BarGraphSeries<DataPoint>(new DataPoint[] {
+                        BarGraphSeries<DataPoint> series1 = new BarGraphSeries<>(new DataPoint[] {
                                 new DataPoint(d1, d1Cal),
                                 new DataPoint(d2, d2Cal),
                                 new DataPoint(d3, d3Cal),
@@ -239,11 +235,11 @@ public class ProgressActivity extends ActionBarActivity {
         String input = w.getType().toString();
         switch(input) {
             case "CARDIO":
-                double cardioPercentage = ((CardioWorkoutItem)w).getTimeSpent()/ ((CardioWorkoutItem)w).getTimeScheduled();
+                double cardioPercentage = w.getTimeSpent()/ w.getTimeScheduled();
             break;
             
             case "STRENGTH":
-                double strengthPercentage = ((StrengthWorkoutItem)w).getSetsCompleted()/((StrengthWorkoutItem)w).getSetsScheduled();
+                double strengthPercentage = w.getSetsCompleted()/ w.getSetsScheduled();
             break;
             
         }

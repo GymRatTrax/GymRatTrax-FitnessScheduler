@@ -20,6 +20,7 @@ import android.app.AlertDialog;
 import android.text.*;
 import android.content.DialogInterface;
 
+import com.google.android.gms.games.Games;
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.ProfileItem;
@@ -29,9 +30,11 @@ import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
 import android.net.Uri;
 
+import java.util.List;
+
 // april 11: added functionality that informs user that workout item has been logged.
 // TODO: display calories burned after workout has been logged
-public class StrengthWorkoutActivity extends ActionBarActivity {
+public class StrengthWorkoutActivity extends LoginActivity {
     private final static String TAG = "StrengthWorkoutActivity";
     int sets;
     int reps;
@@ -317,7 +320,7 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
                                 setsCompleted.setText("Sets Completed: " + Integer.toString(w.getSetsCompleted()));
 
                                 DatabaseHelper dbh = new DatabaseHelper(StrengthWorkoutActivity.this);
-                                dbh.completeWorkout(w);
+                                dbh.completeWorkout(w, false);
                                 dbh.close();
 
                             }
@@ -374,8 +377,25 @@ public class StrengthWorkoutActivity extends ActionBarActivity {
 
         double caloriesBurned = mets * userWeight * time;
         w.setCaloriesBurned(caloriesBurned);
-        dbh.completeWorkout(w);
+        dbh.completeWorkout(w, true);
+        List<String> achievementsUnlocked = dbh.checkForAchievements();
         dbh.close();
+        Games.Achievements.increment(mGoogleApiClient,
+                getString(R.string.achievement_working_hard), 1);
+        Games.Achievements.increment(mGoogleApiClient,
+                getString(R.string.achievement_keep_it_100), 1);
+        Games.Events.increment(mGoogleApiClient,
+                getString(R.string.event_workouts_completed), 1);
+        Games.Events.increment(mGoogleApiClient,
+                getString(R.string.event_time_spent_tracking_workouts), (int)time);
+        for (String achievement : achievementsUnlocked) {
+            Games.Achievements.unlock(mGoogleApiClient, achievement);
+        }
+        if (w.getCaloriesBurned() > 98 && w.getCaloriesBurned() < 102) {
+            Games.Achievements.unlock(mGoogleApiClient,
+                    getString(R.string.achievement_one_heck_of_a_snack_pack));
+        }
+
         if (BuildConfig.DEBUG_MODE) Log.d(TAG, "Closing ongoing notification, if applicable.");
         NotifyReceiver.cancelOngoing(this, ID);
         status.setText(String.format("You have logged this workout. Calories burned: %f", w.getCaloriesBurned()));

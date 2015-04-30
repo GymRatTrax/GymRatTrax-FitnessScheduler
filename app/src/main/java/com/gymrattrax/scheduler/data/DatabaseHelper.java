@@ -16,9 +16,11 @@ import android.widget.Toast;
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.model.ExerciseName;
+import com.gymrattrax.scheduler.model.ExerciseType;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 import com.gymrattrax.scheduler.activity.SettingsActivity;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -354,8 +356,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return id;
     }
 
-
-
     /**
      * Selects the record from the Workout table with column _ID equal to the passed in
      * workoutItem.getId().
@@ -440,7 +440,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return null;
     }
 
+    /**
+     * @deprecated Synonym for
+     * {@link com.gymrattrax.scheduler.data.DatabaseHelper#completeWorkout(com.gymrattrax.scheduler.model.WorkoutItem, boolean)}
+     * where {@code completeInFull} is set to {@code true}.
+     */
+    @Deprecated
     public int completeWorkout(WorkoutItem workout) {
+        return completeWorkout(workout, true);
+    }
+    public int completeWorkout(WorkoutItem workout, boolean completeInFull) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -449,7 +458,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Date date = cal.getTime();
         String dateStr = convertDate(date);
         workout.setDateCompleted(date);
-        workout.setComplete(true);
+        if (completeInFull) {
+            workout.setComplete(true);
+            values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_COMPLETE, 1);
+        }
         values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_COMPLETED, dateStr);
         values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_CALORIES_BURNED,
                 String.valueOf(workout.getCaloriesBurned()));
@@ -816,13 +828,72 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 focusedCheck = true;
             }
         }
-        if (balanceCheck > 4) {
+        if (balanceCheck >= 4) {
             achievements.add(mContext.getString(R.string.achievement_balanced_workout));
         }
         if (focusedCheck) {
             achievements.add(mContext.getString(R.string.achievement_focused));
         }
-
         return achievements;
+    }
+
+    public Map<String,String> getStatistics() {
+        Map<String,String> statistics = new HashMap();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        Calendar lastWeek = Calendar.getInstance();
+        lastWeek.add(Calendar.DATE, -7);
+        Date lastWk = lastWeek.getTime();
+        Date now = new Date();
+        String startStr = dateFormat.format(lastWk) + " 00:00:00.000";
+        String endStr = dateFormat.format(now) + " 23:59:59.999";
+        String nowStr = convertDate(now);
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        //complete
+        String query = "SELECT " + DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE + ", COUNT(*)" +
+                " FROM " + DatabaseContract.WorkoutTable.TABLE_NAME +
+                " WHERE " + DatabaseContract.WorkoutTable.COLUMN_NAME_COMPLETE + " =  1 GROUP BY " +
+                DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE;
+        Cursor cursor = db.rawQuery(query, null);
+        int overall = 0;
+        while (cursor.moveToNext()) {
+            statistics.put("stats_" + ExerciseType.nameFromChar(cursor.getString(0)).toLowerCase() +
+                    "_completed", cursor.getString(1));
+            overall += cursor.getInt(1);
+        }
+        statistics.put("stats_overall_completed", String.valueOf(overall));
+        cursor.close();
+
+        //proposed & commitment
+        query = "SELECT " + DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE + ", COUNT(*)" +
+                " FROM " + DatabaseContract.WorkoutTable.TABLE_NAME +
+                " WHERE " + DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_SCHEDULED + " <=  \"" +
+                nowStr + "\" AND " + DatabaseContract.WorkoutTable.COLUMN_NAME_COMPLETE +
+                " =  0 GROUP BY " + DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE;
+        cursor = db.rawQuery(query, null);
+        overall = 0;
+        int overallComplete = 0;
+        while (cursor.moveToNext()) {
+            int complete = 0;
+            try {
+                complete = Integer.parseInt(statistics.get("stats_" +
+                        ExerciseType.nameFromChar(cursor.getString(0)).toLowerCase() +
+                        "_completed"));
+            } catch (NumberFormatException ignored) {}
+            int proposed = complete + cursor.getInt(1);
+            statistics.put("stats_" + ExerciseType.nameFromChar(cursor.getString(0)).toLowerCase() +
+                    "_planned", String.valueOf(proposed));
+            statistics.put("stats_" + ExerciseType.nameFromChar(cursor.getString(0)).toLowerCase() +
+                    "_commitment", new DecimalFormat("#.0%").format((double) complete / proposed));
+            overall += proposed;
+            overallComplete += complete;
+        }
+        statistics.put("stats_overall_planned", String.valueOf(overall));
+        statistics.put("stats_overall_commitment",
+                new DecimalFormat("#.0%").format((double)overallComplete/overall));
+        cursor.close();
+
+        db.close();
+        return statistics;
     }
 }

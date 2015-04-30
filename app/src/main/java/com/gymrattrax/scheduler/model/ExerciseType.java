@@ -13,4 +13,18 @@ public enum ExerciseType {
     public String getChar() {
         return typeChar;
     }
+    public static String nameFromChar(String typeChar) {
+        switch (typeChar.toUpperCase()) {
+            case "A":
+                return "Arms";
+            case "B":
+                return "Abs";
+            case "C":
+                return "Cardio";
+            case "L":
+                return "Legs";
+            default:
+                return null;
+        }
+    }
 }

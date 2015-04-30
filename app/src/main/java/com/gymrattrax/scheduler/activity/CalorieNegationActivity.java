@@ -1,7 +1,6 @@
 package com.gymrattrax.scheduler.activity;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,7 +23,6 @@ import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -34,10 +32,8 @@ public class CalorieNegationActivity extends ActionBarActivity implements ListVi
     private static final String TAG = "CalorieNegationActivity";
     Button SuggestWorkoutButton;
     EditText NegateEditText;
-    private ArrayList<String> workoutItems = new ArrayList<>();
-    double[] times;
-    String time, name;
-    ExerciseName.Cardio[] exName;
+    private List<WorkoutItem> workoutItems = new ArrayList<>();
+//    String time, name;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,22 +43,17 @@ public class CalorieNegationActivity extends ActionBarActivity implements ListVi
 
         SuggestWorkoutButton = (Button) findViewById(R.id.negate_cal_button);
         NegateEditText = (EditText) findViewById(R.id.negate_calories);
-        times = new double[5];
-        exName = new ExerciseName.Cardio[5];
-
-//        notifyScheduler = new NotifyScheduler(this);
-//        notifyScheduler.doBindService();
+//        times = new double[5];
+//        exName = new ExerciseName.Cardio[5];
 
         SuggestWorkoutButton.setOnClickListener(new Button.OnClickListener() {
 
+            /**
+             * Grabs random WorkoutItem ID, calculates how long it will take to burn a specific
+             * number of calories, and returns workouts.
+             */
             @Override
             public void onClick(View view) {
-
-                /** grab random workout item ID, calculate how long it will take to burn
-                 *  x amount of calories, return workout.
-                 *  update
-                 **/
-
                 InputMethodManager inputManager = (InputMethodManager)
                         getSystemService(Context.INPUT_METHOD_SERVICE);
 
@@ -103,14 +94,11 @@ public class CalorieNegationActivity extends ActionBarActivity implements ListVi
 
     private void displayWorkouts(int caloriesToNegate) {
 
-        String[] workoutsArray = getWorkoutsToNegate(caloriesToNegate);
-
-        List<String> tempItems = Arrays.asList(workoutsArray);
-        workoutItems.addAll(tempItems);
+        ArrayList<String> workoutStrings = getWorkoutsToNegate(caloriesToNegate);
 
         ListView listView = (ListView) findViewById(R.id.calorie_list);
 
-        ListViewAdapterAddNegation adapter = new ListViewAdapterAddNegation(CalorieNegationActivity.this, workoutItems);
+        ListViewAdapterAddNegation adapter = new ListViewAdapterAddNegation(CalorieNegationActivity.this, workoutStrings);
         adapter.setCustButtonListener(CalorieNegationActivity.this);
         listView.setAdapter(adapter);
 
@@ -143,9 +131,9 @@ public class CalorieNegationActivity extends ActionBarActivity implements ListVi
         String[] val_arr = value.split(":", 2);
 
         if (position <= 1) {
-            addStrengthWorkout(val_arr[0]);
-        } else {
             addCardioWorkout(val_arr[0]);
+        } else {
+            addStrengthWorkout(val_arr[0]);
         }
     }
 
@@ -154,84 +142,81 @@ public class CalorieNegationActivity extends ActionBarActivity implements ListVi
         CardioWorkoutItem item = new CardioWorkoutItem();
         item.setDistanceScheduled(2);
         item.setName(name);
-        item.setTimeScheduled(times[4]);
+        item.setTimeScheduled(workoutItems.get(4).getTimeScheduled());
 
         addThisWorkout(item);
-        loadHomeScreen();
-    }
-
-    private void loadHomeScreen() {
-        Intent intent = new Intent(CalorieNegationActivity.this, HomeScreenActivity.class);
-        startActivity(intent);
+        finish(); //exit to home screen
     }
 
     // add exName and time params
     private void addStrengthWorkout(String name) {
-
         StrengthWorkoutItem item = new StrengthWorkoutItem();
         item.setRepsScheduled(12);
         item.setSetsScheduled(4);
         item.setWeightUsed(10);
         item.setName(name);
-        item.setTimeScheduled(times[0]);
+        item.setTimeScheduled(workoutItems.get(0).getTimeScheduled());
 
         addThisWorkout(item);
-        loadHomeScreen();
-
+        finish(); //exit to home screen
     }
 
-    public String[] getWorkoutsToNegate(int caloriesToNegate) {
+    public ArrayList<String> getWorkoutsToNegate(int caloriesToNegate) {
 
-        ProfileItem p = new ProfileItem(CalorieNegationActivity.this);
-        String[] workoutsArray = new String[5];
+        ProfileItem profileItem = new ProfileItem(CalorieNegationActivity.this);
+        ArrayList<String> workoutsArray = new ArrayList<String>();
 
-        double BMR = p.getBMR();
+        /*
+        NOTE: Also, now that I understand more of how we determine METs values, I feel like
+        there is a more efficient and more accurate way to do it. Until I figure that out
+        completely, I am just using some local variables here. -CS
+         */
 
-                /*
-                NOTE: Also, now that I understand more of how we determine METs values, I feel like
-                there is a more efficient and more accurate way to do it. Until I figure that out
-                completely, I am just using some local variables here. -CS
-                 */
-        double cardio_walk = 3.0;
-        double cardio_jog = 7.0;
-        double cardio_run = 11.0;
+        double BMR = profileItem.getBMR();
+
+        double cardio_light = 3.0;
+        double cardio_moderate = 7.0;
+        double cardio_vigorous = 11.0;
         double strength_light = 3.5;
         double strength_vigorous = 6.0;
 
         double[] METsValues = new double[]{strength_light, strength_vigorous,
-                cardio_walk, cardio_jog, cardio_run};
+                cardio_light, cardio_moderate, cardio_vigorous};
 
         for (int i = 0; i < METsValues.length; i++) {
-            double minutesDbl = ((60 * 24 * caloriesToNegate) / (METsValues[i] * BMR));
-            int secondsTotal = (int) (minutesDbl * 60);
+            double minutesRequiredPerWorkout = ((60 * 24 * caloriesToNegate) / (METsValues[i] * BMR));
+            int secondsTotal = (int) (minutesRequiredPerWorkout * 60);
             int seconds = secondsTotal % 60;
             int minutes = (secondsTotal - seconds) / 60;
-            times[i] = minutesDbl;
 
+            WorkoutItem workoutItem = null;
             if (i <= 1) {
-                exName[i] = ExerciseName.Cardio.getRandom();
+                workoutItem = new WorkoutItem(ExerciseName.Cardio.getRandom());
             } else if (i == 2) {
-                exName[2] = ExerciseName.Cardio.WALK;
+                workoutItem = new WorkoutItem(ExerciseName.Abs.getRandom());
             } else if (i == 3) {
-                exName[3] = ExerciseName.Cardio.JOG;
+                workoutItem = new WorkoutItem(ExerciseName.Arms.getRandom());
             } else if (i == 4) {
-                exName[4] = ExerciseName.Cardio.RUN;
+                workoutItem = new WorkoutItem(ExerciseName.Legs.getRandom());
             }
             String details = "";
-            time = minutes + " minutes, " + seconds + " seconds";
-            if (i == 0) {
+            String time = minutes + " minutes, " + seconds + " seconds";
+            if (i <= 1) {
+                details = "2 miles";
+            } else if (i == 2) {
                 time = time.replaceAll("minutes", "mins");
                 time = time.replaceAll("seconds", "secs");
                 details = "12 reps, 4 sets, 10 lb weights";
-            } else if (i == 1) {
+            } else {
                 time = time.replaceAll("minutes", "mins");
                 time = time.replaceAll("seconds", "secs");
                 details = "20 reps, 6 sets, 20 lb weights";
-            } else {
-                details = "2 miles";
             }
 
-            workoutsArray[i] = "" + exName[i].toString() + ":\n" + details + "\n" + time;
+            if (workoutItem != null) {
+                workoutsArray.add("" + workoutItem.getName() + ":\n" + details + "\n" + time);
+                workoutItems.add(workoutItem);
+            }
         }
         return workoutsArray;
     }

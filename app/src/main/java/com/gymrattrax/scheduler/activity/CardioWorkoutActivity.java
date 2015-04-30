@@ -21,6 +21,8 @@ import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
+import java.util.List;
+
 /** TODO: convert chronometer time into an estimation
  *  Complete cardio workouts
  *  if calories have been calculated, inform user workout is completed
@@ -40,11 +42,11 @@ public class CardioWorkoutActivity extends LoginActivity {
     TextView completedTime;
     long timerState;
     static final String TIMER_STATE = "timerState";
-    WorkoutItem w;
+    WorkoutItem workoutItem;
     int ID;
     double userWeight;
     String timeString;
-    ImageButton link;
+    ImageButton linkButton;
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle savedInstanceState){
@@ -68,13 +70,14 @@ public class CardioWorkoutActivity extends LoginActivity {
         start = (Button) findViewById(R.id.start_cardio);
         stop = (Button) findViewById(R.id.stop_cardio);
 
-        link = (ImageButton) findViewById(R.id.youtube_cardio);
-
-        link.setOnClickListener(new View.OnClickListener() {
+        linkButton = (ImageButton) findViewById(R.id.youtube_cardio);
+        linkButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(String.format("https://www.youtube.com/results?search_query=how+to+do+%s", w.getName())));
+                intent.setData(Uri.parse(String.format(
+                        "https://www.youtube.com/results?search_query=how+to+do+%s",
+                        workoutItem.getName())));
                 startActivity(intent);
             }
         });
@@ -98,11 +101,11 @@ public class CardioWorkoutActivity extends LoginActivity {
 
         Bundle b = getIntent().getExtras();
         ID = b.getInt("ID");
-        w = dbh.getWorkoutById(ID);
+        workoutItem = dbh.getWorkoutById(ID);
         Log.d(TAG, "ID = " + ID);
 
-        String name = w.getName();
-        double minutesDbl = w.getTimeScheduled();
+        String name = workoutItem.getName();
+        double minutesDbl = workoutItem.getTimeScheduled();
         int secondsTotal = (int) (minutesDbl * 60);
         int seconds = secondsTotal % 60;
         int minutes = (secondsTotal - seconds) / 60;
@@ -233,11 +236,28 @@ public class CardioWorkoutActivity extends LoginActivity {
         double caloriesBurned = mets * userWeight * time;
         w.setCaloriesBurned(caloriesBurned);
         dbh.completeWorkout(w);
+        List<String> achievementsUnlocked = dbh.checkForAchievements();
         dbh.close();
-        Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_working_hard), 1);
-        Games.Achievements.increment(mGoogleApiClient, getString(R.string.achievement_keep_it_100), 1);
-        Games.Events.increment(mGoogleApiClient, getString(R.string.event_workouts_completed), 1);
-        Games.Events.increment(mGoogleApiClient, getString(R.string.event_time_spent_tracking_workouts), (int)time);
+        Games.Achievements.increment(mGoogleApiClient,
+                getString(R.string.achievement_working_hard), 1);
+        Games.Achievements.increment(mGoogleApiClient,
+                getString(R.string.achievement_keep_it_100), 1);
+        Games.Events.increment(mGoogleApiClient,
+                getString(R.string.event_workouts_completed), 1);
+        Games.Events.increment(mGoogleApiClient,
+                getString(R.string.event_time_spent_tracking_workouts), (int)time);
+        for (String achievement : achievementsUnlocked) {
+            Games.Achievements.unlock(mGoogleApiClient, achievement);
+        }
+        if (w.getCaloriesBurned() > 98 && w.getCaloriesBurned() < 102) {
+            Games.Achievements.unlock(mGoogleApiClient,
+                    getString(R.string.achievement_one_heck_of_a_snack_pack));
+        }
+        if (w.getDistanceCompleted() > w.getDistanceScheduled() + .97) {
+            Games.Achievements.unlock(mGoogleApiClient,
+                    getString(R.string.achievement_going_the_extra_mile));
+        }
+
         if (BuildConfig.DEBUG_MODE) Log.d(TAG, "Closing ongoing notification, if applicable.");
         NotifyReceiver.cancelOngoing(this, ID);
 
