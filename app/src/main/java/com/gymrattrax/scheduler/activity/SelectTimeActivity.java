@@ -1,7 +1,14 @@
 package com.gymrattrax.scheduler.activity;
 
+import android.app.AlertDialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
@@ -10,12 +17,12 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.gms.games.Games;
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.CardioWorkoutItem;
 import com.gymrattrax.scheduler.model.ExerciseName;
-import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
+import com.gymrattrax.scheduler.model.WorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
 import java.util.Calendar;
@@ -36,6 +43,12 @@ public class SelectTimeActivity extends ActionBarActivity {
     private String sets;
     private String reps;
 
+    private boolean notificationDefault;
+    private boolean notificationEnabled;
+    private boolean notificationVibrate;
+    private Uri notificationTone;
+    private int notificationAdvance;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,8 +59,8 @@ public class SelectTimeActivity extends ActionBarActivity {
         this.selectedHour = cal.get(Calendar.HOUR_OF_DAY);
         this.selectedMinutes = cal.get(Calendar.MINUTE);
         Button doneButton = (Button) findViewById(R.id.doneButton);
+        Button notifications = (Button) findViewById(R.id.notifications_text);
         Button addToGoogle = (Button) findViewById(R.id.addGoogleCalButton);
-        TextView notifText = (TextView) findViewById(R.id.notifications_text);
         timeText = (TextView) findViewById(R.id.TimeSelected);
         updateTimeUI();
         final TextView exName = (TextView) findViewById(R.id.ex_name);
@@ -119,10 +132,81 @@ public class SelectTimeActivity extends ActionBarActivity {
         }
 
         doneButton.setOnClickListener(new Button.OnClickListener() {
-
             @Override
             public void onClick(View v) {
                 SelectTimeActivity.this.loadSchedule();
+            }
+        });
+
+        notifications.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(SelectTimeActivity.this);
+                boolean defaultEnabled = sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_ENABLED, true);
+                boolean defaultVibrate = sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_VIBRATE, true);
+                String defaultTone = sharedPref.getString(SettingsActivity.PREF_NOTIFY_TONE, "");
+                String defaultAdvance = sharedPref.getString(SettingsActivity.PREF_NOTIFY_ADVANCE, "0");
+
+                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(SelectTimeActivity.this);
+                alertBuilder.setMessage("Use default notification values?\n" +
+                        "Enabled: " + defaultEnabled + "\n" +
+                        "Vibrate: " + defaultVibrate + "\n" +
+                        "Tone: " + defaultTone + "\n" +
+                        "Advance: " + defaultAdvance + " minutes")
+                        .setTitle("Notification Settings")
+                        .setCancelable(true)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                notificationDefault = true;
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                notificationDefault = false;
+                                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(SelectTimeActivity.this);
+                                alertBuilder.setMessage("Enable notification?")
+                                        .setTitle("Notification Settings")
+                                        .setCancelable(true)
+                                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                notificationEnabled = true;
+                                                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(SelectTimeActivity.this);
+                                                alertBuilder.setMessage("Enable vibration?")
+                                                        .setTitle("Notification Settings")
+                                                        .setCancelable(true)
+                                                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(DialogInterface dialog, int which) {
+                                                                notificationVibrate = true;
+//                                                                continueToTone();
+                                                            }
+                                                        })
+                                                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(DialogInterface dialog, int which) {
+                                                                notificationVibrate = false;
+//                                                                continueToTone();
+                                                            }
+                                                        })
+                                                        .setNeutralButton("Cancel", null);
+                                                alertBuilder.show();
+                                            }
+                                        })
+                                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                notificationEnabled = false;
+                                            }
+                                        })
+                                        .setNeutralButton("Cancel", null);
+                                alertBuilder.show();
+                            }
+                        })
+                        .setNeutralButton("Cancel", null);
+                alertBuilder.show();
             }
         });
 
@@ -213,7 +297,7 @@ public class SelectTimeActivity extends ActionBarActivity {
         if (BuildConfig.DEBUG_MODE) Log.d(TAG, "cancelNotifications called.");
         NotifyReceiver.cancelNotifications(this);
         DatabaseHelper dbh = new DatabaseHelper(SelectTimeActivity.this);
-        CardioWorkoutItem cItem = new CardioWorkoutItem();
+        WorkoutItem cItem = new WorkoutItem(ExerciseName.Cardio.fromString(name));
         updateTimeUI();
 
         // Set cardio item date
@@ -229,10 +313,7 @@ public class SelectTimeActivity extends ActionBarActivity {
         d = cal.getTime();
         cItem.setDateScheduled(d);
 
-        // Set cardio item name
-//        ExerciseName exName = ExerciseName.fromString(name);
-        cItem.setName(name);
-
+        // Set cardio item name (done at instantiation)
         // Set cardio item distance
         cItem.setDistanceScheduled(Double.parseDouble(distance));
 
@@ -240,7 +321,11 @@ public class SelectTimeActivity extends ActionBarActivity {
         cItem.setTimeScheduled(Double.parseDouble(duration) / 60 / 1000);
 
         // Add cardio workout to db
-        cItem.setNotificationDefault(true);
+        cItem.setNotificationDefault(notificationDefault);
+        cItem.setNotificationEnabled(notificationEnabled);
+        cItem.setNotificationVibrate(notificationVibrate);
+        cItem.setNotificationTone(notificationTone);
+        cItem.setNotificationMinutesInAdvance(notificationAdvance);
         dbh.addWorkout(cItem);
         Toast.makeText(this, name + " added to schedule", Toast.LENGTH_SHORT).show();
         dbh.close();
@@ -252,7 +337,7 @@ public class SelectTimeActivity extends ActionBarActivity {
         if (BuildConfig.DEBUG_MODE) Log.d(TAG, "cancelNotifications called.");
         NotifyReceiver.cancelNotifications(this);
         DatabaseHelper dbh = new DatabaseHelper(SelectTimeActivity.this);
-        StrengthWorkoutItem sItem = new StrengthWorkoutItem();
+        WorkoutItem sItem = new WorkoutItem(name);
         updateTimeUI();
 
         // Set Strength date and duration
@@ -269,18 +354,17 @@ public class SelectTimeActivity extends ActionBarActivity {
         d = cal.getTime();
         sItem.setDateScheduled(d);
 
-        sItem.setNotificationDefault(true);
-
-        // Set Strength name
-//        ExerciseName exName = ExerciseName.fromString(name);
-        sItem.setName(name);
-
+        // Set Strength name (done at instantiation)
         // Set strength details
         sItem.setWeightUsed(Double.parseDouble(weight));
         sItem.setRepsScheduled(Integer.parseInt(reps));
         sItem.setSetsScheduled(Integer.parseInt(sets));
 
-        sItem.setNotificationDefault(true);
+        sItem.setNotificationDefault(notificationDefault);
+        sItem.setNotificationEnabled(notificationEnabled);
+        sItem.setNotificationVibrate(notificationVibrate);
+        sItem.setNotificationTone(notificationTone);
+        sItem.setNotificationMinutesInAdvance(notificationAdvance);
         dbh.addWorkout(sItem);
         Toast.makeText(this, name + " added to schedule", Toast.LENGTH_SHORT).show();
         dbh.close();

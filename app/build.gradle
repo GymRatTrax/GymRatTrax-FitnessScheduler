@@ -1,17 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
-//        config
-    }
     compileSdkVersion 22
     buildToolsVersion "21.1.2"
     defaultConfig {
         applicationId "com.gymrattrax.scheduler"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 1
-        versionName "0.9"
+        versionCode 3
+        versionName "0.9.0.1"
     }
     buildTypes {
         release {
@@ -19,14 +16,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField "boolean", "DEBUG_MODE", "false"
             buildConfigField "boolean", "BETA_MODE", "false"
-//            signingConfig signingConfigs.config
         }
         beta {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField "boolean", "DEBUG_MODE", "false"
             buildConfigField "boolean", "BETA_MODE", "true"
-//            signingConfig signingConfigs.config
         }
         debug {
             debuggable true
@@ -44,10 +39,3 @@ dependencies {
     compile 'com.google.android.gms:play-services:7.0.0'
     compile files('src/main/libs/gson-2.2.4.jar')
 }
-
-//def props = new Properties()
-//props.load(new FileInputStream(rootProject.file("release.properties")))
-//android.signingConfigs.config.storeFile rootProject.file(props.keyStore)
-//android.signingConfigs.config.storePassword props.keyStorePassword
-//android.signingConfigs.config.keyAlias props.keyAlias
-//android.signingConfigs.config.keyPassword props.keyAliasPassword

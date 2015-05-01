@@ -1,7 +1,6 @@
 package com.gymrattrax.scheduler.activity;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -20,9 +19,21 @@ import android.app.AlertDialog;
 import android.text.*;
 import android.content.DialogInterface;
 
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.fitness.Fitness;
+import com.google.android.gms.fitness.FitnessActivities;
+import com.google.android.gms.fitness.FitnessStatusCodes;
+import com.google.android.gms.fitness.data.DataType;
+import com.google.android.gms.fitness.data.Session;
+import com.google.android.gms.fitness.data.Subscription;
+import com.google.android.gms.  fitness.result.ListSubscriptionsResult;
+import com.google.android.gms.fitness.result.SessionStopResult;
 import com.google.android.gms.games.Games;
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
+import com.gymrattrax.scheduler.model.ExerciseName;
 import com.gymrattrax.scheduler.model.ProfileItem;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.model.WorkoutItem;
@@ -30,7 +41,10 @@ import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
 import android.net.Uri;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 // april 11: added functionality that informs user that workout item has been logged.
 // TODO: display calories burned after workout has been logged
@@ -48,7 +62,7 @@ public class StrengthWorkoutActivity extends LoginActivity {
     double userWeight;
     ImageButton link;
     TextView status;
-
+    private Session session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +80,6 @@ public class StrengthWorkoutActivity extends LoginActivity {
 
         Bundle b = getIntent().getExtras();
         ID = b.getInt("ID");
-
 
         ProfileItem user = new ProfileItem(StrengthWorkoutActivity.this);
         userWeight = user.getWeight();
@@ -322,7 +335,6 @@ public class StrengthWorkoutActivity extends LoginActivity {
                                 DatabaseHelper dbh = new DatabaseHelper(StrengthWorkoutActivity.this);
                                 dbh.completeWorkout(w, false);
                                 dbh.close();
-
                             }
                         });
                         builder.setNegativeButton("I'M NOT DONE!", new DialogInterface.OnClickListener() {
@@ -377,6 +389,7 @@ public class StrengthWorkoutActivity extends LoginActivity {
 
         double caloriesBurned = mets * userWeight * time;
         w.setCaloriesBurned(caloriesBurned);
+//        session.writeToParcel();
         dbh.completeWorkout(w, true);
         List<String> achievementsUnlocked = dbh.checkForAchievements();
         dbh.close();
@@ -399,6 +412,79 @@ public class StrengthWorkoutActivity extends LoginActivity {
         if (BuildConfig.DEBUG_MODE) Log.d(TAG, "Closing ongoing notification, if applicable.");
         NotifyReceiver.cancelOngoing(this, ID);
         status.setText(String.format("You have logged this workout. Calories burned: %f", w.getCaloriesBurned()));
-    }
 
+//        PendingResult<SessionStopResult> pendingResult2 =
+//                Fitness.SessionsApi.stopSession(mGoogleApiClient, session.getIdentifier());
+//        Fitness.RecordingApi.unsubscribe(mGoogleApiClient, DataType.TYPE_CALORIES_EXPENDED)
+//                .setResultCallback(new ResultCallback<Status>() {
+//                    @Override
+//                    public void onResult(Status status) {
+//                        if (status.isSuccess()) {
+//                            Log.i(TAG, "Successfully unsubscribed for data type: " + DataType.TYPE_CALORIES_EXPENDED);
+//                        } else {
+//                            // Subscription not removed
+//                            Log.i(TAG, "Failed to unsubscribe for data type: " + DataType.TYPE_CALORIES_EXPENDED);
+//                        }
+//                    }
+//                });
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        buildFit();
+    }
+    private void buildFit() {
+        // Setting a start and end date using a range of 1 week before this moment.
+        Calendar cal = Calendar.getInstance();
+        Date now = new Date();
+        cal.setTime(now);
+        long startTime = cal.getTimeInMillis();
+
+        // 1. Subscribe to fitness data (see Recording Fitness Data)
+        Fitness.RecordingApi.subscribe(mGoogleApiClient, DataType.TYPE_CALORIES_EXPENDED)
+                .setResultCallback(new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        if (status.isSuccess()) {
+                            if (status.getStatusCode()
+                                    == FitnessStatusCodes.SUCCESS_ALREADY_SUBSCRIBED) {
+                                Log.i(TAG, "Existing subscription for activity detected.");
+                            } else {
+                                Log.i(TAG, "Successfully subscribed!");
+                            }
+                        } else {
+                            Log.i(TAG, "There was a problem subscribing.");
+                        }
+                    }
+                });
+        Fitness.RecordingApi.listSubscriptions(mGoogleApiClient, DataType.TYPE_CALORIES_EXPENDED)
+                // Create the callback to retrieve the list of subscriptions asynchronously.
+                .setResultCallback(new ResultCallback<ListSubscriptionsResult>() {
+                    @Override
+                    public void onResult(ListSubscriptionsResult listSubscriptionsResult) {
+                        for (Subscription sc : listSubscriptionsResult.getSubscriptions()) {
+                            DataType dt = sc.getDataType();
+                            Log.i(TAG, "Active subscription for data type: " + dt.getName());
+                        }
+                    }
+                });
+
+        // 2. Create a session object
+        // (provide a name, identifier, description and start time)
+        session = new Session.Builder()
+                .setName(w.getID() + ": " + w.getName())
+                .setIdentifier(String.valueOf(w.getID()))
+                .setDescription(w.getID() + ": " + w.getName())
+                .setStartTime(startTime, TimeUnit.MILLISECONDS)
+                .setActivity(FitnessActivities.STRENGTH_TRAINING)
+                .build();
+
+        // 3. Invoke the Sessions API with:
+        // - The Google API client object
+        // - The request object
+        PendingResult<Status> pendingResult =
+                Fitness.SessionsApi.startSession(mGoogleApiClient, session);
+
+        // 4. Check the result (see other examples)
+    }
 }

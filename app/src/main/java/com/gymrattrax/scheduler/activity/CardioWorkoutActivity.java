@@ -14,14 +14,33 @@ import android.content.*;
 import android.app.*;
 import android.os.*;
 
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.fitness.Fitness;
+import com.google.android.gms.fitness.FitnessActivities;
+import com.google.android.gms.fitness.FitnessStatusCodes;
+import com.google.android.gms.fitness.data.DataPoint;
+import com.google.android.gms.fitness.data.DataSet;
+import com.google.android.gms.fitness.data.DataSource;
+import com.google.android.gms.fitness.data.DataType;
+import com.google.android.gms.fitness.data.Session;
+import com.google.android.gms.fitness.data.Subscription;
+import com.google.android.gms.fitness.request.SessionInsertRequest;
+import com.google.android.gms.fitness.result.ListSubscriptionsResult;
+import com.google.android.gms.fitness.result.SessionStopResult;
 import com.google.android.gms.games.Games;
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.R;
+import com.gymrattrax.scheduler.model.ExerciseName;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /** TODO: convert chronometer time into an estimation
  *  Complete cardio workouts
@@ -47,6 +66,10 @@ public class CardioWorkoutActivity extends LoginActivity {
     double userWeight;
     String timeString;
     ImageButton linkButton;
+    private boolean fitSetup = false;
+    private Session session;
+    private long startTime;
+    private long endTime;
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle savedInstanceState){
@@ -88,6 +111,7 @@ public class CardioWorkoutActivity extends LoginActivity {
                 timerState = (SystemClock.elapsedRealtime() + lastPause);
                 timer.setBase(timerState);
                 timer.start();
+                startFitTimer();
             }
         });
 
@@ -198,6 +222,161 @@ public class CardioWorkoutActivity extends LoginActivity {
         });
     }
 
+    private void startFitTimer() {
+        if (!fitSetup) {
+            // Setting a start and end date using a range of 1 week before this moment.
+            Calendar cal = Calendar.getInstance();
+            Date now = new Date();
+            cal.setTime(now);
+            startTime = cal.getTimeInMillis();
+
+            // 1. Subscribe to fitness data (see Recording Fitness Data)
+            Fitness.RecordingApi.subscribe(mGoogleApiClient, DataType.TYPE_DISTANCE_DELTA)
+                    .setResultCallback(new ResultCallback<Status>() {
+                        @Override
+                        public void onResult(Status status) {
+                            if (status.isSuccess()) {
+                                if (status.getStatusCode()
+                                        == FitnessStatusCodes.SUCCESS_ALREADY_SUBSCRIBED) {
+                                    Log.i(TAG, "Existing subscription for activity detected.");
+                                } else {
+                                    Log.i(TAG, "Successfully subscribed!");
+                                }
+                            } else {
+                                Log.i(TAG, "There was a problem subscribing.");
+                            }
+                        }
+                    });
+            Fitness.RecordingApi.listSubscriptions(mGoogleApiClient, DataType.TYPE_DISTANCE_DELTA)
+                    // Create the callback to retrieve the list of subscriptions asynchronously.
+                    .setResultCallback(new ResultCallback<ListSubscriptionsResult>() {
+                        @Override
+                        public void onResult(ListSubscriptionsResult listSubscriptionsResult) {
+                            for (Subscription sc : listSubscriptionsResult.getSubscriptions()) {
+                                DataType dt = sc.getDataType();
+                                Log.i(TAG, "Active subscription for data type: " + dt.getName());
+                            }
+                        }
+                    });
+
+            // 2. Create a session object
+            // (provide a name, identifier, description and start time)
+            String activity = FitnessActivities.RUNNING;
+            switch (ExerciseName.Cardio.fromString(workoutItem.getName())) {
+                case WALK:
+                    activity = FitnessActivities.WALKING;
+                    break;
+                case JOG:
+                    activity = FitnessActivities.RUNNING_JOGGING;
+                    break;
+                case RUN:
+                    activity = FitnessActivities.RUNNING;
+                    break;
+                case CYCLING:
+                    activity = FitnessActivities.BIKING;
+                    break;
+                case ELLIPTICAL:
+                    activity = FitnessActivities.ELLIPTICAL;
+                    break;
+            }
+
+            session = new Session.Builder()
+                    .setName(workoutItem.getID() + ": " + workoutItem.getName())
+                    .setIdentifier(String.valueOf(workoutItem.getID()))
+                    .setDescription(workoutItem.getID() + ": " + workoutItem.getName())
+                    .setStartTime(startTime, TimeUnit.MILLISECONDS)
+                    .setActivity(activity)
+                    .build();
+
+            // 3. Invoke the Sessions API with:
+            // - The Google API client object
+            // - The request object
+            PendingResult<Status> pendingResult =
+                    Fitness.SessionsApi.startSession(mGoogleApiClient, session);
+
+            // 4. Check the result (see other examples)
+            fitSetup = true;
+        }
+    }
+    private void setupFitCals() {
+        // 1. Subscribe to fitness data (see Recording Fitness Data)
+        Fitness.RecordingApi.subscribe(mGoogleApiClient, DataType.TYPE_CALORIES_EXPENDED)
+                .setResultCallback(new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        if (status.isSuccess()) {
+                            if (status.getStatusCode()
+                                    == FitnessStatusCodes.SUCCESS_ALREADY_SUBSCRIBED) {
+                                Log.i(TAG, "Existing subscription for activity detected.");
+                            } else {
+                                Log.i(TAG, "Successfully subscribed!");
+                            }
+                        } else {
+                            Log.i(TAG, "There was a problem subscribing.");
+                        }
+                    }
+                });
+        Fitness.RecordingApi.listSubscriptions(mGoogleApiClient, DataType.TYPE_CALORIES_EXPENDED)
+                // Create the callback to retrieve the list of subscriptions asynchronously.
+                .setResultCallback(new ResultCallback<ListSubscriptionsResult>() {
+                    @Override
+                    public void onResult(ListSubscriptionsResult listSubscriptionsResult) {
+                        for (Subscription sc : listSubscriptionsResult.getSubscriptions()) {
+                            DataType dt = sc.getDataType();
+                            Log.i(TAG, "Active subscription for data type: " + dt.getName());
+                        }
+                    }
+                });
+
+        // 2. Create a session object
+        // (provide a name, identifier, description and start time)
+        String activity = FitnessActivities.RUNNING;
+        switch (ExerciseName.Cardio.fromString(workoutItem.getName())) {
+            case WALK:
+                activity = FitnessActivities.WALKING;
+                break;
+            case JOG:
+                activity = FitnessActivities.RUNNING_JOGGING;
+                break;
+            case RUN:
+                activity = FitnessActivities.RUNNING;
+                break;
+            case CYCLING:
+                activity = FitnessActivities.BIKING;
+                break;
+            case ELLIPTICAL:
+                activity = FitnessActivities.ELLIPTICAL;
+                break;
+        }
+
+        session = new Session.Builder()
+                .setName(workoutItem.getID() + ": calories")
+                .setIdentifier(workoutItem.getID() + ": calories")
+                .setDescription(workoutItem.getID() + ": calories")
+                .setStartTime(startTime, TimeUnit.MILLISECONDS)
+                .setStartTime(endTime, TimeUnit.MILLISECONDS)
+                .setActivity(activity)
+                .build();
+
+        DataSource dataSource = DataSource.extract(getIntent());
+//        dataSource.
+        DataSet calorieDataSet = DataSet.create(dataSource);
+        DataPoint dataPoint = DataPoint.create(dataSource);
+        dataPoint.setFloatValues((float)workoutItem.getCaloriesBurned());
+        calorieDataSet.add(dataPoint);
+
+        SessionInsertRequest insertRequest = new SessionInsertRequest.Builder()
+                .setSession(session)
+                .addDataSet(calorieDataSet)
+                .build();
+
+        // 3. Invoke the Sessions API with:
+        // - The Google API client object
+        // - The request object
+        PendingResult<Status> pendingResult =
+                Fitness.SessionsApi.startSession(mGoogleApiClient, session);
+    }
+
     public void onRadioButtonClicked(View view) {
         // Is the button now checked?
         boolean checked = ((RadioButton) view).isChecked();
@@ -219,6 +398,11 @@ public class CardioWorkoutActivity extends LoginActivity {
         }
     }
     private void updateCompletedWorkout(){
+        Calendar cal = Calendar.getInstance();
+        Date now = new Date();
+        cal.setTime(now);
+        endTime = cal.getTimeInMillis();
+
         DatabaseHelper dbh = new DatabaseHelper(CardioWorkoutActivity.this);
         //calculate calories (exertion lvl, time)
         //set
@@ -235,7 +419,8 @@ public class CardioWorkoutActivity extends LoginActivity {
 
         double caloriesBurned = mets * userWeight * time;
         w.setCaloriesBurned(caloriesBurned);
-        dbh.completeWorkout(w);
+        dbh.completeWorkout(w, true);
+//        setupFitCals();
         List<String> achievementsUnlocked = dbh.checkForAchievements();
         dbh.close();
         Games.Achievements.increment(mGoogleApiClient,
@@ -263,6 +448,21 @@ public class CardioWorkoutActivity extends LoginActivity {
 
         completedTime.setText(String.format("You have logged this workout. Time Spent: %s\nCalories Burned: %f", timer.getText().toString(),
                 w.getCaloriesBurned()));
+
+        PendingResult<SessionStopResult> pendingResult2 =
+                Fitness.SessionsApi.stopSession(mGoogleApiClient, session.getIdentifier());
+        Fitness.RecordingApi.unsubscribe(mGoogleApiClient, DataType.TYPE_DISTANCE_DELTA)
+                .setResultCallback(new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(Status status) {
+                        if (status.isSuccess()) {
+                            Log.i(TAG, "Successfully unsubscribed for data type: " + DataType.TYPE_DISTANCE_DELTA);
+                        } else {
+                            // Subscription not removed
+                            Log.i(TAG, "Failed to unsubscribe for data type: " + DataType.TYPE_DISTANCE_DELTA);
+                        }
+                    }
+                });
     }
 
     public static int getSecondsFromDurationString(String value){

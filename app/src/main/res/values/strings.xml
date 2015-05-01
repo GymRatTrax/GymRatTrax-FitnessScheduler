@@ -148,4 +148,5 @@
     <string name="add_to_google_cal">Add to Google Calendar</string>
     <string name="edit_cal">Edit Google Calendar</string>
     <string name="title_activity_statistics">Statistics</string>
+    <string name="submit_notifications">Submit</string>
 </resources>

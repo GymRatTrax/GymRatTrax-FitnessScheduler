@@ -1,6 +1,5 @@
 package com.gymrattrax.scheduler.fragment;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -15,8 +14,6 @@ import android.util.Log;
 
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.R;
-import com.gymrattrax.scheduler.activity.LoginActivity;
-import com.gymrattrax.scheduler.activity.ScheduleActivity;
 import com.gymrattrax.scheduler.activity.SettingsActivity;
 
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {

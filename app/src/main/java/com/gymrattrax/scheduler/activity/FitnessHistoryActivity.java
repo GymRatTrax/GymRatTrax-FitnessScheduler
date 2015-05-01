@@ -2,6 +2,8 @@ package com.gymrattrax.scheduler.activity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -23,11 +25,13 @@ import java.util.concurrent.TimeUnit;
 
 public class FitnessHistoryActivity extends LoginActivity {
     public static final String TAG = "FitnessHistoryActivity";
+    private LinearLayout stuff;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fitness_history);
+        LinearLayout stuff = (LinearLayout)findViewById(R.id.sample_logview);
     }
 
     @Override
@@ -39,8 +43,8 @@ public class FitnessHistoryActivity extends LoginActivity {
         long startTime = endTime - (WEEK_IN_MS);
 
         DataReadRequest readReq = new DataReadRequest.Builder()
-                .aggregate(DataType.TYPE_CALORIES_CONSUMED,
-                        DataType.AGGREGATE_CALORIES_CONSUMED)
+                .aggregate(DataType.TYPE_CALORIES_EXPENDED,
+                        DataType.AGGREGATE_CALORIES_EXPENDED)
                 .bucketByTime(1, TimeUnit.DAYS)
                 .setTimeRange(startTime, endTime, TimeUnit.MILLISECONDS)
                 .build();
@@ -87,6 +91,9 @@ public class FitnessHistoryActivity extends LoginActivity {
             Log.d(TAG, "Size of dp.getDataType().getFields() in processDataSet: " + dp.getDataType().getFields().size());
             for (Field field : dp.getDataType().getFields()) {
                 String fieldName = field.getName();
+                TextView textView = new TextView(this);
+                textView.setText("\tField: " + fieldName + " Value: " + dp.getValue(field));
+                stuff.addView(textView);
                 Log.i(TAG, "\tField: " + fieldName + " Value: " + dp.getValue(field));
             }
         }

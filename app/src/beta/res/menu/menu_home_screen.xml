@@ -2,10 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@id/menu_feedback"
         android:title="@string/menu_feedback" />
-    <item android:id="@+id/menu_achievements"
-        android:title="@string/menu_achievements" />
+    <item android:id="@+id/menu_fitness_history"
+        android:title="@string/menu_fitness_history" />
     <item android:id="@+id/menu_add_templates"
         android:title="@string/menu_add_templates" />
     <item android:id="@+id/menu_settings"
         android:title="@string/menu_settings" />
+    <item android:id="@+id/help"
+        android:title="@string/menu_help" />
 </menu>

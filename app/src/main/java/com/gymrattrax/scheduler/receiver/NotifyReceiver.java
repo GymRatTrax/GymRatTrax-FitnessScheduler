@@ -169,7 +169,7 @@ public class NotifyReceiver extends BroadcastReceiver {
     private static PendingIntent createPendingIntent(Context context, WorkoutItem workoutItem) {
         Intent intent = new Intent(context, NotifyService.class);
         intent.putExtra(NotifyService.ID, workoutItem.getID());
-        intent.putExtra(NotifyService.NAME, workoutItem.getName().toString());
+        intent.putExtra(NotifyService.NAME, workoutItem.getName());
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(workoutItem.getDateScheduled());
         calendar.add(Calendar.MINUTE, -workoutItem.getNotificationMinutesInAdvance());

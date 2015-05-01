@@ -2,25 +2,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
     android:layout_width="match_parent">
-    <Preference
-        android:title="Some Title"
-        android:summary="Some Description">
-
-        <intent
-            android:action="android.intent.action.VIEW"
-            android:targetPackage="com.gymrattrax.scheduler"
-            android:targetClass="com.gymrattrax.scheduler.activity.LoginActivity"
-            />
-
-    </Preference>
-    <ListPreference
-        android:key="pref_date_format"
-        android:title="Date format"
-        android:summary="Standard date format displayed"
-        android:dialogTitle="Select preferred date format"
-        android:entries="@array/date_format_array"
-        android:entryValues="@array/date_format_array"
-        android:defaultValue="MM/dd/yyyy" />
     <PreferenceScreen
         android:key="@string/settings_notify_button"
         android:title="@string/settings_notify"
@@ -93,4 +74,12 @@
                 android:defaultValue="content://settings/system/notification_sound" />
         </PreferenceCategory>
     </PreferenceScreen>
+    <ListPreference
+        android:key="pref_date_format"
+        android:title="Date format"
+        android:summary="Standard date format displayed"
+        android:dialogTitle="Select preferred date format"
+        android:entries="@array/date_format_array"
+        android:entryValues="@array/date_format_array"
+        android:defaultValue="MM/dd/yyyy" />
 </PreferenceScreen>

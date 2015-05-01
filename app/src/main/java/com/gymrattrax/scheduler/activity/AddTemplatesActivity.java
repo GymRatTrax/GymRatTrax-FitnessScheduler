@@ -42,7 +42,10 @@ public class AddTemplatesActivity extends Activity {
         if (getActionBar() != null) {
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
+        prepareApplication();
+    }
 
+    private void prepareApplication() {
         linearContainer = (LinearLayout) findViewById(R.id.addTemplateLayout);
         buttons = new Button[5];
         for (int i = 0; i < buttons.length; i++) {
@@ -68,7 +71,7 @@ public class AddTemplatesActivity extends Activity {
 
         linearContainer.addView(a);
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 2; i++) {
             TableRow row = new TableRow(AddTemplatesActivity.this);
             LinearLayout main = new LinearLayout(AddTemplatesActivity.this);
             LinearLayout stack = new LinearLayout(AddTemplatesActivity.this);
@@ -100,11 +103,6 @@ public class AddTemplatesActivity extends Activity {
                 case 1:
                     title = "Balanced Routine";
                     time = "3-Week Plan";
-                    break;
-                case 2:
-                    title = "Going the Extra Mile";
-                    time = "Complete a scheduled cardio workout with a distance of at least one" +
-                            "mile in excess of the miles scheduled.";
                     break;
             }
             viewTitle.setText(title);
@@ -210,15 +208,88 @@ public class AddTemplatesActivity extends Activity {
                             addTheseWorkouts(workoutItems, 0);
                         }
                     })
-                    .setNeutralButton("Tomorrow", new DialogInterface.OnClickListener() {
+                    .setNegativeButton("Tomorrow", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             addTheseWorkouts(workoutItems, 1);
                         }
                     })
-                    .setNegativeButton("Cancel", null);
+                    .setNeutralButton("Cancel", null);
             alertBuilder.show();
         }
+        });
+
+        buttons[1].setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final WorkoutItem[] workoutItems = new WorkoutItem[21];
+                String message = "";
+                for (int i = 0; i < workoutItems.length; i++) {
+                    int time = 0;
+                    switch (i % 4) {
+                        case 0:
+                            workoutItems[i] = new WorkoutItem(ExerciseName.Cardio.getRandom());
+                            workoutItems[i].setDistanceScheduled(2);
+                            time = ((int)(Math.random() * 5)) * 5 + 20;
+                            workoutItems[i].setTimeScheduled(15);
+                            break;
+                        case 1:
+                            workoutItems[i] = new WorkoutItem(ExerciseName.Abs.getRandom());
+                            workoutItems[i].setRepsScheduled(10);
+                            workoutItems[i].setSetsScheduled(3);
+                            workoutItems[i].setWeightUsed(15);
+                            time = ((int)(Math.random() * 5)) * 5 + 15;
+                            workoutItems[i].setTimeScheduled(15);
+                            break;
+                        case 2:
+                            workoutItems[i] = new WorkoutItem(ExerciseName.Arms.getRandom());
+                            workoutItems[i].setRepsScheduled(10);
+                            workoutItems[i].setSetsScheduled(3);
+                            workoutItems[i].setWeightUsed(15);
+                            time = ((int)(Math.random() * 5)) * 5 + 15;
+                            workoutItems[i].setTimeScheduled(15);
+                            break;
+                        case 3:
+                            workoutItems[i] = new WorkoutItem(ExerciseName.Legs.getRandom());
+                            workoutItems[i].setRepsScheduled(10);
+                            workoutItems[i].setSetsScheduled(3);
+                            workoutItems[i].setWeightUsed(15);
+                            time = ((int)(Math.random() * 5)) * 5 + 15;
+                            workoutItems[i].setTimeScheduled(15);
+                            break;
+                    }
+
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(Calendar.HOUR_OF_DAY, 8);
+                    calendar.set(Calendar.MINUTE, 0);
+                    calendar.set(Calendar.SECOND, 0);
+                    calendar.set(Calendar.MILLISECOND, 0);
+                    int offset = (int) (3 * i-2 * Math.floor(i / 3) - (Math.pow(i, 2) % 3));
+                    calendar.add(Calendar.DAY_OF_MONTH, offset);
+                    workoutItems[i].setDateScheduled(calendar.getTime());
+                    message += "Day " + (i + 1) + ": " + workoutItems[i].getName() + " " + time + " minutes\n";
+                }
+                message = message.substring(0, message.length() - 1);
+
+                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(AddTemplatesActivity.this);
+                alertBuilder.setMessage(message)
+                        .setTitle("Select Start Date for Balanced Routine")
+                        .setCancelable(true)
+                        .setPositiveButton("Today", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                addTheseWorkouts(workoutItems, 0);
+                            }
+                        })
+                        .setNegativeButton("Tomorrow", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                addTheseWorkouts(workoutItems, 1);
+                            }
+                        })
+                        .setNeutralButton("Cancel", null);
+                alertBuilder.show();
+            }
         });
     }
 

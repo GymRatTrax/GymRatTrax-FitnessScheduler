@@ -862,17 +862,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             overall += cursor.getInt(1);
         }
         statistics.put("stats_overall_completed", String.valueOf(overall));
+        if (cursor.moveToFirst()) {
+            do {
+                statistics.put("stats_" + ExerciseType.nameFromChar(cursor.getString(0)).toLowerCase() +
+                        "_percent", new DecimalFormat("#.0%").format((double) cursor.getInt(1) / overall));
+            } while (cursor.moveToNext());
+        }
         cursor.close();
 
         //proposed & commitment
         query = "SELECT " + DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE + ", COUNT(*)" +
                 " FROM " + DatabaseContract.WorkoutTable.TABLE_NAME +
                 " WHERE " + DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_SCHEDULED + " <=  \"" +
-                nowStr + "\" AND " + DatabaseContract.WorkoutTable.COLUMN_NAME_COMPLETE +
+                endStr + "\" AND " + DatabaseContract.WorkoutTable.COLUMN_NAME_COMPLETE +
                 " =  0 GROUP BY " + DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE;
         cursor = db.rawQuery(query, null);
         overall = 0;
         int overallComplete = 0;
+        boolean getA = false;
+        boolean getB = false;
+        boolean getC = false;
+        boolean getL = false;
         while (cursor.moveToNext()) {
             int complete = 0;
             try {
@@ -885,6 +895,64 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     "_planned", String.valueOf(proposed));
             statistics.put("stats_" + ExerciseType.nameFromChar(cursor.getString(0)).toLowerCase() +
                     "_commitment", new DecimalFormat("#.0%").format((double) complete / proposed));
+            overall += proposed;
+            overallComplete += complete;
+            switch (cursor.getString(0)) {
+                case "A":
+                    getA = true;
+                    break;
+                case "B":
+                    getB = true;
+                    break;
+                case "C":
+                    getC = true;
+                    break;
+                case "L":
+                    getL = true;
+                    break;
+            }
+        }
+        if (!getA) {
+            int complete = 0;
+            try {
+                complete = Integer.parseInt(statistics.get("stats_arms_completed"));
+            } catch (NumberFormatException ignored) {}
+            int proposed = complete;
+            statistics.put("stats_arms_planned", String.valueOf(proposed));
+            statistics.put("stats_arms_commitment", new DecimalFormat("#.0%").format((double) complete / proposed));
+            overall += proposed;
+            overallComplete += complete;
+        }
+        if (!getB) {
+            int complete = 0;
+            try {
+                complete = Integer.parseInt(statistics.get("stats_abs_completed"));
+            } catch (NumberFormatException ignored) {}
+            int proposed = complete;
+            statistics.put("stats_abs_planned", String.valueOf(proposed));
+            statistics.put("stats_abs_commitment", new DecimalFormat("#.0%").format((double) complete / proposed));
+            overall += proposed;
+            overallComplete += complete;
+        }
+        if (!getC) {
+            int complete = 0;
+            try {
+                complete = Integer.parseInt(statistics.get("stats_cardio_completed"));
+            } catch (NumberFormatException ignored) {}
+            int proposed = complete;
+            statistics.put("stats_cardio_planned", String.valueOf(proposed));
+            statistics.put("stats_cardio_commitment", new DecimalFormat("#.0%").format((double) complete / proposed));
+            overall += proposed;
+            overallComplete += complete;
+        }
+        if (!getL) {
+            int complete = 0;
+            try {
+                complete = Integer.parseInt(statistics.get("stats_legs_completed"));
+            } catch (NumberFormatException ignored) {}
+            int proposed = complete;
+            statistics.put("stats_legs_planned", String.valueOf(proposed));
+            statistics.put("stats_legs_commitment", new DecimalFormat("#.0%").format((double) complete / proposed));
             overall += proposed;
             overallComplete += complete;
         }
