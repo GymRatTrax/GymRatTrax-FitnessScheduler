@@ -1,23 +1,26 @@
 package com.gymrattrax.scheduler.activity;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RadioButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseContract;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.ProfileItem;
-import com.gymrattrax.scheduler.R;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,7 +28,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class ProfileActivity extends ActionBarActivity {
+public class ProfileActivity extends ActionBarActivity implements DatePickerDialog.OnDateSetListener {
 
     private Button editProfileButton;
     private EditText nameEditText;
@@ -115,6 +118,12 @@ public class ProfileActivity extends ActionBarActivity {
                     birthDateEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
                     birthDateEditText.setEnabled(true);
                     birthDateEditText.setClickable(true);
+                    birthDateEditText.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            showDialog(0);
+                        }
+                    });
 
                     weightEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
                     weightEditText.setEnabled(true);
@@ -165,6 +174,34 @@ public class ProfileActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
+
+        @Override
+        public void onDateSet(DatePicker datePicker, int i, int i2, int i3) {
+            showDate(i, i2+1, i3);
+        }
+    };
+
+    private void showDate(int year, int month, int day) {
+        birthDateEditText.setText(new StringBuilder().append(month).append("/").append(day)
+        .append("/").append(year));
+    }
+
+    @Override
+    public Dialog onCreateDialog(int id) {
+
+        String bday = birthDateEditText.getText().toString();
+        String[] div = bday.split("/", 3);
+        int year = Integer.parseInt(div[2]);
+        int month = Integer.parseInt(div[0]);
+        int day = Integer.parseInt(div[1]);
+
+        if (id == 0) {
+            return new DatePickerDialog(this, datePickerListener, year, month-1, day);
+        }
+        return null;
     }
 
     private void lockInput() {
@@ -303,10 +340,10 @@ public class ProfileActivity extends ActionBarActivity {
             DatabaseHelper dbh = new DatabaseHelper(ProfileActivity.this);
             birthDateEditText.setText(dbh.displayDate(this, profileItem.getDOB()));
             dbh.close();
-        }
-        else {
+        } else {
             birthDateEditText.setText("");
         }
+
 
         if (profileItem.getWeight() > 0)
             weightEditText.setText(String.valueOf(profileItem.getWeight()));
@@ -409,5 +446,10 @@ public class ProfileActivity extends ActionBarActivity {
         }
 
         return ""; //No errors found.
+    }
+
+    @Override
+    public void onDateSet(DatePicker datePicker, int i, int i2, int i3) {
+
     }
 }

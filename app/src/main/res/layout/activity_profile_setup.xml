@@ -62,7 +62,8 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Birth Date"
             android:id="@+id/textViewDate"
-            android:layout_weight="0.08" />
+            android:layout_weight="0.08"
+            android:focusable="false"/>
 
         <EditText
             android:layout_width="126dp"
