@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -28,7 +29,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class ProfileActivity extends ActionBarActivity implements DatePickerDialog.OnDateSetListener {
+public class ProfileActivity extends ActionBarActivity
+        implements DatePickerDialog.OnDateSetListener, NumberPicker.OnValueChangeListener {
 
     private Button editProfileButton;
     private EditText nameEditText;
@@ -121,17 +123,29 @@ public class ProfileActivity extends ActionBarActivity implements DatePickerDial
                     birthDateEditText.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            showDialog(0);
+                            showDateDialog();
                         }
                     });
 
                     weightEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
                     weightEditText.setEnabled(true);
                     weightEditText.setClickable(true);
+                    weightEditText.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            showWeightDialog();
+                        }
+                    });
 
                     heightEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
                     heightEditText.setEnabled(true);
                     heightEditText.setClickable(true);
+                    heightEditText.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            showHeightDialog();
+                        }
+                    });
 
                     fatPercentageEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
                     fatPercentageEditText.setEnabled(true);
@@ -152,6 +166,98 @@ public class ProfileActivity extends ActionBarActivity implements DatePickerDial
                 }
             }
         });
+    }
+
+    private void showDateDialog() {
+        final Dialog d = new Dialog(ProfileActivity.this);
+        d.setContentView(R.layout.date_dialog);
+        d.setTitle("Date of birth");
+        String bday = birthDateEditText.getText().toString();
+        String[] div = bday.split("/", 3);
+        int year = Integer.parseInt(div[2]);
+        int month = Integer.parseInt(div[0]);
+        int day = Integer.parseInt(div[1]);
+        Button b1 = (Button) d.findViewById(R.id.button1);
+        Button b2 = (Button) d.findViewById(R.id.button2);
+        final DatePicker dp = (DatePicker) d.findViewById(R.id.datePicker1);
+        dp.init(year, month-1, day, new DatePicker.OnDateChangedListener() {
+            @Override
+            public void onDateChanged(DatePicker datePicker, int i, int i2, int i3) {
+                showDate(i, i2+1, i3);
+            }
+        });
+
+        b1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                birthDateEditText.setText(String.valueOf(dp.getMonth()+1 + "/" +
+                dp.getDayOfMonth() + "/" + dp.getYear()));
+                d.dismiss();
+            }
+        });
+        b2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d.dismiss();
+            }
+        });
+        d.show();
+    }
+
+    private void showHeightDialog() {
+        final Dialog d = new Dialog(ProfileActivity.this);
+        d.setTitle("Height (in inches)");
+        d.setContentView(R.layout.dialog);
+        Button b1 = (Button) d.findViewById(R.id.button1);
+        Button b2 = (Button) d.findViewById(R.id.button2);
+        final NumberPicker np = (NumberPicker) d.findViewById(R.id.numberPicker1);
+        np.setMaxValue(100);
+        np.setMinValue(0);
+        np.setValue(70);
+        np.setWrapSelectorWheel(false);
+        np.setOnValueChangedListener(this);
+        b1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                heightEditText.setText(String.valueOf(np.getValue()));
+                d.dismiss();
+            }
+        });
+        b2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d.dismiss();
+            }
+        });
+        d.show();
+    }
+
+    public void showWeightDialog() {
+        final Dialog d = new Dialog(ProfileActivity.this);
+        d.setTitle("Weight (in pounds)");
+        d.setContentView(R.layout.dialog);
+        Button b1 = (Button) d.findViewById(R.id.button1);
+        Button b2 = (Button) d.findViewById(R.id.button2);
+        final NumberPicker np = (NumberPicker) d.findViewById(R.id.numberPicker1);
+        np.setMaxValue(1000);
+        np.setMinValue(0);
+        np.setValue(165);
+        np.setWrapSelectorWheel(false);
+        np.setOnValueChangedListener(this);
+        b1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                weightEditText.setText(String.valueOf(np.getValue()));
+                d.dismiss();
+            }
+        });
+        b2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d.dismiss();
+            }
+        });
+        d.show();
     }
 
     @Override
@@ -176,32 +282,9 @@ public class ProfileActivity extends ActionBarActivity implements DatePickerDial
         return super.onOptionsItemSelected(item);
     }
 
-    private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
-
-        @Override
-        public void onDateSet(DatePicker datePicker, int i, int i2, int i3) {
-            showDate(i, i2+1, i3);
-        }
-    };
-
     private void showDate(int year, int month, int day) {
         birthDateEditText.setText(new StringBuilder().append(month).append("/").append(day)
         .append("/").append(year));
-    }
-
-    @Override
-    public Dialog onCreateDialog(int id) {
-
-        String bday = birthDateEditText.getText().toString();
-        String[] div = bday.split("/", 3);
-        int year = Integer.parseInt(div[2]);
-        int month = Integer.parseInt(div[0]);
-        int day = Integer.parseInt(div[1]);
-
-        if (id == 0) {
-            return new DatePickerDialog(this, datePickerListener, year, month-1, day);
-        }
-        return null;
     }
 
     private void lockInput() {
@@ -450,6 +533,11 @@ public class ProfileActivity extends ActionBarActivity implements DatePickerDial
 
     @Override
     public void onDateSet(DatePicker datePicker, int i, int i2, int i3) {
+
+    }
+
+    @Override
+    public void onValueChange(NumberPicker numberPicker, int i, int i2) {
 
     }
 }

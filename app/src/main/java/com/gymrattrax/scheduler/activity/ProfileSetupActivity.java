@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -30,7 +31,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class ProfileSetupActivity extends ActionBarActivity {
+public class ProfileSetupActivity extends ActionBarActivity
+        implements DatePickerDialog.OnDateSetListener, NumberPicker.OnValueChangeListener {
 
     private EditText nameEditText;
     private EditText birthDateEditText;
@@ -54,11 +56,17 @@ public class ProfileSetupActivity extends ActionBarActivity {
         birthDateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDialog(0);
+                showDateDialog();
             }
         });
 
         weightEditText = (EditText) findViewById(R.id.profile_weight);
+        weightEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showWeightDialog();
+            }
+        });
         heightEditText = (EditText) findViewById(R.id.profile_height);
         fatPercentageEditText = (EditText) findViewById(R.id.fat_percentage);
         littleExercise = (RadioButton) findViewById(R.id.little_exercise);
@@ -104,6 +112,68 @@ public class ProfileSetupActivity extends ActionBarActivity {
         });
     }
 
+    private void showWeightDialog() {
+        final Dialog d = new Dialog(ProfileSetupActivity.this);
+        d.setTitle("Weight");
+        d.setContentView(R.layout.dialog);
+        Button b1 = (Button) d.findViewById(R.id.button1);
+        Button b2 = (Button) d.findViewById(R.id.button2);
+        final NumberPicker np = (NumberPicker) d.findViewById(R.id.numberPicker1);
+        np.setMaxValue(1000);
+        np.setMinValue(0);
+        np.setValue(165);
+        np.setWrapSelectorWheel(false);
+        np.setOnValueChangedListener(this);
+        b1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                weightEditText.setText(String.valueOf(np.getValue()));
+                d.dismiss();
+            }
+        });
+        b2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d.dismiss();
+            }
+        });
+        d.show();
+    }
+
+    private void showDateDialog() {
+        final Dialog d = new Dialog(ProfileSetupActivity.this);
+        d.setContentView(R.layout.date_dialog);
+        d.setTitle("Date of birth");
+        int year = 1995;
+        int month = 0;
+        int day = 1;
+        Button b1 = (Button) d.findViewById(R.id.button1);
+        Button b2 = (Button) d.findViewById(R.id.button2);
+        final DatePicker dp = (DatePicker) d.findViewById(R.id.datePicker1);
+        dp.init(year, month, day, new DatePicker.OnDateChangedListener() {
+            @Override
+            public void onDateChanged(DatePicker datePicker, int i, int i2, int i3) {
+                showDate(i, i2+1, i3);
+            }
+        });
+
+        b1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                birthDateEditText.setText(String.valueOf(dp.getMonth()+1 + "/" +
+                        dp.getDayOfMonth() + "/" + dp.getYear()));
+                d.dismiss();
+            }
+        });
+        b2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d.dismiss();
+            }
+        });
+        d.show();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -126,30 +196,9 @@ public class ProfileSetupActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private DatePickerDialog.OnDateSetListener datePickerListener = new DatePickerDialog.OnDateSetListener() {
-
-        @Override
-        public void onDateSet(DatePicker datePicker, int i, int i2, int i3) {
-            showDate(i, i2+1, i3);
-        }
-    };
-
     private void showDate(int year, int month, int day) {
         birthDateEditText.setText(new StringBuilder().append(month).append("/").append(day)
                 .append("/").append(year));
-    }
-
-    @Override
-    public Dialog onCreateDialog(int id) {
-
-        int year = 1990;
-        int month = 0;
-        int day = 1;
-
-        if (id == 0) {
-            return new DatePickerDialog(this, datePickerListener, year, month, day);
-        }
-        return null;
     }
 
 
@@ -311,5 +360,15 @@ public class ProfileSetupActivity extends ActionBarActivity {
         }
 
         return ""; //No errors found.
+    }
+
+    @Override
+    public void onDateSet(DatePicker datePicker, int i, int i2, int i3) {
+
+    }
+
+    @Override
+    public void onValueChange(NumberPicker numberPicker, int i, int i2) {
+
     }
 }

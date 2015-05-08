@@ -70,7 +70,8 @@
             android:layout_height="wrap_content"
             android:background="#ffffffff"
             android:inputType="none"
-            android:id="@+id/birth_date"/>
+            android:id="@+id/birth_date"
+            android:focusable="false"/>
     </LinearLayout>
 
     <LinearLayout
