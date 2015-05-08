@@ -838,15 +838,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Map<String,String> getStatistics() {
-        Map<String,String> statistics = new HashMap();
+        Map<String,String> statistics = new HashMap<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         Calendar lastWeek = Calendar.getInstance();
         lastWeek.add(Calendar.DATE, -7);
-        Date lastWk = lastWeek.getTime();
         Date now = new Date();
-        String startStr = dateFormat.format(lastWk) + " 00:00:00.000";
         String endStr = dateFormat.format(now) + " 23:59:59.999";
-        String nowStr = convertDate(now);
         SQLiteDatabase db = this.getReadableDatabase();
 
         //complete
@@ -855,20 +852,43 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 " WHERE " + DatabaseContract.WorkoutTable.COLUMN_NAME_COMPLETE + " =  1 GROUP BY " +
                 DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE;
         Cursor cursor = db.rawQuery(query, null);
-        int overall = 0;
+        int completed = 0;
+        int completedAbs = 0;
+        int completedArms = 0;
+        int completedCardio = 0;
+        int completedLegs = 0;
         while (cursor.moveToNext()) {
-            statistics.put("stats_" + ExerciseType.nameFromChar(cursor.getString(0)).toLowerCase() +
-                    "_completed", cursor.getString(1));
-            overall += cursor.getInt(1);
-        }
-        statistics.put("stats_overall_completed", String.valueOf(overall));
-        if (cursor.moveToFirst()) {
-            do {
-                statistics.put("stats_" + ExerciseType.nameFromChar(cursor.getString(0)).toLowerCase() +
-                        "_percent", new DecimalFormat("#.0%").format((double) cursor.getInt(1) / overall));
-            } while (cursor.moveToNext());
+            switch (cursor.getString(0)) {
+                case "A":
+                    completedArms = cursor.getInt(1);
+                    completed += completedArms;
+                    break;
+                case "B":
+                    completedAbs = cursor.getInt(1);
+                    completed += completedAbs;
+                    break;
+                case "C":
+                    completedCardio = cursor.getInt(1);
+                    completed += completedCardio;
+                    break;
+                case "L":
+                    completedLegs = cursor.getInt(1);
+                    completed += completedLegs;
+                    break;
+            }
         }
         cursor.close();
+        DecimalFormat decFmt = new DecimalFormat("#.0%");
+        statistics.put("stats_abs_completed", String.valueOf(completedAbs));
+        statistics.put("stats_arms_completed", String.valueOf(completedArms));
+        statistics.put("stats_cardio_completed", String.valueOf(completedCardio));
+        statistics.put("stats_legs_completed", String.valueOf(completedLegs));
+        statistics.put("stats_overall_completed", String.valueOf(completed));
+        statistics.put("stats_abs_percent", decFmt.format((double) completedAbs / completed));
+        statistics.put("stats_arms_percent", decFmt.format((double) completedArms / completed));
+        statistics.put("stats_cardio_percent", decFmt.format((double) completedCardio / completed));
+        statistics.put("stats_legs_percent", decFmt.format((double) completedLegs / completed));
+        statistics.put("stats_overall_percent", decFmt.format((double) completed / completed));
 
         //proposed & commitment
         query = "SELECT " + DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE + ", COUNT(*)" +
@@ -877,89 +897,206 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 endStr + "\" AND " + DatabaseContract.WorkoutTable.COLUMN_NAME_COMPLETE +
                 " =  0 GROUP BY " + DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE;
         cursor = db.rawQuery(query, null);
-        overall = 0;
-        int overallComplete = 0;
-        boolean getA = false;
-        boolean getB = false;
-        boolean getC = false;
-        boolean getL = false;
+        int proposed = completed;
+        int proposedAbs = completedAbs;
+        int proposedArms = completedArms;
+        int proposedCardio = completedCardio;
+        int proposedLegs = completedLegs;
         while (cursor.moveToNext()) {
-            int complete = 0;
-            try {
-                complete = Integer.parseInt(statistics.get("stats_" +
-                        ExerciseType.nameFromChar(cursor.getString(0)).toLowerCase() +
-                        "_completed"));
-            } catch (NumberFormatException ignored) {}
-            int proposed = complete + cursor.getInt(1);
-            statistics.put("stats_" + ExerciseType.nameFromChar(cursor.getString(0)).toLowerCase() +
-                    "_planned", String.valueOf(proposed));
-            statistics.put("stats_" + ExerciseType.nameFromChar(cursor.getString(0)).toLowerCase() +
-                    "_commitment", new DecimalFormat("#.0%").format((double) complete / proposed));
-            overall += proposed;
-            overallComplete += complete;
             switch (cursor.getString(0)) {
                 case "A":
-                    getA = true;
+                    proposedArms += cursor.getInt(1);
+                    proposed += cursor.getInt(1);
                     break;
                 case "B":
-                    getB = true;
+                    proposedAbs += cursor.getInt(1);
+                    proposed += cursor.getInt(1);
                     break;
                 case "C":
-                    getC = true;
+                    proposedCardio += cursor.getInt(1);
+                    proposed += cursor.getInt(1);
                     break;
                 case "L":
-                    getL = true;
+                    proposedLegs += cursor.getInt(1);
+                    proposed += cursor.getInt(1);
                     break;
             }
         }
-        if (!getA) {
-            int complete = 0;
-            try {
-                complete = Integer.parseInt(statistics.get("stats_arms_completed"));
-            } catch (NumberFormatException ignored) {}
-            int proposed = complete;
-            statistics.put("stats_arms_planned", String.valueOf(proposed));
-            statistics.put("stats_arms_commitment", new DecimalFormat("#.0%").format((double) complete / proposed));
-            overall += proposed;
-            overallComplete += complete;
-        }
-        if (!getB) {
-            int complete = 0;
-            try {
-                complete = Integer.parseInt(statistics.get("stats_abs_completed"));
-            } catch (NumberFormatException ignored) {}
-            int proposed = complete;
-            statistics.put("stats_abs_planned", String.valueOf(proposed));
-            statistics.put("stats_abs_commitment", new DecimalFormat("#.0%").format((double) complete / proposed));
-            overall += proposed;
-            overallComplete += complete;
-        }
-        if (!getC) {
-            int complete = 0;
-            try {
-                complete = Integer.parseInt(statistics.get("stats_cardio_completed"));
-            } catch (NumberFormatException ignored) {}
-            int proposed = complete;
-            statistics.put("stats_cardio_planned", String.valueOf(proposed));
-            statistics.put("stats_cardio_commitment", new DecimalFormat("#.0%").format((double) complete / proposed));
-            overall += proposed;
-            overallComplete += complete;
-        }
-        if (!getL) {
-            int complete = 0;
-            try {
-                complete = Integer.parseInt(statistics.get("stats_legs_completed"));
-            } catch (NumberFormatException ignored) {}
-            int proposed = complete;
-            statistics.put("stats_legs_planned", String.valueOf(proposed));
-            statistics.put("stats_legs_commitment", new DecimalFormat("#.0%").format((double) complete / proposed));
-            overall += proposed;
-            overallComplete += complete;
-        }
-        statistics.put("stats_overall_planned", String.valueOf(overall));
-        statistics.put("stats_overall_commitment",
-                new DecimalFormat("#.0%").format((double)overallComplete/overall));
         cursor.close();
+
+        statistics.put("stats_abs_planned", String.valueOf(proposedAbs));
+        statistics.put("stats_arms_planned", String.valueOf(proposedArms));
+        statistics.put("stats_cardio_planned", String.valueOf(proposedCardio));
+        statistics.put("stats_legs_planned", String.valueOf(proposedLegs));
+        statistics.put("stats_overall_planned", String.valueOf(proposed));
+        if (proposedAbs > 0) {
+            statistics.put("stats_abs_commitment", decFmt.format((double) completedAbs / proposedAbs));
+        } else {
+            statistics.put("stats_abs_commitment", "--");
+        }
+        if (proposedArms > 0) {
+            statistics.put("stats_arms_commitment", decFmt.format((double) completedArms / proposedArms));
+        } else {
+            statistics.put("stats_arms_commitment", "--");
+        }
+        if (proposedCardio > 0) {
+            statistics.put("stats_cardio_commitment", decFmt.format((double) completedCardio / proposedCardio));
+        } else {
+            statistics.put("stats_cardio_commitment", "--");
+        }
+        if (proposedLegs > 0) {
+            statistics.put("stats_legs_commitment", decFmt.format((double) completedLegs / proposedLegs));
+        } else {
+            statistics.put("stats_legs_commitment", "--");
+        }
+        if (proposed > 0) {
+            statistics.put("stats_overall_commitment", decFmt.format((double) completed / proposed));
+        } else {
+            statistics.put("stats_overall_commitment", "--");
+        }
+
+        //parameters
+        query = "SELECT " + DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE + ", SUM(" +
+                DatabaseContract.WorkoutTable.COLUMN_NAME_CARDIO_DISTANCE_SCHEDULED + "),SUM(" +
+                DatabaseContract.WorkoutTable.COLUMN_NAME_CARDIO_DISTANCE_COMPLETED + "),AVG(" +
+                DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_WEIGHT + "),SUM(" +
+                DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_REPS_SCHEDULED + "),SUM(" +
+                DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_REPS_COMPLETED + "),SUM(" +
+                DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_SETS_SCHEDULED + "),SUM(" +
+                DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_SETS_COMPLETED + ")" +
+                " FROM " + DatabaseContract.WorkoutTable.TABLE_NAME + " WHERE " +
+                DatabaseContract.WorkoutTable.COLUMN_NAME_COMPLETE + " =  1 GROUP BY " +
+                DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE;
+        cursor = db.rawQuery(query, null);
+        double distanceScheduled = 0;
+        double distanceCompleted = 0;
+        double weight = 0;
+        double weightAbs = 0;
+        double weightArms = 0;
+        double weightLegs = 0;
+        double repsScheduled = 0;
+        int repsScheduledAbs = 0;
+        int repsScheduledArms = 0;
+        int repsScheduledLegs = 0;
+        int repsCompleted = 0;
+        int repsCompletedAbs = 0;
+        int repsCompletedArms = 0;
+        int repsCompletedLegs = 0;
+        int setsScheduled = 0;
+        int setsScheduledAbs = 0;
+        int setsScheduledArms = 0;
+        int setsScheduledLegs = 0;
+        int setsCompleted = 0;
+        int setsCompletedAbs = 0;
+        int setsCompletedArms = 0;
+        int setsCompletedLegs = 0;
+        while (cursor.moveToNext()) {
+            switch (cursor.getString(0)) {
+                case "A":
+                    weightArms = cursor.getDouble(3);
+                    repsScheduledArms = cursor.getInt(4);
+                    repsCompletedArms = cursor.getInt(5);
+                    setsScheduledArms = cursor.getInt(6);
+                    setsCompletedArms = cursor.getInt(7);
+                    weight += cursor.getDouble(3);
+                    repsScheduled += cursor.getInt(4);
+                    repsCompleted += cursor.getInt(5);
+                    setsScheduled += cursor.getInt(6);
+                    setsCompleted += cursor.getInt(7);
+                    break;
+                case "B":
+                    weightAbs = cursor.getDouble(3);
+                    repsScheduledAbs = cursor.getInt(4);
+                    repsCompletedAbs = cursor.getInt(5);
+                    setsScheduledAbs = cursor.getInt(6);
+                    setsCompletedAbs = cursor.getInt(7);
+                    weight += cursor.getDouble(3);
+                    repsScheduled += cursor.getInt(4);
+                    repsCompleted += cursor.getInt(5);
+                    setsScheduled += cursor.getInt(6);
+                    setsCompleted += cursor.getInt(7);
+                    break;
+                case "C":
+                    distanceScheduled = cursor.getDouble(1);
+                    distanceCompleted = cursor.getDouble(2);
+                    break;
+                case "L":
+                    weightLegs = cursor.getDouble(3);
+                    repsScheduledLegs = cursor.getInt(4);
+                    repsCompletedLegs = cursor.getInt(5);
+                    setsScheduledLegs = cursor.getInt(6);
+                    setsCompletedLegs = cursor.getInt(7);
+                    weight += cursor.getDouble(3);
+                    repsScheduled += cursor.getInt(4);
+                    repsCompleted += cursor.getInt(5);
+                    setsScheduled += cursor.getInt(6);
+                    setsCompleted += cursor.getInt(7);
+                    break;
+            }
+        }
+        cursor.close();
+
+        statistics.put("stats_abs_distance_scheduled", "--");
+        statistics.put("stats_arms_distance_scheduled", "--");
+        statistics.put("stats_cardio_distance_scheduled", String.valueOf(distanceScheduled));
+        statistics.put("stats_legs_distance_scheduled", "--");
+        statistics.put("stats_overall_distance_scheduled", String.valueOf(distanceScheduled));
+        statistics.put("stats_abs_distance_completed", "--");
+        statistics.put("stats_arms_distance_completed", "--");
+        statistics.put("stats_cardio_distance_completed", String.valueOf(distanceCompleted));
+        statistics.put("stats_legs_distance_completed", "--");
+        statistics.put("stats_overall_distance_completed", String.valueOf(distanceCompleted));
+        statistics.put("stats_abs_weight", String.valueOf(weightAbs));
+        statistics.put("stats_arms_weight", String.valueOf(weightArms));
+        statistics.put("stats_cardio_weight", "--");
+        statistics.put("stats_legs_weight", String.valueOf(weightLegs));
+        statistics.put("stats_overall_weight", String.valueOf(weight));
+        statistics.put("stats_abs_reps_scheduled", String.valueOf(repsScheduledAbs));
+        statistics.put("stats_arms_reps_scheduled", String.valueOf(repsScheduledArms));
+        statistics.put("stats_cardio_reps_scheduled", "--");
+        statistics.put("stats_legs_reps_scheduled", String.valueOf(repsScheduledLegs));
+        statistics.put("stats_overall_reps_scheduled", String.valueOf(repsScheduled));
+        statistics.put("stats_abs_reps_completed", String.valueOf(repsCompletedAbs));
+        statistics.put("stats_arms_reps_completed", String.valueOf(repsCompletedArms));
+        statistics.put("stats_cardio_reps_completed", "--");
+        statistics.put("stats_legs_reps_completed", String.valueOf(repsCompletedLegs));
+        statistics.put("stats_overall_reps_completed", String.valueOf(repsCompleted));
+        statistics.put("stats_abs_sets_scheduled", String.valueOf(setsScheduledAbs));
+        statistics.put("stats_arms_sets_scheduled", String.valueOf(setsScheduledArms));
+        statistics.put("stats_cardio_sets_scheduled", "--");
+        statistics.put("stats_legs_sets_scheduled", String.valueOf(setsScheduledLegs));
+        statistics.put("stats_overall_sets_scheduled", String.valueOf(setsScheduled));
+        statistics.put("stats_abs_sets_completed", String.valueOf(setsCompletedAbs));
+        statistics.put("stats_arms_sets_completed", String.valueOf(setsCompletedArms));
+        statistics.put("stats_cardio_sets_completed", "--");
+        statistics.put("stats_legs_sets_completed", String.valueOf(setsCompletedLegs));
+        statistics.put("stats_overall_sets_completed", String.valueOf(setsCompleted));
+        if (repsScheduledAbs * setsScheduledAbs > 0) {
+            statistics.put("stats_abs_completion", decFmt.format((double) (repsCompletedAbs * setsCompletedAbs) / (repsScheduledAbs * setsScheduledAbs)));
+        } else {
+            statistics.put("stats_abs_completion", "--");
+        }
+        if (repsScheduledArms * setsScheduledArms > 0) {
+            statistics.put("stats_arms_completion", decFmt.format((double) (repsCompletedArms * setsCompletedArms) / (repsScheduledArms * setsScheduledArms)));
+        } else {
+            statistics.put("stats_arms_completion", "--");
+        }
+        if (distanceScheduled > 0) {
+            statistics.put("stats_cardio_completion", decFmt.format(distanceCompleted / distanceScheduled));
+        } else {
+            statistics.put("stats_cardio_completion", "--");
+        }
+        if (repsScheduledLegs * setsScheduledLegs > 0) {
+            statistics.put("stats_legs_completion", decFmt.format((double) (repsCompletedLegs*setsCompletedLegs) / (repsScheduledLegs * setsScheduledLegs)));
+        } else {
+            statistics.put("stats_legs_completion", "--");
+        }
+        if (proposed > 0) {
+            statistics.put("stats_overall_completion", decFmt.format((double) completed / proposed));
+        } else {
+            statistics.put("stats_overall_completion", "--");
+        }
+
 
         db.close();
         return statistics;

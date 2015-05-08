@@ -149,4 +149,12 @@
     <string name="edit_cal">Edit Google Calendar</string>
     <string name="title_activity_statistics">Statistics</string>
     <string name="submit_notifications">Submit</string>
+    <string name="stats_overall_distance_scheduled">Distance scheduled</string>
+    <string name="stats_overall_weight">Weight used</string>
+    <string name="stats_overall_distance_completed">Distance completed</string>
+    <string name="stats_overall_sets_scheduled">Sets scheduled</string>
+    <string name="stats_overall_sets_completed">Sets completed</string>
+    <string name="stats_overall_reps_scheduled">Reps scheduled</string>
+    <string name="stats_overall_reps_completed">Reps completed</string>
+    <string name="stats_overall_completion">Completion rate</string>
 </resources>

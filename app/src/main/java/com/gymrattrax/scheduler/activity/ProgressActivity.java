@@ -26,6 +26,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
 import android.graphics.Color;
+import android.widget.Toast;
+
 import com.jjoe64.graphview.ValueDependentColor;
 
 public class ProgressActivity extends ActionBarActivity {
@@ -79,7 +81,13 @@ public class ProgressActivity extends ActionBarActivity {
                         Date endDate = today.getTime();
                         Date beginDate = lastWeek.getTime();
 
-                        Map <Date, Double> weights = dbh.getWeights(lastWeek.getTime(),today.getTime());
+                        Map <Date, Double> weights = dbh.getWeights(lastWeek.getTime(), today.getTime());
+
+                        if (weights == null || weights.size() <= 1) {
+                            Toast toast = Toast.makeText(getBaseContext(), "Not enough data points are available to make a graph yet.", Toast.LENGTH_SHORT);
+                            toast.show();
+                            break;
+                        }
 
                         DataPoint points[] = new DataPoint[weights.size()];
                         int i = 0;
@@ -87,7 +95,7 @@ public class ProgressActivity extends ActionBarActivity {
                         Set<Date> dateSet = weights.keySet();
                         for (Date date : dateSet) {
                             double weightForDate = weights.get(date);
-                            points[i] = new DataPoint(date, weightForDate);
+                            points[i] = new DataPoint(date.getTime(), weightForDate);
                             i++;
                         }
 

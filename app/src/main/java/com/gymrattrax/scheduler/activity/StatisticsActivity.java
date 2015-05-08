@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 
@@ -25,7 +26,11 @@ public class StatisticsActivity extends Activity {
             Resources res = getResources();
             int id = res.getIdentifier(key, "id", this.getPackageName());
             TextView textView = (TextView)findViewById(id);
-            textView.setText(statistics.get(key));
+            try {
+                textView.setText(statistics.get(key));
+            } catch (NullPointerException ex) {
+                if (BuildConfig.DEBUG_MODE) Log.e(TAG, "There does not exist a TextView named " + key);
+            }
         }
     }
 }

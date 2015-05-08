@@ -408,10 +408,10 @@ public class CardioWorkoutActivity extends LoginActivity {
         //set
         WorkoutItem w = dbh.getWorkoutById(ID);
         w.setExertionLevel(exertionLvl);
-        double mets = w.calculateMETs();
         double seconds = getSecondsFromDurationString(timer.getText().toString());
         double timeRecorded = seconds/60;
         w.setTimeSpent(timeRecorded);
+        double mets = w.calculateMETs();
         double time = w.getTimeSpent();
 
         double weights[] = dbh.getLatestWeight();
