@@ -119,7 +119,8 @@
             android:layout_height="wrap_content"
             android:background="#ffffffff"
             android:inputType="none"
-            android:id="@+id/profile_weight"/>
+            android:id="@+id/profile_weight"
+            android:focusable="false"/>
 
     </LinearLayout>
 
@@ -143,7 +144,8 @@
             android:layout_height="wrap_content"
             android:background="#ffffffff"
             android:id="@+id/profile_height"
-            android:inputType="none"/>
+            android:inputType="none"
+            android:focusable="false"/>
     </LinearLayout>
 
     <LinearLayout

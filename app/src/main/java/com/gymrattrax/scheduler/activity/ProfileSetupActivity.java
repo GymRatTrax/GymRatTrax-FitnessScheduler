@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 public class ProfileSetupActivity extends ActionBarActivity
         implements DatePickerDialog.OnDateSetListener, NumberPicker.OnValueChangeListener {
@@ -69,6 +70,12 @@ public class ProfileSetupActivity extends ActionBarActivity
             }
         });
         heightEditText = (EditText) findViewById(R.id.profile_height);
+        heightEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showHeightDialog();
+            }
+        });
         fatPercentageEditText = (EditText) findViewById(R.id.fat_percentage);
         littleExercise = (RadioButton) findViewById(R.id.little_exercise);
         lightExercise = (RadioButton) findViewById(R.id.light_exercise);
@@ -116,20 +123,67 @@ public class ProfileSetupActivity extends ActionBarActivity
 
     private void showWeightDialog() {
         final Dialog d = new Dialog(ProfileSetupActivity.this);
-        d.setTitle("Weight");
+        d.setTitle("Weight (in pounds)");
+        d.setContentView(R.layout.dialog_decimal);
+        Button b1 = (Button) d.findViewById(R.id.button1);
+        Button b2 = (Button) d.findViewById(R.id.button2);
+        String weight = weightEditText.getText().toString();
+        String[] div = weight.split(Pattern.quote("."), 2);
+        int weightInteger = 165;
+        int weightDecimal = 0;
+        try {
+            weightInteger = Integer.parseInt(div[0]);
+            weightDecimal = Integer.parseInt(div[1]);
+        } catch (NumberFormatException|ArrayIndexOutOfBoundsException ignored) {}
+        final NumberPicker np1 = (NumberPicker) d.findViewById(R.id.numberPicker1);
+        np1.setMaxValue(1000);
+        np1.setMinValue(0);
+        np1.setValue(weightInteger);
+        np1.setWrapSelectorWheel(false);
+        np1.setOnValueChangedListener(this);
+        final NumberPicker np2 = (NumberPicker) d.findViewById(R.id.numberPicker2);
+        np2.setMaxValue(9);
+        np2.setMinValue(0);
+        np2.setValue(weightDecimal);
+        np2.setWrapSelectorWheel(false);
+        np2.setOnValueChangedListener(this);
+        b1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                weightEditText.setText(String.valueOf(np1.getValue()) + "." + String.valueOf(np2.getValue()));
+                d.dismiss();
+            }
+        });
+        b2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                d.dismiss();
+            }
+        });
+        d.show();
+    }
+    private void showHeightDialog() {
+        final Dialog d = new Dialog(this);
+        d.setTitle("Height (in inches)");
         d.setContentView(R.layout.dialog_integer);
         Button b1 = (Button) d.findViewById(R.id.button1);
         Button b2 = (Button) d.findViewById(R.id.button2);
         final NumberPicker np = (NumberPicker) d.findViewById(R.id.numberPicker1);
-        np.setMaxValue(1000);
+        np.setMaxValue(100);
         np.setMinValue(0);
-        np.setValue(165);
+        String height = heightEditText.getText().toString();
+        double heightIntegerDouble = 65;
+        try {
+            heightIntegerDouble = Double.valueOf(height);
+        } catch (NumberFormatException ignored) {}
+        int heightInteger = (int)heightIntegerDouble;
+        np.setValue(heightInteger);
         np.setWrapSelectorWheel(false);
         np.setOnValueChangedListener(this);
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                weightEditText.setText(String.valueOf(np.getValue()));
+                heightEditText.setText(String.valueOf(np.getValue()));
                 d.dismiss();
             }
         });
@@ -147,15 +201,27 @@ public class ProfileSetupActivity extends ActionBarActivity
         d.setContentView(R.layout.dialog_date);
         d.setTitle("Date of birth");
         int year = 1995;
-        int month = 0;
+        int month = 1;
         int day = 1;
+        String bday = birthDateEditText.getText().toString();
+        String[] div = bday.split("/", 3);
+        try {
+            year = Integer.parseInt(div[2]);
+            if (dateFormat.equals("dd/MM/yyyy")) {
+                month = Integer.parseInt(div[1]);
+                day = Integer.parseInt(div[0]);
+            } else {
+                month = Integer.parseInt(div[0]);
+                day = Integer.parseInt(div[1]);
+            }
+        } catch (NumberFormatException|ArrayIndexOutOfBoundsException ignored) {}
         Button b1 = (Button) d.findViewById(R.id.button1);
         Button b2 = (Button) d.findViewById(R.id.button2);
         final DatePicker dp = (DatePicker) d.findViewById(R.id.datePicker1);
-        dp.init(year, month, day, new DatePicker.OnDateChangedListener() {
+        dp.init(year, month-1, day, new DatePicker.OnDateChangedListener() {
             @Override
             public void onDateChanged(DatePicker datePicker, int i, int i2, int i3) {
-                showDate(i, i2+1, i3);
+                showDate(i, i2 + 1, i3);
             }
         });
 
