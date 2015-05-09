@@ -44,6 +44,7 @@ public class ProfileSetupActivity extends ActionBarActivity
     private RadioButton modExercise;
     private RadioButton heavyExercise;
     private Spinner profileSpinner;
+    private String dateFormat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +78,8 @@ public class ProfileSetupActivity extends ActionBarActivity
         TextView textViewDate = (TextView) findViewById(R.id.textViewDate);
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String dateFormat = sharedPref.getString(SettingsActivity.PREF_DATE_FORMAT, "MM/dd/yyyy");
+        dateFormat = sharedPref.getString(SettingsActivity.PREF_DATE_FORMAT, "MM/dd/yyyy");
+        if (dateFormat == null) dateFormat = "MM/dd/yyyy";
         textViewDate.setText("Birth date (" + dateFormat.toUpperCase() + ")");
 
         doneButton.setOnClickListener(new Button.OnClickListener() {
@@ -115,7 +117,7 @@ public class ProfileSetupActivity extends ActionBarActivity
     private void showWeightDialog() {
         final Dialog d = new Dialog(ProfileSetupActivity.this);
         d.setTitle("Weight");
-        d.setContentView(R.layout.dialog);
+        d.setContentView(R.layout.dialog_integer);
         Button b1 = (Button) d.findViewById(R.id.button1);
         Button b2 = (Button) d.findViewById(R.id.button2);
         final NumberPicker np = (NumberPicker) d.findViewById(R.id.numberPicker1);
@@ -142,7 +144,7 @@ public class ProfileSetupActivity extends ActionBarActivity
 
     private void showDateDialog() {
         final Dialog d = new Dialog(ProfileSetupActivity.this);
-        d.setContentView(R.layout.date_dialog);
+        d.setContentView(R.layout.dialog_date);
         d.setTitle("Date of birth");
         int year = 1995;
         int month = 0;
@@ -160,8 +162,13 @@ public class ProfileSetupActivity extends ActionBarActivity
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                birthDateEditText.setText(String.valueOf(dp.getMonth()+1 + "/" +
-                        dp.getDayOfMonth() + "/" + dp.getYear()));
+                if (dateFormat.equals("dd/MM/yyyy")) {
+                    birthDateEditText.setText(String.valueOf(dp.getDayOfMonth() + "/" +
+                            (dp.getMonth() + 1) + "/" + dp.getYear()));
+                } else {
+                    birthDateEditText.setText(String.valueOf((dp.getMonth() + 1) + "/" +
+                            dp.getDayOfMonth() + "/" + dp.getYear()));
+                }
                 d.dismiss();
             }
         });
@@ -197,8 +204,13 @@ public class ProfileSetupActivity extends ActionBarActivity
     }
 
     private void showDate(int year, int month, int day) {
-        birthDateEditText.setText(new StringBuilder().append(month).append("/").append(day)
-                .append("/").append(year));
+        if (dateFormat.equals("dd/MM/yyyy")) {
+            birthDateEditText.setText(new StringBuilder().append(day).append("/").append(month)
+                    .append("/").append(year));
+        } else {
+            birthDateEditText.setText(new StringBuilder().append(month).append("/").append(day)
+                    .append("/").append(year));
+        }
     }
 
 
@@ -209,8 +221,6 @@ public class ProfileSetupActivity extends ActionBarActivity
         dbh.setProfileInfo(DatabaseContract.ProfileTable.KEY_HEIGHT_INCHES, heightEditText.getText().toString());
 
         String date = birthDateEditText.getText().toString();
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String dateFormat = sharedPref.getString(SettingsActivity.PREF_DATE_FORMAT, "MM/dd/yyyy");
         SimpleDateFormat inputFormat = new SimpleDateFormat(dateFormat, Locale.US);
         Date d = null;
         try {
@@ -292,8 +302,6 @@ public class ProfileSetupActivity extends ActionBarActivity
         //Name and body fat are optional, and sex forces input.
         //Test birth date
         testVar = birthDateEditText.getText().toString();
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String dateFormat = sharedPref.getString(SettingsActivity.PREF_DATE_FORMAT, "MM/dd/yyyy");
         SimpleDateFormat inputFormat = new SimpleDateFormat(dateFormat, Locale.US);
         Date testDate;
         try {
