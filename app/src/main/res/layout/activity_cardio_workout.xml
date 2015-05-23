@@ -10,144 +10,166 @@
     android:weightSum="1"
     android:orientation="vertical"
     android:id="@+id/cardio_main_layout">
-
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="cardio_title"
         android:id="@+id/cardio_title"
         android:layout_gravity="center_horizontal" />
-
-    <TableLayout
+    <LinearLayout
         android:layout_width="114dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" >
-
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="Tutorial: "
-                android:id="@+id/textView4"
-                android:layout_column="32"
-                android:layout_gravity="center" />
-
-            <ImageButton
-                android:layout_width="40dp"
-                android:layout_height="39dp"
-                android:id="@+id/youtube_cardio"
-                android:layout_gravity="right"
-                android:background="@drawable/youtube"
-                android:layout_row="0"
-                android:layout_column="33" />
-        </TableRow>
-    </TableLayout>
-
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="@string/cardio_workout_tutorial"
+            android:id="@+id/textView4"
+            android:layout_gravity="center" />
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="39dp"
+            android:id="@+id/youtube_cardio"
+            android:layout_gravity="end"
+            android:background="@drawable/youtube"
+            android:contentDescription="@string/cardio_workout_youtube_button_description"/>
+    </LinearLayout>
     <Chronometer
         android:layout_width="142dp"
         android:layout_height="wrap_content"
         android:id="@+id/chronometer"
         android:layout_gravity="center_horizontal"
-        android:textSize="50dp"
-        android:textAlignment="center" />
-
+        android:textSize="50sp"
+        android:editable="false"
+        android:clickable="true"
+        android:enabled="true"
+        android:onClick="changeTime" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="scheduled_time"
         android:id="@+id/scheduled_time"
+        android:layout_gravity="center_horizontal" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_gravity="center_horizontal"
-        android:textAlignment="center" />
-
-    <TableLayout
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal">
-
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
-
-            <Button
-                android:layout_width="128dp"
-                android:layout_height="43dp"
-                android:text="START"
-                android:id="@+id/start_cardio"
-                android:layout_gravity="center"
-                android:background="@drawable/button_shp_rvrs_press" />
-
-            <Button
-                android:layout_width="128dp"
-                android:layout_height="43dp"
-                android:text="STOP"
-                android:id="@+id/stop_cardio"
-                android:layout_gravity="center"
-                android:background="@drawable/button_shp_rvrs_press"
-                android:layout_marginLeft="5dp" />
-        </TableRow>
-    </TableLayout>
-
-    <RadioGroup
+        android:gravity="center">
+        <Button
+            android:layout_width="128dp"
+            android:layout_height="43dp"
+            android:text="@string/cardio_workout_button_start"
+            android:id="@+id/start_cardio"
+            android:background="@drawable/button_shp_rvrs_press" />
+        <Button
+            android:layout_width="128dp"
+            android:layout_height="43dp"
+            android:text="@string/cardio_workout_button_stop"
+            android:id="@+id/stop_cardio"
+            android:layout_gravity="center"
+            android:background="@drawable/button_shp_rvrs_press"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp" />
+    </LinearLayout>
+    <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.36">
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Easy"
-            android:id="@+id/easy_cardio"
-            android:layout_weight="0.08"
-            android:onClick="onRadioButtonClicked"
-            android:checked="false"
-            android:layout_gravity="center_horizontal"/>
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Moderate"
-            android:id="@+id/moderate_cardio"
-            android:layout_weight="0.08"
-            android:onClick="onRadioButtonClicked"
-            android:checked="false"
-            android:layout_gravity="center_horizontal"
-            />
-
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hard"
-            android:id="@+id/hard_cardio"
-            android:layout_weight="0.08"
-            android:onClick="onRadioButtonClicked"
-            android:checked="false"
-            android:layout_gravity="center_horizontal"/>
-
-    </RadioGroup>
-
+        android:layout_gravity="center_horizontal"
+        android:stretchColumns="*">
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/cardio_workout_distance_completed"
+                android:id="@+id/textView18"
+                android:layout_column="0"
+                android:layout_gravity="center" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/cardio_workout_exertion_level"
+                android:id="@+id/textView19"
+                android:layout_column="1"
+                android:layout_gravity="center" />
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_column="0"
+                android:layout_gravity="center">
+                <EditText
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:ems="10"
+                    android:id="@+id/edit_text_distance_completed"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="@string/cardio_workout_units_miles"
+                    android:id="@+id/textView20"/>
+            </LinearLayout>
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal">
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cardio_workout_exertion_level_easy"
+                    android:id="@+id/easy_cardio"
+                    android:layout_weight="0.08"
+                    android:onClick="onRadioButtonClicked"
+                    android:checked="false"
+                    android:layout_gravity="center_horizontal"/>
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cardio_workout_exertion_level_moderate"
+                    android:id="@+id/moderate_cardio"
+                    android:layout_weight="0.08"
+                    android:onClick="onRadioButtonClicked"
+                    android:checked="false"
+                    android:layout_gravity="center_horizontal"
+                    />
+                <RadioButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cardio_workout_exertion_level_hard"
+                    android:id="@+id/hard_cardio"
+                    android:layout_weight="0.08"
+                    android:onClick="onRadioButtonClicked"
+                    android:checked="false"
+                    android:layout_gravity="center_horizontal"/>
+            </RadioGroup>
+        </TableRow>
+    </TableLayout>
     <Button
         android:layout_width="218dp"
-        android:layout_height="45dp"
-        android:text="COMPLETE"
+        android:layout_height="0dp"
+        android:text="@string/cardio_workout_button_complete"
         android:id="@+id/complete_cardio"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/button_shape_press"
         android:layout_weight="0.17"
-        android:textSize="35dp" />
-
+        android:textSize="24sp"
+        android:layout_marginTop="16dp"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:id="@+id/completed_time"
+        android:id="@+id/text_view_completed_time"
         android:layout_gravity="center_horizontal" />
-
 </LinearLayout>

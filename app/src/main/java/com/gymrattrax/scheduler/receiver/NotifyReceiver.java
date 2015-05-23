@@ -42,9 +42,11 @@ public class NotifyReceiver extends BroadcastReceiver {
         if (sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_ENABLED_ALL, true)) {
             Calendar lastWorkoutNotify = Calendar.getInstance();
             try {
-                String dateString = dbh.getProfileInfo(DatabaseContract.ProfileTable.KEY_LAST_NOTIFY_WORKOUT);
+                String dateString = dbh.getProfileInfo(
+                        DatabaseContract.ProfileTable.KEY_LAST_NOTIFY_WORKOUT);
                 Date lastWorkoutNotifyDate = dbh.convertDate(dateString);
-                if (BuildConfig.DEBUG_MODE) Log.d(TAG, "The latest workout notification was on " + dateString + ".");
+                if (BuildConfig.DEBUG_MODE)
+                    Log.d(TAG, "The latest workout notification was on " + dateString + ".");
                 lastWorkoutNotify.setTime(lastWorkoutNotifyDate);
             } catch (ParseException e) {
                 Log.d(TAG, "Date parsing failed. Something unexpected has happened. " +
@@ -52,20 +54,25 @@ public class NotifyReceiver extends BroadcastReceiver {
             }
             Calendar lastWeightNotify = Calendar.getInstance();
             try {
-                String dateString = dbh.getProfileInfo(DatabaseContract.ProfileTable.KEY_LAST_NOTIFY_WEIGHT);
+                String dateString = dbh.getProfileInfo(
+                        DatabaseContract.ProfileTable.KEY_LAST_NOTIFY_WEIGHT);
                 Date lastWeightNotifyDate = dbh.convertDate(dateString);
-                if (BuildConfig.DEBUG_MODE) Log.d(TAG, "The latest weight notification was on " + dateString + ".");
+                if (BuildConfig.DEBUG_MODE)
+                    Log.d(TAG, "The latest weight notification was on " + dateString + ".");
                 lastWeightNotify.setTime(lastWeightNotifyDate);
             } catch (ParseException e) {
                 Log.d(TAG, "Date parsing failed. Something unexpected has happened. " +
                         "You should have a date if notifications are on. Resetting to today.");
             }
 
-            boolean defaultEnabled = sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_ENABLED, true);
-            boolean defaultVibrate = sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_VIBRATE, true);
+            boolean defaultEnabled = sharedPref.getBoolean(
+                    SettingsActivity.PREF_NOTIFY_ENABLED, true);
+            boolean defaultVibrate = sharedPref.getBoolean(
+                    SettingsActivity.PREF_NOTIFY_VIBRATE, true);
             int defaultMinutes = Integer.parseInt(
                     sharedPref.getString(SettingsActivity.PREF_NOTIFY_ADVANCE, "0"));
-            Uri defaultTone = Uri.parse(sharedPref.getString(SettingsActivity.PREF_NOTIFY_TONE, ""));
+            Uri defaultTone = Uri.parse(
+                    sharedPref.getString(SettingsActivity.PREF_NOTIFY_TONE, ""));
 
             Calendar lastWeek = Calendar.getInstance();
             lastWeek.add(Calendar.DAY_OF_MONTH, -7);
@@ -75,7 +82,8 @@ public class NotifyReceiver extends BroadcastReceiver {
             if (BuildConfig.DEBUG_MODE) Log.d(TAG, "workouts.length = " + workouts.length);
 
             for (WorkoutItem workoutItem : workouts) {
-                if (BuildConfig.DEBUG_MODE) Log.d(TAG, "Looking into workout ID: " + workoutItem.getID() + "...");
+                if (BuildConfig.DEBUG_MODE)
+                    Log.d(TAG, "Looking into workout ID: " + workoutItem.getID() + "...");
                 if (workoutItem.isNotificationDefault()) {
                     if (defaultEnabled) {
                         workoutItem.setNotificationEnabled(true);
@@ -92,23 +100,29 @@ public class NotifyReceiver extends BroadcastReceiver {
                     calendar.setTime(workoutItem.getDateScheduled());
                     calendar.add(Calendar.MINUTE, -workoutItem.getNotificationMinutesInAdvance());
                     if (calendar.after(lastWorkoutNotify)) {
-                        if (BuildConfig.DEBUG_MODE) Log.d(TAG, "About to set notification (ID: " + workoutItem.getID() + ").");
+                        if (BuildConfig.DEBUG_MODE)
+                            Log.d(
+                                TAG,
+                                "About to set notification (ID: " + workoutItem.getID() + ").");
                         setNotification(context, calendar, pIntent);
                     } else {
-                        if (BuildConfig.DEBUG_MODE) Log.d(TAG, "Notification (ID: " + workoutItem.getID() + ") not set.");
+                        if (BuildConfig.DEBUG_MODE)
+                            Log.d(TAG, "Notification (ID: " + workoutItem.getID() + ") not set.");
                     }
                 } else {
-                    if (BuildConfig.DEBUG_MODE) Log.d(TAG, "Notification (ID: " + workoutItem.getID() + ") ignored.");
+                    if (BuildConfig.DEBUG_MODE)
+                        Log.d(TAG, "Notification (ID: " + workoutItem.getID() + ") ignored.");
                 }
             }
             dbh.close();
 
             if (sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_WEIGH_ENABLED, false)) {
                 Calendar prefTime = Calendar.getInstance();
-                prefTime.setTimeInMillis(sharedPref.getLong(SettingsActivity.PREF_NOTIFY_WEIGH_TIME, 0));
+                prefTime.setTimeInMillis(
+                        sharedPref.getLong(SettingsActivity.PREF_NOTIFY_WEIGH_TIME, 0));
                 Calendar todayDate = Calendar.getInstance();
                 Calendar calendar = Calendar.getInstance();
-                calendar.set(Calendar.HOUR, prefTime.get(Calendar.HOUR));
+                calendar.set(Calendar.HOUR_OF_DAY, prefTime.get(Calendar.HOUR_OF_DAY));
                 calendar.set(Calendar.MINUTE, prefTime.get(Calendar.MINUTE));
                 calendar.set(Calendar.SECOND, 0);
                 calendar.set(Calendar.MILLISECOND, 0);
@@ -121,7 +135,8 @@ public class NotifyReceiver extends BroadcastReceiver {
                 } else {
                     pIntent = createPendingIntent(context, 999, "Time to weigh-in", calendar,
                             sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_WEIGH_VIBRATE, true),
-                            Uri.parse(sharedPref.getString(SettingsActivity.PREF_NOTIFY_WEIGH_TONE, "")));
+                            Uri.parse(sharedPref.getString(
+                                    SettingsActivity.PREF_NOTIFY_WEIGH_TONE, "")));
                 }
                 if (calendar.after(lastWeightNotify)) {
                     if (BuildConfig.DEBUG_MODE) Log.d(TAG, "About to set weight notification.");
@@ -149,7 +164,8 @@ public class NotifyReceiver extends BroadcastReceiver {
             if (workoutItem.isNotificationEnabled()) {
                 PendingIntent pIntent = createPendingIntent(context, workoutItem);
 
-                AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+                AlarmManager alarmManager = (AlarmManager)context.getSystemService(
+                        Context.ALARM_SERVICE);
                 Log.d(TAG, "Notification (ID: " + workoutItem.getID() + ") canceled.");
                 alarmManager.cancel(pIntent);
             }

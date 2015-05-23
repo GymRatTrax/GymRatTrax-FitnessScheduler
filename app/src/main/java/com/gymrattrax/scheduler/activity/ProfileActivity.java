@@ -1,6 +1,5 @@
 package com.gymrattrax.scheduler.activity;
 
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -30,8 +29,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-public class ProfileActivity extends ActionBarActivity
-        implements DatePickerDialog.OnDateSetListener, NumberPicker.OnValueChangeListener {
+public class ProfileActivity extends ActionBarActivity {
 
     private Button editProfileButton;
     private EditText nameEditText;
@@ -55,7 +53,6 @@ public class ProfileActivity extends ActionBarActivity
         setContentView(R.layout.activity_fitness_profile);
 
         //database query and then set editTexts to display the appropriate data
-
         Button backProfileButton = (Button) findViewById(R.id.BackProfileButton);
         editProfileButton = (Button) findViewById(R.id.EditProfileButton);
         nameEditText = (EditText)findViewById(R.id.profile_name);
@@ -79,9 +76,7 @@ public class ProfileActivity extends ActionBarActivity
         lockInput();
         setTextFromProfile();
 
-
         backProfileButton.setOnClickListener(new Button.OnClickListener() {
-
             @Override
             public void onClick(View view) {
                 if (editing) {
@@ -92,7 +87,6 @@ public class ProfileActivity extends ActionBarActivity
                 } else {
                     finish();
                 }
-
             }
         });
 
@@ -113,57 +107,7 @@ public class ProfileActivity extends ActionBarActivity
                         toast.show();
                     }
                 } else {
-                    editing = true;
-                    nameEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
-                    nameEditText.setEnabled(true);
-                    nameEditText.setClickable(true);
-
-                    birthDateEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
-                    birthDateEditText.setEnabled(true);
-                    birthDateEditText.setClickable(true);
-                    birthDateEditText.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            showDateDialog();
-                        }
-                    });
-
-                    weightEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
-                    weightEditText.setEnabled(true);
-                    weightEditText.setClickable(true);
-                    weightEditText.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            showWeightDialog();
-                        }
-                    });
-
-                    heightEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
-                    heightEditText.setEnabled(true);
-                    heightEditText.setClickable(true);
-                    heightEditText.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            showHeightDialog();
-                        }
-                    });
-
-                    fatPercentageEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
-                    fatPercentageEditText.setEnabled(true);
-                    fatPercentageEditText.setClickable(true);
-
-                    littleExercise.setEnabled(true);
-                    littleExercise.setClickable(true);
-                    lightExercise.setEnabled(true);
-                    lightExercise.setClickable(true);
-                    modExercise.setEnabled(true);
-                    modExercise.setClickable(true);
-                    heavyExercise.setEnabled(true);
-                    heavyExercise.setClickable(true);
-                    profileSpinner.setEnabled(true);
-                    profileSpinner.setClickable(true);
-
-                    editProfileButton.setText("SAVE");
+                    editProfile();
                 }
             }
         });
@@ -185,13 +129,13 @@ public class ProfileActivity extends ActionBarActivity
             month = Integer.parseInt(div[0]);
             day = Integer.parseInt(div[1]);
         }
-        Button b1 = (Button) d.findViewById(R.id.button1);
-        Button b2 = (Button) d.findViewById(R.id.button2);
+        Button b1 = (Button) d.findViewById(R.id.decimal_button_set);
+        Button b2 = (Button) d.findViewById(R.id.decimal_button_cancel);
         final DatePicker dp = (DatePicker) d.findViewById(R.id.datePicker1);
-        dp.init(year, month-1, day, new DatePicker.OnDateChangedListener() {
+        dp.init(year, month - 1, day, new DatePicker.OnDateChangedListener() {
             @Override
             public void onDateChanged(DatePicker datePicker, int i, int i2, int i3) {
-                showDate(i, i2+1, i3);
+                showDate(i, i2 + 1, i3);
             }
         });
 
@@ -221,9 +165,9 @@ public class ProfileActivity extends ActionBarActivity
         final Dialog d = new Dialog(ProfileActivity.this);
         d.setTitle("Height (in inches)");
         d.setContentView(R.layout.dialog_integer);
-        Button b1 = (Button) d.findViewById(R.id.button1);
-        Button b2 = (Button) d.findViewById(R.id.button2);
-        final NumberPicker np = (NumberPicker) d.findViewById(R.id.numberPicker1);
+        Button b1 = (Button) d.findViewById(R.id.decimal_button_set);
+        Button b2 = (Button) d.findViewById(R.id.decimal_button_cancel);
+        final NumberPicker np = (NumberPicker) d.findViewById(R.id.decimal_number_picker_integer);
         np.setMaxValue(100);
         np.setMinValue(0);
         String height = heightEditText.getText().toString();
@@ -231,7 +175,6 @@ public class ProfileActivity extends ActionBarActivity
         int heightInteger = (int)heightIntegerDouble;
         np.setValue(heightInteger);
         np.setWrapSelectorWheel(false);
-        np.setOnValueChangedListener(this);
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -249,41 +192,39 @@ public class ProfileActivity extends ActionBarActivity
     }
 
     public void showWeightDialog() {
-        final Dialog d = new Dialog(ProfileActivity.this);
-        d.setTitle("Weight (in pounds)");
-        d.setContentView(R.layout.dialog_decimal);
-        Button b1 = (Button) d.findViewById(R.id.button1);
-        Button b2 = (Button) d.findViewById(R.id.button2);
+        final Dialog dialogWeight = new Dialog(ProfileActivity.this);
+        dialogWeight.setTitle("Weight (in pounds)");
+        dialogWeight.setContentView(R.layout.dialog_decimal);
+        Button b1 = (Button) dialogWeight.findViewById(R.id.decimal_button_set);
+        Button b2 = (Button) dialogWeight.findViewById(R.id.decimal_button_cancel);
         String weight = weightEditText.getText().toString();
         String[] div = weight.split(Pattern.quote("."), 2);
         int weightInteger = Integer.parseInt(div[0]);
         int weightDecimal = Integer.parseInt(div[1]);
-        final NumberPicker np1 = (NumberPicker) d.findViewById(R.id.numberPicker1);
+        final NumberPicker np1 = (NumberPicker) dialogWeight.findViewById(R.id.decimal_number_picker_integer);
         np1.setMaxValue(1000);
         np1.setMinValue(0);
         np1.setValue(weightInteger);
         np1.setWrapSelectorWheel(false);
-        np1.setOnValueChangedListener(this);
-        final NumberPicker np2 = (NumberPicker) d.findViewById(R.id.numberPicker2);
+        final NumberPicker np2 = (NumberPicker) dialogWeight.findViewById(R.id.decimal_number_picker_fractional);
         np2.setMaxValue(9);
         np2.setMinValue(0);
         np2.setValue(weightDecimal);
         np2.setWrapSelectorWheel(false);
-        np2.setOnValueChangedListener(this);
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 weightEditText.setText(String.valueOf(np1.getValue()) + "." + String.valueOf(np2.getValue()));
-                d.dismiss();
+                dialogWeight.dismiss();
             }
         });
         b2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                d.dismiss();
+                dialogWeight.dismiss();
             }
         });
-        d.show();
+        dialogWeight.show();
     }
 
     @Override
@@ -408,8 +349,61 @@ public class ProfileActivity extends ActionBarActivity
         profileItem = new ProfileItem(this);
     }
 
-    public void editProfile(View view){
-        // unlock EditText fields and spinner
+    /**
+     * Unlocks EditText and Spinner elements.
+     */
+    public void editProfile(){
+        editing = true;
+        nameEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
+        nameEditText.setEnabled(true);
+        nameEditText.setClickable(true);
+
+        birthDateEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
+        birthDateEditText.setEnabled(true);
+        birthDateEditText.setClickable(true);
+        birthDateEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDateDialog();
+            }
+        });
+
+        weightEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
+        weightEditText.setEnabled(true);
+        weightEditText.setClickable(true);
+        weightEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showWeightDialog();
+            }
+        });
+
+        heightEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
+        heightEditText.setEnabled(true);
+        heightEditText.setClickable(true);
+        heightEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showHeightDialog();
+            }
+        });
+
+        fatPercentageEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
+        fatPercentageEditText.setEnabled(true);
+        fatPercentageEditText.setClickable(true);
+
+        littleExercise.setEnabled(true);
+        littleExercise.setClickable(true);
+        lightExercise.setEnabled(true);
+        lightExercise.setClickable(true);
+        modExercise.setEnabled(true);
+        modExercise.setClickable(true);
+        heavyExercise.setEnabled(true);
+        heavyExercise.setClickable(true);
+        profileSpinner.setEnabled(true);
+        profileSpinner.setClickable(true);
+
+        editProfileButton.setText("SAVE");
     }
 
     /**
@@ -554,15 +548,5 @@ public class ProfileActivity extends ActionBarActivity
         }
 
         return ""; //No errors found.
-    }
-
-    @Override
-    public void onDateSet(DatePicker datePicker, int i, int i2, int i3) {
-
-    }
-
-    @Override
-    public void onValueChange(NumberPicker numberPicker, int i, int i2) {
-
     }
 }

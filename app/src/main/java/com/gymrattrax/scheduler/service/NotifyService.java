@@ -26,8 +26,6 @@ import com.gymrattrax.scheduler.activity.SettingsActivity;
 import com.gymrattrax.scheduler.activity.StrengthWorkoutActivity;
 import com.gymrattrax.scheduler.data.DatabaseContract;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.CardioWorkoutItem;
-import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
 import java.util.Calendar;
@@ -51,6 +49,7 @@ public class NotifyService extends Service {
 
     private int id = -1;
     private String name = "GymRatTrax";
+    //TODO: Use these variables consistently or not at all.
     private int hour = -1;
     private int minute = -1;
     private String tone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION).toString();

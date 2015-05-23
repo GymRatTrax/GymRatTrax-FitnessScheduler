@@ -33,7 +33,6 @@ import com.google.android.gms.fitness.result.SessionStopResult;
 import com.google.android.gms.games.Games;
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.ExerciseName;
 import com.gymrattrax.scheduler.model.ProfileItem;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.model.WorkoutItem;
@@ -46,8 +45,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-// april 11: added functionality that informs user that workout item has been logged.
-// TODO: display calories burned after workout has been logged
 public class StrengthWorkoutActivity extends LoginActivity {
     private final static String TAG = "StrengthWorkoutActivity";
     int sets;
@@ -389,6 +386,7 @@ public class StrengthWorkoutActivity extends LoginActivity {
 
         double caloriesBurned = mets * userWeight * time;
         w.setCaloriesBurned(caloriesBurned);
+        //TODO: Write calories burned to parcel
 //        session.writeToParcel();
         dbh.completeWorkout(w, true);
         List<String> achievementsUnlocked = dbh.checkForAchievements();
@@ -404,7 +402,7 @@ public class StrengthWorkoutActivity extends LoginActivity {
         for (String achievement : achievementsUnlocked) {
             Games.Achievements.unlock(mGoogleApiClient, achievement);
         }
-        if (w.getCaloriesBurned() > 98 && w.getCaloriesBurned() < 102) {
+        if (w.getCaloriesBurned() > 95 && w.getCaloriesBurned() < 105) {
             Games.Achievements.unlock(mGoogleApiClient,
                     getString(R.string.achievement_one_heck_of_a_snack_pack));
         }

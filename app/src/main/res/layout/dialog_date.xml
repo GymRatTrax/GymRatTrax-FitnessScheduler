@@ -15,7 +15,7 @@
         android:background="@color/primary100" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/decimal_button_cancel"
         android:layout_width="100dp"
         android:layout_height="40dp"
         android:layout_below="@+id/datePicker1"
@@ -29,14 +29,14 @@
         android:text="Cancel" />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/decimal_button_set"
         android:layout_width="100dp"
         android:layout_height="40dp"
         android:textSize="20sp"
         android:background="@drawable/button_shp_rvrs_press"
         android:shadowColor="@color/shadow"
         android:text="Set"
-        android:layout_alignTop="@+id/button2"
+        android:layout_alignTop="@+id/decimal_button_cancel"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="20dp"

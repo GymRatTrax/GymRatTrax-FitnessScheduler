@@ -14,7 +14,7 @@ public class LoginBaseActivity extends Activity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
-    private static final String TAG = "BaseActivity";
+    private static final String TAG = "LoginBaseActivity";
 
     /**
      * Google API client.

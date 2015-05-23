@@ -5,8 +5,6 @@ import android.test.RenamingDelegatingContext;
 
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.ExerciseName;
-import com.gymrattrax.scheduler.model.ExerciseType;
-import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
 import java.text.ParseException;
@@ -30,18 +28,16 @@ public class DatabaseHelperTest extends AndroidTestCase {
     }
 
     private WorkoutItem getWorkout() {
-        WorkoutItem workout = new StrengthWorkoutItem();
-        workout.setName(ExerciseName.CRUNCH);
+        WorkoutItem workout = new WorkoutItem(ExerciseName.Abs.CRUNCH);
         try {
             workout.setDateScheduled(dbh.convertDate("2015-03-20 15:00:00.000"));
         } catch (ParseException e) {
             e.printStackTrace();
         }
         workout.setTimeScheduled(30);
-        workout.setType(ExerciseType.STRENGTH);
-        ((StrengthWorkoutItem) workout).setWeightUsed(15);
-        ((StrengthWorkoutItem) workout).setRepsScheduled(12);
-        ((StrengthWorkoutItem) workout).setSetsScheduled(4);
+        workout.setWeightUsed(15);
+        workout.setRepsScheduled(12);
+        workout.setSetsScheduled(4);
         workout.setNotificationEnabled(false);
         return workout;
     }
@@ -61,11 +57,11 @@ public class DatabaseHelperTest extends AndroidTestCase {
         assertEquals(workout.getTimeScheduled(), returnWorkout.getTimeScheduled());
         assertEquals(workout.getTimeSpent(), returnWorkout.getTimeSpent());
         assertEquals(workout.getExertionLevel(), returnWorkout.getExertionLevel());
-        assertEquals(((StrengthWorkoutItem)workout).getWeightUsed(), ((StrengthWorkoutItem)returnWorkout).getWeightUsed());
-        assertEquals(((StrengthWorkoutItem)workout).getRepsScheduled(), ((StrengthWorkoutItem)returnWorkout).getRepsScheduled());
-        assertEquals(((StrengthWorkoutItem)workout).getRepsCompleted(), ((StrengthWorkoutItem)returnWorkout).getRepsCompleted());
-        assertEquals(((StrengthWorkoutItem)workout).getSetsScheduled(), ((StrengthWorkoutItem)returnWorkout).getSetsScheduled());
-        assertEquals(((StrengthWorkoutItem)workout).getSetsCompleted(), ((StrengthWorkoutItem)returnWorkout).getSetsCompleted());
+        assertEquals(workout.getWeightUsed(), returnWorkout.getWeightUsed());
+        assertEquals(workout.getRepsScheduled(), returnWorkout.getRepsScheduled());
+        assertEquals(workout.getRepsCompleted(), returnWorkout.getRepsCompleted());
+        assertEquals(workout.getSetsScheduled(), returnWorkout.getSetsScheduled());
+        assertEquals(workout.getSetsCompleted(), returnWorkout.getSetsCompleted());
     }
 
     public void testUpdateWorkout() {
@@ -74,12 +70,12 @@ public class DatabaseHelperTest extends AndroidTestCase {
         assertTrue(id > 0);
         workout.setID((int) id);
         workout.setTimeSpent(17);
-        ((StrengthWorkoutItem)workout).setRepsCompleted(10);
-        ((StrengthWorkoutItem)workout).setSetsCompleted(3);
+        workout.setRepsCompleted(10);
+        workout.setSetsCompleted(3);
         workout.setCaloriesBurned(120);
         workout.setExertionLevel(2);
 
-        int result = dbh.completeWorkout(workout);
+        int result = dbh.completeWorkout(workout, true);
         assertTrue(result > 0);
 
         WorkoutItem returnWorkout = dbh.getWorkoutById(id);
@@ -92,11 +88,11 @@ public class DatabaseHelperTest extends AndroidTestCase {
         assertEquals(workout.getTimeScheduled(), returnWorkout.getTimeScheduled());
         assertEquals(workout.getTimeSpent(), returnWorkout.getTimeSpent());
         assertEquals(workout.getExertionLevel(), returnWorkout.getExertionLevel());
-        assertEquals(((StrengthWorkoutItem)workout).getWeightUsed(), ((StrengthWorkoutItem)returnWorkout).getWeightUsed());
-        assertEquals(((StrengthWorkoutItem)workout).getRepsScheduled(), ((StrengthWorkoutItem)returnWorkout).getRepsScheduled());
-        assertEquals(((StrengthWorkoutItem)workout).getRepsCompleted(), ((StrengthWorkoutItem)returnWorkout).getRepsCompleted());
-        assertEquals(((StrengthWorkoutItem)workout).getSetsScheduled(), ((StrengthWorkoutItem)returnWorkout).getSetsScheduled());
-        assertEquals(((StrengthWorkoutItem)workout).getSetsCompleted(), ((StrengthWorkoutItem)returnWorkout).getSetsCompleted());
+        assertEquals(workout.getWeightUsed(), returnWorkout.getWeightUsed());
+        assertEquals(workout.getRepsScheduled(), returnWorkout.getRepsScheduled());
+        assertEquals(workout.getRepsCompleted(), returnWorkout.getRepsCompleted());
+        assertEquals(workout.getSetsScheduled(), returnWorkout.getSetsScheduled());
+        assertEquals(workout.getSetsCompleted(), returnWorkout.getSetsCompleted());
     }
 
     public void testDeleteWorkout() {

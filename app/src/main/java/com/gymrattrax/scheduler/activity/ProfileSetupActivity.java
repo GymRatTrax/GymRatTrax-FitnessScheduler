@@ -125,8 +125,8 @@ public class ProfileSetupActivity extends ActionBarActivity
         final Dialog d = new Dialog(ProfileSetupActivity.this);
         d.setTitle("Weight (in pounds)");
         d.setContentView(R.layout.dialog_decimal);
-        Button b1 = (Button) d.findViewById(R.id.button1);
-        Button b2 = (Button) d.findViewById(R.id.button2);
+        Button b1 = (Button) d.findViewById(R.id.decimal_button_set);
+        Button b2 = (Button) d.findViewById(R.id.decimal_button_cancel);
         String weight = weightEditText.getText().toString();
         String[] div = weight.split(Pattern.quote("."), 2);
         int weightInteger = 165;
@@ -135,13 +135,13 @@ public class ProfileSetupActivity extends ActionBarActivity
             weightInteger = Integer.parseInt(div[0]);
             weightDecimal = Integer.parseInt(div[1]);
         } catch (NumberFormatException|ArrayIndexOutOfBoundsException ignored) {}
-        final NumberPicker np1 = (NumberPicker) d.findViewById(R.id.numberPicker1);
+        final NumberPicker np1 = (NumberPicker) d.findViewById(R.id.decimal_number_picker_integer);
         np1.setMaxValue(1000);
         np1.setMinValue(0);
         np1.setValue(weightInteger);
         np1.setWrapSelectorWheel(false);
         np1.setOnValueChangedListener(this);
-        final NumberPicker np2 = (NumberPicker) d.findViewById(R.id.numberPicker2);
+        final NumberPicker np2 = (NumberPicker) d.findViewById(R.id.decimal_number_picker_fractional);
         np2.setMaxValue(9);
         np2.setMinValue(0);
         np2.setValue(weightDecimal);
@@ -166,9 +166,9 @@ public class ProfileSetupActivity extends ActionBarActivity
         final Dialog d = new Dialog(this);
         d.setTitle("Height (in inches)");
         d.setContentView(R.layout.dialog_integer);
-        Button b1 = (Button) d.findViewById(R.id.button1);
-        Button b2 = (Button) d.findViewById(R.id.button2);
-        final NumberPicker np = (NumberPicker) d.findViewById(R.id.numberPicker1);
+        Button b1 = (Button) d.findViewById(R.id.decimal_button_set);
+        Button b2 = (Button) d.findViewById(R.id.decimal_button_cancel);
+        final NumberPicker np = (NumberPicker) d.findViewById(R.id.decimal_number_picker_integer);
         np.setMaxValue(100);
         np.setMinValue(0);
         String height = heightEditText.getText().toString();
@@ -215,8 +215,8 @@ public class ProfileSetupActivity extends ActionBarActivity
                 day = Integer.parseInt(div[1]);
             }
         } catch (NumberFormatException|ArrayIndexOutOfBoundsException ignored) {}
-        Button b1 = (Button) d.findViewById(R.id.button1);
-        Button b2 = (Button) d.findViewById(R.id.button2);
+        Button b1 = (Button) d.findViewById(R.id.decimal_button_set);
+        Button b2 = (Button) d.findViewById(R.id.decimal_button_cancel);
         final DatePicker dp = (DatePicker) d.findViewById(R.id.datePicker1);
         dp.init(year, month-1, day, new DatePicker.OnDateChangedListener() {
             @Override

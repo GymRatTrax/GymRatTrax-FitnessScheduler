@@ -157,4 +157,15 @@
     <string name="stats_overall_reps_scheduled">Reps scheduled</string>
     <string name="stats_overall_reps_completed">Reps completed</string>
     <string name="stats_overall_completion">Completion rate</string>
+    <string name="cardio_workout_tutorial">Tutorial:</string>
+    <string name="cardio_workout_youtube_button_description">YouTube external link</string>
+    <string name="cardio_workout_button_start">START</string>
+    <string name="cardio_workout_button_stop">STOP</string>
+    <string name="cardio_workout_distance_completed">Distance completed</string>
+    <string name="cardio_workout_exertion_level">Exertion level</string>
+    <string name="cardio_workout_units_miles">miles</string>
+    <string name="cardio_workout_exertion_level_easy">Easy</string>
+    <string name="cardio_workout_exertion_level_moderate">Moderate</string>
+    <string name="cardio_workout_exertion_level_hard">Hard</string>
+    <string name="cardio_workout_button_complete">COMPLETE</string>
 </resources>

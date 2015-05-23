@@ -1,18 +1,22 @@
 package com.gymrattrax.scheduler.activity;
 
+import android.app.Dialog;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.Chronometer;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.content.*;
-import android.app.*;
 import android.os.*;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -41,60 +45,53 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
-/** TODO: convert chronometer time into an estimation
- *  Complete cardio workouts
- *  if calories have been calculated, inform user workout is completed
- */
+//TODO: convert chronometer time into an estimation
 public class CardioWorkoutActivity extends LoginActivity {
     private final static String TAG = "CardioWorkoutActivity";
-    private long lastPause;
-    double timeScheduled;
-    double time;
-    int exertionLvl;
-    Button completeWorkout;
-    Button start;
-    Button stop;
-    Chronometer timer;
-    double recordedTime = 0;
-    TextView goalTime;
-    TextView completedTime;
-    long timerState;
-    static final String TIMER_STATE = "timerState";
-    WorkoutItem workoutItem;
-    int ID;
-    double userWeight;
-    String timeString;
-    ImageButton linkButton;
+    private long timeSpentInMilliseconds;
+    private int exertionLevel;
+    private Chronometer chronometer;
+    private TextView textViewCompletedTime;
+    private long chronometerTargetBase;
+    private static final String CHRONOMETER_TARGET_BASE = "chronometerTargetBase";
+    private WorkoutItem workoutItem;
+    private int ID;
     private boolean fitSetup = false;
     private Session session;
     private long startTime;
     private long endTime;
+    private EditText editTextDistanceComplete;
+    private Button buttonStart;
+    private Button buttonStop;
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle savedInstanceState){
-        savedInstanceState.putLong(TIMER_STATE, timerState);
+        savedInstanceState.putLong(CHRONOMETER_TARGET_BASE, chronometerTargetBase);
         super.onSaveInstanceState(savedInstanceState);
     }
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            timerState = savedInstanceState.getLong(TIMER_STATE);
+            chronometerTargetBase = savedInstanceState.getLong(CHRONOMETER_TARGET_BASE);
         }
         setContentView(R.layout.activity_cardio_workout);
 
         DatabaseHelper dbh = new DatabaseHelper(this);
 
-        TextView title = (TextView) findViewById(R.id.cardio_title);
-        goalTime = (TextView) findViewById(R.id.scheduled_time);
-        completedTime = (TextView)findViewById(R.id.completed_time);
-        completeWorkout = (Button) findViewById(R.id.complete_cardio);
-        timer = (Chronometer) findViewById(R.id.chronometer);
-        start = (Button) findViewById(R.id.start_cardio);
-        stop = (Button) findViewById(R.id.stop_cardio);
+        TextView textViewTitle = (TextView) findViewById(R.id.cardio_title);
+        TextView textViewGoalTime = (TextView) findViewById(R.id.scheduled_time);
+        textViewCompletedTime = (TextView)findViewById(R.id.text_view_completed_time);
+        Button buttonCompleteWorkout = (Button) findViewById(R.id.complete_cardio);
+        chronometer = (Chronometer) findViewById(R.id.chronometer);
+        buttonStart = (Button) findViewById(R.id.start_cardio);
+        buttonStop = (Button) findViewById(R.id.stop_cardio);
+        editTextDistanceComplete = (EditText)findViewById(R.id.edit_text_distance_completed);
+        ImageButton buttonYouTube = (ImageButton) findViewById(R.id.youtube_cardio);
 
-        linkButton = (ImageButton) findViewById(R.id.youtube_cardio);
-        linkButton.setOnClickListener(new View.OnClickListener() {
+        buttonStop.setEnabled(false);
+        buttonYouTube.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -105,26 +102,37 @@ public class CardioWorkoutActivity extends LoginActivity {
             }
         });
 
-        start.setOnClickListener(new View.OnClickListener() {
+        buttonStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                timerState = (SystemClock.elapsedRealtime() + lastPause);
-                timer.setBase(timerState);
-                timer.start();
-                startFitTimer();
+                buttonStart.setEnabled(false);
+                chronometerTargetBase = SystemClock.elapsedRealtime() - timeSpentInMilliseconds;
+                chronometer.setBase(chronometerTargetBase);
+                chronometer.setEnabled(false);
+//                chronometer.setClickable(false);
+//                chronometer.setTextColor(Color.argb(255,220,220,220));
+                chronometer.start();
+                //TODO: Consider 'starting Fit timer'
+//                startFitTimer();
+                buttonStop.setEnabled(true);
             }
         });
 
-        stop.setOnClickListener(new View.OnClickListener() {
+        buttonStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lastPause = timer.getBase() - SystemClock.elapsedRealtime();
-                timer.stop();
+                buttonStop.setEnabled(false);
+                timeSpentInMilliseconds = SystemClock.elapsedRealtime() - chronometer.getBase();
+                chronometer.stop();
+                chronometer.setEnabled(true);
+//                chronometer.setClickable(true);
+//                chronometer.setTextColor(R.color.);
+                buttonStart.setEnabled(true);
             }
         });
 
-        Bundle b = getIntent().getExtras();
-        ID = b.getInt("ID");
+        Bundle bundle = getIntent().getExtras();
+        ID = bundle.getInt("ID");
         workoutItem = dbh.getWorkoutById(ID);
         Log.d(TAG, "ID = " + ID);
 
@@ -133,90 +141,33 @@ public class CardioWorkoutActivity extends LoginActivity {
         int secondsTotal = (int) (minutesDbl * 60);
         int seconds = secondsTotal % 60;
         int minutes = (secondsTotal - seconds) / 60;
-        timeString = String.format("%02d", minutes) + ":" + String.format("%02d", seconds);
+        String timeString = String.format("%02d", minutes) + ":" + String.format("%02d", seconds);
 
-        goalTime.setText("Scheduled Time: " + timeString);
-        title.setText(name);
+        textViewGoalTime.setText("Scheduled Time: " + timeString);
+        textViewTitle.setText(name);
 
-        completeWorkout.setOnClickListener(new View.OnClickListener() {
+        editTextDistanceComplete.setText(String.valueOf(workoutItem.getDistanceScheduled()));
 
+        buttonCompleteWorkout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //make sure time is documented
-                //make sure a radio button is selected
-                lastPause = timer.getBase() - SystemClock.elapsedRealtime();
-                timer.stop();
+                //TODO: make sure time is documented
+                //TODO: make sure a radio button is selected
+                timeSpentInMilliseconds = chronometer.getBase() - SystemClock.elapsedRealtime();
+                chronometer.stop();
 
-                //completedTime.setText("Logged Time: " + timer.getText().toString());
+                textViewCompletedTime.setText("Logged Time: " + chronometer.getText().toString());
 
                 // calculate minutes from total seconds
-                double timeForCalculation = getSecondsFromDurationString(timer.getText().toString())/60;
+                double timeForCalculation = getSecondsFromDurationString(chronometer.getText().toString()) / 60;
 
-
-                if (exertionLvl == 0) {
-                    final AlertDialog.Builder exertBuild = new AlertDialog.Builder(CardioWorkoutActivity.this);
-                    exertBuild.setTitle("Error");
-                    exertBuild.setMessage("Please select an Exertion Level.");
-
-                    exertBuild.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
-                    exertBuild.show();
-
-//                    exertBuild.setNegativeButton("No!", new DialogInterface.OnClickListener(){
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            dialog.cancel();
-//                        }
-//                    });
-//                    exertBuild.show();
-
-//                } else if (timer.getText().toString() != timeString){
-//                    final AlertDialog.Builder editTime = new AlertDialog.Builder(CardioWorkoutActivity.this);
-//                    editTime.setTitle("Attention");
-//                    editTime.setMessage("The amount of time spent is not the same as time scheduled.  Would you like to edit?");
-//                    /**
-//                     * Recreate xml file for dialogue box
-//                     */
-////                    View dialog_layout = getLayoutInflater().inflate(R.layout.dialog_layout, null);
-////                    EditText minutes = (EditText)dialog_layout.findViewById(R.id.Minutes);
-////                    EditText seconds = (EditText)dialog_layout.findViewById(R.id.Seconds);
-//
-////                    editTime.setView(dialog_layout);
-//                    editTime.show();
-//                }
-
-                }else if ((timer.getText().toString().equals(timeString))) {
-                    //prompt user input
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(CardioWorkoutActivity.this);
+                if (exertionLevel == 0) {
+                    Toast exertionLevelToast = Toast.makeText(
+                            CardioWorkoutActivity.this, "Please select an exertion level.",
+                            Toast.LENGTH_SHORT);
+                    exertionLevelToast.show();
+                } else {
                     updateCompletedWorkout();
-                    builder.setTitle("Attention");
-                    builder.setMessage("WORKOUT LOGGED!");
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
-                    builder.show();
-
-                }
-
-                else{
-                    AlertDialog.Builder notFinished = new AlertDialog.Builder(CardioWorkoutActivity.this);
-                    updateCompletedWorkout();
-                    notFinished.setTitle("Attention");
-                    notFinished.setMessage("WORKOUT LOGGED BUT SCHEDULED TIME NOT REACHED");
-                    notFinished.setPositiveButton("OK", new DialogInterface.OnClickListener(){
-                        @Override
-                        public void onClick(DialogInterface dialog, int which){
-                            dialog.cancel();
-                        }
-                    });
-
                 }
             }
         });
@@ -298,7 +249,7 @@ public class CardioWorkoutActivity extends LoginActivity {
             fitSetup = true;
         }
     }
-    private void setupFitCals() {
+    private void subscribeToGoogleFitCalories() {
         // 1. Subscribe to fitness data (see Recording Fitness Data)
         Fitness.RecordingApi.subscribe(mGoogleApiClient, DataType.TYPE_CALORIES_EXPENDED)
                 .setResultCallback(new ResultCallback<Status>() {
@@ -354,7 +305,7 @@ public class CardioWorkoutActivity extends LoginActivity {
                 .setIdentifier(workoutItem.getID() + ": calories")
                 .setDescription(workoutItem.getID() + ": calories")
                 .setStartTime(startTime, TimeUnit.MILLISECONDS)
-                .setStartTime(endTime, TimeUnit.MILLISECONDS)
+                .setEndTime(endTime, TimeUnit.MILLISECONDS)
                 .setActivity(activity)
                 .build();
 
@@ -385,15 +336,15 @@ public class CardioWorkoutActivity extends LoginActivity {
         switch(view.getId()) {
             case R.id.easy_cardio:
                 if (checked)
-                    exertionLvl = 1;
+                    exertionLevel = 1;
                 break;
             case R.id.moderate_cardio:
                 if (checked)
-                    exertionLvl = 2;
+                    exertionLevel = 2;
                 break;
             case R.id.hard_cardio:
                 if (checked)
-                    exertionLvl = 3;
+                    exertionLevel = 3;
                 break;
         }
     }
@@ -404,23 +355,20 @@ public class CardioWorkoutActivity extends LoginActivity {
         endTime = cal.getTimeInMillis();
 
         DatabaseHelper dbh = new DatabaseHelper(CardioWorkoutActivity.this);
-        //calculate calories (exertion lvl, time)
-        //set
         WorkoutItem w = dbh.getWorkoutById(ID);
-        w.setExertionLevel(exertionLvl);
-        double seconds = getSecondsFromDurationString(timer.getText().toString());
+        w.setExertionLevel(exertionLevel);
+        double seconds = getSecondsFromDurationString(chronometer.getText().toString());
         double timeRecorded = seconds/60;
         w.setTimeSpent(timeRecorded);
+        w.setDistanceCompleted(Double.valueOf(editTextDistanceComplete.getText().toString()));
         double mets = w.calculateMETs();
-        double time = w.getTimeSpent();
 
-        double weights[] = dbh.getLatestWeight();
-        userWeight = weights[0];
+        double latestWeight[] = dbh.getLatestWeight();
 
-        double caloriesBurned = mets * userWeight * time;
+        double caloriesBurned = mets * latestWeight[0] * timeRecorded;
         w.setCaloriesBurned(caloriesBurned);
         dbh.completeWorkout(w, true);
-//        setupFitCals();
+//        subscribeToGoogleFitCalories();
         List<String> achievementsUnlocked = dbh.checkForAchievements();
         dbh.close();
         Games.Achievements.increment(mGoogleApiClient,
@@ -430,11 +378,11 @@ public class CardioWorkoutActivity extends LoginActivity {
         Games.Events.increment(mGoogleApiClient,
                 getString(R.string.event_workouts_completed), 1);
         Games.Events.increment(mGoogleApiClient,
-                getString(R.string.event_time_spent_tracking_workouts), (int)time);
+                getString(R.string.event_time_spent_tracking_workouts), (int)timeRecorded);
         for (String achievement : achievementsUnlocked) {
             Games.Achievements.unlock(mGoogleApiClient, achievement);
         }
-        if (w.getCaloriesBurned() > 98 && w.getCaloriesBurned() < 102) {
+        if (w.getCaloriesBurned() > 95 && w.getCaloriesBurned() < 105) {
             Games.Achievements.unlock(mGoogleApiClient,
                     getString(R.string.achievement_one_heck_of_a_snack_pack));
         }
@@ -446,23 +394,23 @@ public class CardioWorkoutActivity extends LoginActivity {
         if (BuildConfig.DEBUG_MODE) Log.d(TAG, "Closing ongoing notification, if applicable.");
         NotifyReceiver.cancelOngoing(this, ID);
 
-        completedTime.setText(String.format("You have logged this workout. Time Spent: %s\nCalories Burned: %f", timer.getText().toString(),
+        textViewCompletedTime.setText(String.format("You have logged this workout. Time Spent: %s\nCalories Burned: %f", chronometer.getText().toString(),
                 w.getCaloriesBurned()));
 
-        PendingResult<SessionStopResult> pendingResult2 =
-                Fitness.SessionsApi.stopSession(mGoogleApiClient, session.getIdentifier());
-        Fitness.RecordingApi.unsubscribe(mGoogleApiClient, DataType.TYPE_DISTANCE_DELTA)
-                .setResultCallback(new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        if (status.isSuccess()) {
-                            Log.i(TAG, "Successfully unsubscribed for data type: " + DataType.TYPE_DISTANCE_DELTA);
-                        } else {
-                            // Subscription not removed
-                            Log.i(TAG, "Failed to unsubscribe for data type: " + DataType.TYPE_DISTANCE_DELTA);
-                        }
-                    }
-                });
+//        PendingResult<SessionStopResult> pendingResult2 =
+//                Fitness.SessionsApi.stopSession(mGoogleApiClient, session.getIdentifier());
+//        Fitness.RecordingApi.unsubscribe(mGoogleApiClient, DataType.TYPE_DISTANCE_DELTA)
+//                .setResultCallback(new ResultCallback<Status>() {
+//                    @Override
+//                    public void onResult(Status status) {
+//                        if (status.isSuccess()) {
+//                            Log.i(TAG, "Successfully unsubscribed for data type: " + DataType.TYPE_DISTANCE_DELTA);
+//                        } else {
+//                            // Subscription not removed
+//                            Log.i(TAG, "Failed to unsubscribe for data type: " + DataType.TYPE_DISTANCE_DELTA);
+//                        }
+//                    }
+//                });
     }
 
     public static int getSecondsFromDurationString(String value){
@@ -486,6 +434,57 @@ public class CardioWorkoutActivity extends LoginActivity {
         }
 
         return seconds + (minutes*60) + (hours*3600);
+    }
+    public void changeTime(View view) {
+        //TODO: Bring up dialog with "decimal" layout, prepopulated with minutes and seconds
+        //TODO: When user submits this, the difference is calculated and converted and subtracted from base
+        if (BuildConfig.DEBUG_MODE) {
+            Log.i(TAG, "chronometer.getBase() = " + chronometer.getBase());
+            Log.i(TAG, "SystemClock.elapsedRealtime() = " + SystemClock.elapsedRealtime());
+            Log.i(TAG, "chronometer.getFormat() = " + chronometer.getFormat());
+            Log.i(TAG, "chronometer.getText().toString() = " + chronometer.getText().toString());
+        }
+
+        final Dialog dialogTime = new Dialog(this);
+        dialogTime.setTitle("Time spent");
+        dialogTime.setContentView(R.layout.dialog_decimal);
+        Button buttonSet = (Button) dialogTime.findViewById(R.id.decimal_button_set);
+        Button buttonCancel = (Button) dialogTime.findViewById(R.id.decimal_button_cancel);
+        String timeCurrent = chronometer.getText().toString();
+        final int timeMinutesOriginal = Integer.parseInt(timeCurrent.split(Pattern.quote(":"), 2)[0]);
+        final int timeSecondsOriginal = Integer.parseInt(timeCurrent.split(Pattern.quote(":"), 2)[1]);
+        final NumberPicker numberPickerMinutes = (NumberPicker) dialogTime.findViewById(
+                R.id.decimal_number_picker_integer);
+        numberPickerMinutes.setMaxValue(200);
+        numberPickerMinutes.setMinValue(0);
+        numberPickerMinutes.setValue(timeMinutesOriginal);
+        numberPickerMinutes.setWrapSelectorWheel(false);
+        final NumberPicker numberPickerSeconds = (NumberPicker) dialogTime.findViewById(
+                R.id.decimal_number_picker_fractional);
+        numberPickerSeconds.setMaxValue(59);
+        numberPickerSeconds.setMinValue(0);
+        numberPickerSeconds.setValue(timeSecondsOriginal);
+        numberPickerSeconds.setWrapSelectorWheel(true);
+        buttonSet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int timeMinutesNew = numberPickerMinutes.getValue();
+                int timeSecondsNew = numberPickerSeconds.getValue();
+                int secondsElapsed = (timeMinutesNew - timeMinutesOriginal) * 60;
+                secondsElapsed = secondsElapsed + (timeSecondsNew - timeSecondsOriginal);
+                timeSpentInMilliseconds += secondsElapsed * 1000;
+                chronometerTargetBase = SystemClock.elapsedRealtime() - timeSpentInMilliseconds;
+                chronometer.setBase(chronometerTargetBase);
+                dialogTime.dismiss();
+            }
+        });
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogTime.dismiss();
+            }
+        });
+        dialogTime.show();
     }
 }
 
