@@ -166,12 +166,7 @@ public class CalorieNegationActivity extends ActionBarActivity implements ListVi
         ProfileItem profileItem = new ProfileItem(CalorieNegationActivity.this);
         ArrayList<String> workoutsArray = new ArrayList<String>();
 
-        /*
-        NOTE: Also, now that I understand more of how we determine METs values, I feel like
-        there is a more efficient and more accurate way to do it. Until I figure that out
-        completely, I am just using some local variables here. -CS
-         */
-
+        //TODO: Come up with a better way of creating METs values on-the-fly.
         double BMR = profileItem.getBMR();
 
         double cardio_light = 3.0;

@@ -19,22 +19,21 @@ import android.app.AlertDialog;
 import android.text.*;
 import android.content.DialogInterface;
 
-import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.fitness.Fitness;
-import com.google.android.gms.fitness.FitnessActivities;
 import com.google.android.gms.fitness.FitnessStatusCodes;
+import com.google.android.gms.fitness.data.DataPoint;
+import com.google.android.gms.fitness.data.DataSet;
+import com.google.android.gms.fitness.data.DataSource;
 import com.google.android.gms.fitness.data.DataType;
-import com.google.android.gms.fitness.data.Session;
-import com.google.android.gms.fitness.data.Subscription;
-import com.google.android.gms.  fitness.result.ListSubscriptionsResult;
-import com.google.android.gms.fitness.result.SessionStopResult;
+import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.games.Games;
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.ProfileItem;
 import com.gymrattrax.scheduler.R;
+import com.gymrattrax.scheduler.data.SendToGoogleFitHistory;
+import com.gymrattrax.scheduler.model.ProfileItem;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
@@ -47,19 +46,14 @@ import java.util.concurrent.TimeUnit;
 
 public class StrengthWorkoutActivity extends LoginActivity {
     private final static String TAG = "StrengthWorkoutActivity";
-    int sets;
-    int reps;
-    double weight;
-    int counter;
-    int ID;
-    TextView setsCompleted;
-    WorkoutItem w;
-    Button completeWorkout;
-    int exertionLvl;
-    double userWeight;
-    ImageButton link;
-    TextView status;
-    private Session session;
+    private int sets;
+    private int reps;
+    private int counter;
+    private int ID;
+    private TextView setsCompleted;
+    private WorkoutItem workoutItem;
+    private int exertionLevel;
+    private TextView status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,26 +65,23 @@ public class StrengthWorkoutActivity extends LoginActivity {
         TextView strengthReps = (TextView)findViewById(R.id.strength_reps);
         TextView weightUsed = (TextView)findViewById(R.id.weight_used);
         setsCompleted = (TextView)findViewById(R.id.completed_sets);
-        completeWorkout = (Button)findViewById(R.id.complete_strength);
-        link = (ImageButton)findViewById(R.id.youtube_strength);
+        Button completeWorkout = (Button) findViewById(R.id.complete_strength);
+        ImageButton link = (ImageButton) findViewById(R.id.youtube_strength);
         status = (TextView)findViewById(R.id.strength_status);
 
         Bundle b = getIntent().getExtras();
         ID = b.getInt("ID");
 
-        ProfileItem user = new ProfileItem(StrengthWorkoutActivity.this);
-        userWeight = user.getWeight();
-
         DatabaseHelper dbh = new DatabaseHelper(this);
-        w = dbh.getWorkoutById(ID);
-        title.setText(w.getName());
-        sets = w.getSetsScheduled();
-        reps = w.getRepsScheduled();
-        weight = w.getWeightUsed();
-        counter = w.getSetsCompleted();
+        workoutItem = dbh.getWorkoutById(ID);
+        title.setText(workoutItem.getName());
+        sets = workoutItem.getSetsScheduled();
+        reps = workoutItem.getRepsScheduled();
+        double weight = workoutItem.getWeightUsed();
+        counter = workoutItem.getSetsCompleted();
 
-        if (w.getCaloriesBurned() > 0){
-            status.setText(String.format("You have logged this workout. Calories burned: %f", w.getCaloriesBurned()));
+        if (workoutItem.getCaloriesBurned() > 0){
+            status.setText(String.format("You have logged this workout. Calories burned: %f", workoutItem.getCaloriesBurned()));
         }
 
         setsCompleted.setText("Completed Sets: " + Integer.toString(counter));
@@ -100,9 +91,9 @@ public class StrengthWorkoutActivity extends LoginActivity {
 
         link.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(String.format("https://www.youtube.com/results?search_query=how+to+do+%s", w.getName())));
+                intent.setData(Uri.parse(String.format("https://www.youtube.com/results?search_query=how+to+do+%s", workoutItem.getName())));
                 startActivity(intent);
             }
         });
@@ -114,7 +105,7 @@ public class StrengthWorkoutActivity extends LoginActivity {
                 //check to see if all sets have been completed
                 //make sure time is documented
                 //make sure a radio button is selected
-                if (w.getCaloriesBurned() != 0){
+                if (workoutItem.getCaloriesBurned() != 0) {
                     final AlertDialog.Builder exertBuild = new AlertDialog.Builder(StrengthWorkoutActivity.this);
                     exertBuild.setTitle("Error");
                     exertBuild.setMessage("You have completed this Workout Item!");
@@ -126,8 +117,7 @@ public class StrengthWorkoutActivity extends LoginActivity {
                         }
                     });
                     exertBuild.show();
-                }
-                else if (w.getSetsCompleted() != w.getSetsScheduled()){
+                } else if (workoutItem.getSetsCompleted() != workoutItem.getSetsScheduled()) {
                     //prompt user input
                     AlertDialog.Builder builder = new AlertDialog.Builder(StrengthWorkoutActivity.this);
                     builder.setTitle("Attention");
@@ -137,7 +127,7 @@ public class StrengthWorkoutActivity extends LoginActivity {
                     builder.setPositiveButton("Yes!", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            if (exertionLvl == 0){
+                            if (exertionLevel == 0) {
                                 final AlertDialog.Builder exertBuild = new AlertDialog.Builder(StrengthWorkoutActivity.this);
                                 exertBuild.setTitle("Error");
                                 exertBuild.setMessage("Please select an Exertion Level.");
@@ -149,9 +139,7 @@ public class StrengthWorkoutActivity extends LoginActivity {
                                     }
                                 });
                                 exertBuild.show();
-                            }
-
-                            else {
+                            } else {
                                 updateCompletedWorkout();
                                 final AlertDialog.Builder finish = new AlertDialog.Builder(StrengthWorkoutActivity.this);
                                 finish.setTitle("COMPLETE");
@@ -161,7 +149,7 @@ public class StrengthWorkoutActivity extends LoginActivity {
                         }
                     });
 
-                    builder.setNegativeButton("No!", new DialogInterface.OnClickListener(){
+                    builder.setNegativeButton("No!", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.cancel();
@@ -169,9 +157,7 @@ public class StrengthWorkoutActivity extends LoginActivity {
                     });
                     builder.show();
 
-                }
-
-                else if (exertionLvl == 0){
+                } else if (exertionLevel == 0) {
                     final AlertDialog.Builder exertBuild = new AlertDialog.Builder(StrengthWorkoutActivity.this);
                     exertBuild.setTitle("Error");
                     exertBuild.setMessage("Please select an Exertion Level.");
@@ -183,8 +169,7 @@ public class StrengthWorkoutActivity extends LoginActivity {
                         }
                     });
                     exertBuild.show();
-                }
-                else{
+                } else {
                     updateCompletedWorkout();
                     final AlertDialog.Builder finish = new AlertDialog.Builder(StrengthWorkoutActivity.this);
                     finish.setTitle("COMPLETE");
@@ -250,12 +235,12 @@ public class StrengthWorkoutActivity extends LoginActivity {
 
         //populate screen with number of sets
         for (int i = 0; i < sets; i++) {
-            w.getSetsCompleted();
+            workoutItem.getSetsCompleted();
 
             final TableRow row = new TableRow(StrengthWorkoutActivity.this);
             LinearLayout main = new LinearLayout(StrengthWorkoutActivity.this);
             LinearLayout stack = new LinearLayout(StrengthWorkoutActivity.this);
-            TextView viewWeight = new TextView(StrengthWorkoutActivity.this);
+//            TextView viewWeight = new TextView(StrengthWorkoutActivity.this);
             final TextView viewSet = new TextView(StrengthWorkoutActivity.this);
             row.setId(1000 + i);
             main.setId(2000 + i);
@@ -299,7 +284,7 @@ public class StrengthWorkoutActivity extends LoginActivity {
                         //check to see if all sets have been completed
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(StrengthWorkoutActivity.this);
-                        builder.setTitle("MINUTES TAKEN TO COMPLETE SET:");
+                        builder.setTitle("Seconds Taken to Complete Set");
 
                         // Set up the input
                         final EditText input = new EditText(StrengthWorkoutActivity.this);
@@ -320,17 +305,17 @@ public class StrengthWorkoutActivity extends LoginActivity {
 
                                 // Error Check EditText Input *************************
                                 // add time spent to existing value
-                                double timeInHours = Double.parseDouble(input.getText().toString()) / 60;
-                                w.setTimeSpent(w.getTimeSpent() + timeInHours);
+                                double timeInMinutes = Double.parseDouble(input.getText().toString()) / 60;
+                                workoutItem.setTimeSpent(workoutItem.getTimeSpent() + timeInMinutes);
 
-                                w.setSetsCompleted(counter);
-                                w.setRepsCompleted(counter * reps);
+                                workoutItem.setSetsCompleted(counter);
+                                workoutItem.setRepsCompleted(counter * reps);
                                 //setRepsCompleted
 
-                                setsCompleted.setText("Sets Completed: " + Integer.toString(w.getSetsCompleted()));
+                                setsCompleted.setText("Sets Completed: " + Integer.toString(workoutItem.getSetsCompleted()));
 
                                 DatabaseHelper dbh = new DatabaseHelper(StrengthWorkoutActivity.this);
-                                dbh.completeWorkout(w, false);
+                                dbh.completeWorkout(workoutItem, false);
                                 dbh.close();
                             }
                         });
@@ -359,58 +344,45 @@ public class StrengthWorkoutActivity extends LoginActivity {
         switch(view.getId()) {
             case R.id.easy_strength:
                 if (checked)
-                    exertionLvl = 1;
+                    exertionLevel = 1;
                 break;
             case R.id.moderate_strength:
                 if (checked)
-                    exertionLvl = 2;
+                    exertionLevel = 2;
                 break;
             case R.id.hard_strength:
                 if (checked)
-                    exertionLvl = 3;
+                    exertionLevel = 3;
                 break;
         }
     }
 
     private void updateCompletedWorkout(){
+
+        workoutItem.setExertionLevel(exertionLevel);
+        double METs = workoutItem.calculateMETs();
+        double totalTimeInMinutes = workoutItem.getTimeSpent();
+
+        ProfileItem profileItem = new ProfileItem(this);
+        double caloriesBurned = METs * (profileItem.getBMR() / 24) * (totalTimeInMinutes / 60);
+        workoutItem.setCaloriesBurned(caloriesBurned);
+
         DatabaseHelper dbh = new DatabaseHelper(StrengthWorkoutActivity.this);
-        //calculate calories (exertion lvl, time)
-        //set
-        WorkoutItem w = dbh.getWorkoutById(ID);
-
-        double weights[] = dbh.getLatestWeight();
-        userWeight = weights[0];
-        w.setExertionLevel(exertionLvl);
-        double mets = w.calculateMETs();
-        double time = w.getTimeSpent();
-
-        double caloriesBurned = mets * userWeight * time;
-        w.setCaloriesBurned(caloriesBurned);
-        //TODO: Write calories burned to parcel
-//        session.writeToParcel();
-        dbh.completeWorkout(w, true);
+        dbh.completeWorkout(workoutItem, true);
         List<String> achievementsUnlocked = dbh.checkForAchievements();
         dbh.close();
-        Games.Achievements.increment(mGoogleApiClient,
-                getString(R.string.achievement_working_hard), 1);
-        Games.Achievements.increment(mGoogleApiClient,
-                getString(R.string.achievement_keep_it_100), 1);
-        Games.Events.increment(mGoogleApiClient,
-                getString(R.string.event_workouts_completed), 1);
-        Games.Events.increment(mGoogleApiClient,
-                getString(R.string.event_time_spent_tracking_workouts), (int)time);
-        for (String achievement : achievementsUnlocked) {
-            Games.Achievements.unlock(mGoogleApiClient, achievement);
-        }
-        if (w.getCaloriesBurned() > 95 && w.getCaloriesBurned() < 105) {
-            Games.Achievements.unlock(mGoogleApiClient,
-                    getString(R.string.achievement_one_heck_of_a_snack_pack));
+        if (mGoogleApiClient != null) {
+            insertIntoGoogleFitHistory((long)(totalTimeInMinutes*60*1000), (float)caloriesBurned);
+            unlockGooglePlayGamesAchievements((int)totalTimeInMinutes, achievementsUnlocked);
+        } else {
+            Log.e(TAG, "Could not connect to Google APIs.");
         }
 
         if (BuildConfig.DEBUG_MODE) Log.d(TAG, "Closing ongoing notification, if applicable.");
         NotifyReceiver.cancelOngoing(this, ID);
-        status.setText(String.format("You have logged this workout. Calories burned: %f", w.getCaloriesBurned()));
+        status.setText(String.format("You have logged this workout. Calories burned: %f", workoutItem.getCaloriesBurned()));
 
+        //TODO: Clean up Google Fit unsubscription.
 //        PendingResult<SessionStopResult> pendingResult2 =
 //                Fitness.SessionsApi.stopSession(mGoogleApiClient, session.getIdentifier());
 //        Fitness.RecordingApi.unsubscribe(mGoogleApiClient, DataType.TYPE_CALORIES_EXPENDED)
@@ -429,8 +401,10 @@ public class StrengthWorkoutActivity extends LoginActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        //TODO: Clean up Google Fit instantiation.
 //        buildFit();
     }
+    @Deprecated
     private void buildFit() {
         // Setting a start and end date using a range of 1 week before this moment.
         Calendar cal = Calendar.getInstance();
@@ -455,34 +429,79 @@ public class StrengthWorkoutActivity extends LoginActivity {
                         }
                     }
                 });
-        Fitness.RecordingApi.listSubscriptions(mGoogleApiClient, DataType.TYPE_CALORIES_EXPENDED)
-                // Create the callback to retrieve the list of subscriptions asynchronously.
-                .setResultCallback(new ResultCallback<ListSubscriptionsResult>() {
-                    @Override
-                    public void onResult(ListSubscriptionsResult listSubscriptionsResult) {
-                        for (Subscription sc : listSubscriptionsResult.getSubscriptions()) {
-                            DataType dt = sc.getDataType();
-                            Log.i(TAG, "Active subscription for data type: " + dt.getName());
-                        }
-                    }
-                });
+        //TODO: Clean up Google Fit Recording/Session uses.
+//        Fitness.RecordingApi.listSubscriptions(mGoogleApiClient, DataType.TYPE_CALORIES_EXPENDED)
+//                // Create the callback to retrieve the list of subscriptions asynchronously.
+//                .setResultCallback(new ResultCallback<ListSubscriptionsResult>() {
+//                    @Override
+//                    public void onResult(ListSubscriptionsResult listSubscriptionsResult) {
+//                        for (Subscription sc : listSubscriptionsResult.getSubscriptions()) {
+//                            DataType dt = sc.getDataType();
+//                            Log.i(TAG, "Active subscription for data type: " + dt.getName());
+//                        }
+//                    }
+//                });
+//
+//        // 2. Create a session object
+//        // (provide a name, identifier, description and start time)
+//        Session session = new Session.Builder()
+//                .setName(workoutItem.getID() + ": " + workoutItem.getName())
+//                .setIdentifier(String.valueOf(workoutItem.getID()))
+//                .setDescription(workoutItem.getID() + ": " + workoutItem.getName())
+//                .setStartTime(startTime, TimeUnit.MILLISECONDS)
+//                .setActivity(FitnessActivities.STRENGTH_TRAINING)
+//                .build();
+//
+//        // 3. Invoke the Sessions API with:
+//        // - The Google API client object
+//        // - The request object
+//        PendingResult<Status> pendingResult =
+//                Fitness.SessionsApi.startSession(mGoogleApiClient, session);
+//
+//        // 4. Check the result (see other examples)
+    }
+    private void unlockGooglePlayGamesAchievements(int timeRecorded, List<String> achievementsUnlocked) {
+        Games.Achievements.increment(mGoogleApiClient,
+                getString(R.string.achievement_working_hard), 1);
+        Games.Achievements.increment(mGoogleApiClient,
+                getString(R.string.achievement_keep_it_100), 1);
+        Games.Events.increment(mGoogleApiClient,
+                getString(R.string.event_workouts_completed), 1);
+        Games.Events.increment(mGoogleApiClient,
+                getString(R.string.event_time_spent_tracking_workouts), (int)timeRecorded);
+        for (String achievement : achievementsUnlocked) {
+            Games.Achievements.unlock(mGoogleApiClient, achievement);
+        }
+        if (workoutItem.getCaloriesBurned() > 95 && workoutItem.getCaloriesBurned() < 105) {
+            Games.Achievements.unlock(mGoogleApiClient,
+                    getString(R.string.achievement_one_heck_of_a_snack_pack));
+        }
+    }
+    private void insertIntoGoogleFitHistory(long timeSpentInMilliseconds, float caloriesBurned) {
+        // Set a start and end time for our data, using a start time of 1 hour before this moment.
+        Calendar cal = Calendar.getInstance();
+        Date now = new Date();
+        cal.setTime(now);
+        long endTime = cal.getTimeInMillis();
+        long startTime = endTime - timeSpentInMilliseconds;
 
-        // 2. Create a session object
-        // (provide a name, identifier, description and start time)
-        session = new Session.Builder()
-                .setName(w.getID() + ": " + w.getName())
-                .setIdentifier(String.valueOf(w.getID()))
-                .setDescription(w.getID() + ": " + w.getName())
-                .setStartTime(startTime, TimeUnit.MILLISECONDS)
-                .setActivity(FitnessActivities.STRENGTH_TRAINING)
+        // Create a data source
+        DataSource dataSource = new DataSource.Builder()
+                .setAppPackageName(this)
+                .setDataType(DataType.TYPE_CALORIES_EXPENDED)
+                .setName(TAG + " - " + ID + " - calories")
+                .setType(DataSource.TYPE_DERIVED)
                 .build();
 
-        // 3. Invoke the Sessions API with:
-        // - The Google API client object
-        // - The request object
-        PendingResult<Status> pendingResult =
-                Fitness.SessionsApi.startSession(mGoogleApiClient, session);
+        // Create a data set
+        DataSet dataSet = DataSet.create(dataSource);
+        // For each data point, specify a start time, end time, and the data value -- in this case,
+        // the number of new steps.
+        DataPoint dataPoint = dataSet.createDataPoint()
+                .setTimeInterval(startTime, endTime, TimeUnit.MILLISECONDS);
+        dataPoint.getValue(Field.FIELD_CALORIES).setFloat(caloriesBurned);
+        dataSet.add(dataPoint);
 
-        // 4. Check the result (see other examples)
+        new SendToGoogleFitHistory(dataSet, mGoogleApiClient).execute("CALORIES");
     }
 }
