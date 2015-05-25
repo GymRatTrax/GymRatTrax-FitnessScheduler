@@ -16,7 +16,6 @@ import android.widget.Toast;
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.model.ExerciseName;
-import com.gymrattrax.scheduler.model.ExerciseType;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 import com.gymrattrax.scheduler.activity.SettingsActivity;
 
@@ -878,17 +877,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
         }
         cursor.close();
-        DecimalFormat decFmt = new DecimalFormat("#.0%");
+        DecimalFormat decimalFormat = new DecimalFormat("#.0%");
         statistics.put("stats_abs_completed", String.valueOf(completedAbs));
         statistics.put("stats_arms_completed", String.valueOf(completedArms));
         statistics.put("stats_cardio_completed", String.valueOf(completedCardio));
         statistics.put("stats_legs_completed", String.valueOf(completedLegs));
         statistics.put("stats_overall_completed", String.valueOf(completed));
-        statistics.put("stats_abs_percent", decFmt.format((double) completedAbs / completed));
-        statistics.put("stats_arms_percent", decFmt.format((double) completedArms / completed));
-        statistics.put("stats_cardio_percent", decFmt.format((double) completedCardio / completed));
-        statistics.put("stats_legs_percent", decFmt.format((double) completedLegs / completed));
-        statistics.put("stats_overall_percent", decFmt.format((double) completed / completed));
+        statistics.put("stats_abs_percent", decimalFormat.format((double) completedAbs / completed));
+        statistics.put("stats_arms_percent", decimalFormat.format((double) completedArms / completed));
+        statistics.put("stats_cardio_percent", decimalFormat.format((double) completedCardio / completed));
+        statistics.put("stats_legs_percent", decimalFormat.format((double) completedLegs / completed));
+        statistics.put("stats_overall_percent", decimalFormat.format((double) completed / completed));
 
         //proposed & commitment
         query = "SELECT " + DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE + ", COUNT(*)" +
@@ -930,27 +929,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         statistics.put("stats_legs_planned", String.valueOf(proposedLegs));
         statistics.put("stats_overall_planned", String.valueOf(proposed));
         if (proposedAbs > 0) {
-            statistics.put("stats_abs_commitment", decFmt.format((double) completedAbs / proposedAbs));
+            statistics.put("stats_abs_commitment", decimalFormat.format((double) completedAbs / proposedAbs));
         } else {
             statistics.put("stats_abs_commitment", "--");
         }
         if (proposedArms > 0) {
-            statistics.put("stats_arms_commitment", decFmt.format((double) completedArms / proposedArms));
+            statistics.put("stats_arms_commitment", decimalFormat.format((double) completedArms / proposedArms));
         } else {
             statistics.put("stats_arms_commitment", "--");
         }
         if (proposedCardio > 0) {
-            statistics.put("stats_cardio_commitment", decFmt.format((double) completedCardio / proposedCardio));
+            statistics.put("stats_cardio_commitment", decimalFormat.format((double) completedCardio / proposedCardio));
         } else {
             statistics.put("stats_cardio_commitment", "--");
         }
         if (proposedLegs > 0) {
-            statistics.put("stats_legs_commitment", decFmt.format((double) completedLegs / proposedLegs));
+            statistics.put("stats_legs_commitment", decimalFormat.format((double) completedLegs / proposedLegs));
         } else {
             statistics.put("stats_legs_commitment", "--");
         }
         if (proposed > 0) {
-            statistics.put("stats_overall_commitment", decFmt.format((double) completed / proposed));
+            statistics.put("stats_overall_commitment", decimalFormat.format((double) completed / proposed));
         } else {
             statistics.put("stats_overall_commitment", "--");
         }
@@ -1072,27 +1071,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         statistics.put("stats_legs_sets_completed", String.valueOf(setsCompletedLegs));
         statistics.put("stats_overall_sets_completed", String.valueOf(setsCompleted));
         if (repsScheduledAbs * setsScheduledAbs > 0) {
-            statistics.put("stats_abs_completion", decFmt.format((double) (repsCompletedAbs * setsCompletedAbs) / (repsScheduledAbs * setsScheduledAbs)));
+            statistics.put("stats_abs_completion", decimalFormat.format((double) (repsCompletedAbs * setsCompletedAbs) / (repsScheduledAbs * setsScheduledAbs)));
         } else {
             statistics.put("stats_abs_completion", "--");
         }
         if (repsScheduledArms * setsScheduledArms > 0) {
-            statistics.put("stats_arms_completion", decFmt.format((double) (repsCompletedArms * setsCompletedArms) / (repsScheduledArms * setsScheduledArms)));
+            statistics.put("stats_arms_completion", decimalFormat.format((double) (repsCompletedArms * setsCompletedArms) / (repsScheduledArms * setsScheduledArms)));
         } else {
             statistics.put("stats_arms_completion", "--");
         }
         if (distanceScheduled > 0) {
-            statistics.put("stats_cardio_completion", decFmt.format(distanceCompleted / distanceScheduled));
+            statistics.put("stats_cardio_completion", decimalFormat.format(distanceCompleted / distanceScheduled));
         } else {
             statistics.put("stats_cardio_completion", "--");
         }
         if (repsScheduledLegs * setsScheduledLegs > 0) {
-            statistics.put("stats_legs_completion", decFmt.format((double) (repsCompletedLegs*setsCompletedLegs) / (repsScheduledLegs * setsScheduledLegs)));
+            statistics.put("stats_legs_completion", decimalFormat.format((double) (repsCompletedLegs * setsCompletedLegs) / (repsScheduledLegs * setsScheduledLegs)));
         } else {
             statistics.put("stats_legs_completion", "--");
         }
         if (proposed > 0) {
-            statistics.put("stats_overall_completion", decFmt.format((double) completed / proposed));
+            statistics.put("stats_overall_completion", decimalFormat.format((double) completed / proposed));
         } else {
             statistics.put("stats_overall_completion", "--");
         }

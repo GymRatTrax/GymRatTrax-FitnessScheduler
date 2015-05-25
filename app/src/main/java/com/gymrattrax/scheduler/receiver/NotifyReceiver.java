@@ -138,12 +138,10 @@ public class NotifyReceiver extends BroadcastReceiver {
                             Uri.parse(sharedPref.getString(
                                     SettingsActivity.PREF_NOTIFY_WEIGH_TONE, "")));
                 }
-                if (calendar.after(lastWeightNotify)) {
-                    if (BuildConfig.DEBUG_MODE) Log.d(TAG, "About to set weight notification.");
-                    setNotification(context, calendar, pIntent);
-                } else {
-                    if (BuildConfig.DEBUG_MODE) Log.d(TAG, "Notification (weight) not set.");
-                }
+                if (calendar.before(lastWeightNotify))
+                    calendar.add(Calendar.DATE, 1);
+                Log.v(TAG, "About to set weight notification for " + calendar.toString() +  ".");
+                setNotification(context, calendar, pIntent);
             }
         }
     }

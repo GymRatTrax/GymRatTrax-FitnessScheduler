@@ -27,6 +27,7 @@ import com.gymrattrax.scheduler.activity.StrengthWorkoutActivity;
 import com.gymrattrax.scheduler.data.DatabaseContract;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.WorkoutItem;
+import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
 import java.util.Calendar;
 
@@ -206,8 +207,10 @@ public class NotifyService extends Service {
 
         NotificationManager mNotificationManager =
                 (NotificationManager)this.getSystemService(Context.NOTIFICATION_SERVICE);
-        if (BuildConfig.DEBUG_MODE && workoutItem != null)
-            Log.d(TAG, "Displaying notification for workout item (ID: " + workoutItem.getID() + ").");
+        if (workoutItem != null)
+            Log.i(TAG, "Displaying notification for workout item (ID: " + workoutItem.getID() + ").");
+        else
+            Log.i(TAG, "Displaying notification: " + name);
 
         DatabaseHelper dbh = new DatabaseHelper(this);
         Calendar now = Calendar.getInstance();
@@ -220,6 +223,7 @@ public class NotifyService extends Service {
 
         mNotificationManager.notify(NOTIFICATION, mNotificationBuilder.build());
 
+        NotifyReceiver.setNotifications(this);
         // Stop the service when we are finished
         stopSelf();
     }
