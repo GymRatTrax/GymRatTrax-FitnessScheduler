@@ -1,35 +1,33 @@
 package com.gymrattrax.scheduler.activity;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gymrattrax.scheduler.BuildConfig;
+import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.ExerciseName;
-import com.gymrattrax.scheduler.receiver.NotifyReceiver;
-import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.model.WorkoutItem;
+import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
 import java.util.Calendar;
 import java.util.Date;
 
-public class AddTemplatesActivity extends Activity {
+public class AddTemplatesActivity extends AppCompatActivity {
 
     private static final String TAG = "AddTemplatesActivity";
     LinearLayout linearContainer;
@@ -118,10 +116,14 @@ public class AddTemplatesActivity extends Activity {
             buttons[i].setHeight(20);
             buttons[i].setWidth(20);
             buttons[i].setId(6000 + i);
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                buttons[i].setBackground(getResources().getDrawable(R.drawable.add_button_press,
+                        null));
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 buttons[i].setBackground(getResources().getDrawable(R.drawable.add_button_press));
-            else {
-                buttons[i].setBackgroundDrawable(getResources().getDrawable(R.drawable.add_button_press));
+            } else {
+                buttons[i].setBackgroundDrawable(getResources().getDrawable(R.drawable
+                        .add_button_press));
             }
             main.addView(buttons[i]);
             row.addView(main);

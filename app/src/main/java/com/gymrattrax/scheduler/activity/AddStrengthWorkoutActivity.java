@@ -1,8 +1,8 @@
 package com.gymrattrax.scheduler.activity;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,8 +10,7 @@ import android.widget.TextView;
 
 import com.gymrattrax.scheduler.R;
 
-
-public class AddStrengthWorkoutActivity extends ActionBarActivity {
+public class AddStrengthWorkoutActivity extends AppCompatActivity {
     private String name;
     private EditText weight, sets, reps;
 

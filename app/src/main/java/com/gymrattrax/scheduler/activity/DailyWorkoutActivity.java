@@ -1,8 +1,8 @@
 package com.gymrattrax.scheduler.activity;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,8 +18,7 @@ import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.model.ExerciseType;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
-
-public class DailyWorkoutActivity extends ActionBarActivity {
+public class DailyWorkoutActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

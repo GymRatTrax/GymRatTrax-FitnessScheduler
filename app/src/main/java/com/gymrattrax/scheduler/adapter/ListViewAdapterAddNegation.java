@@ -16,18 +16,18 @@ import java.util.Collections;
 public class ListViewAdapterAddNegation extends ArrayAdapter<String> {
 
     private Context context;
-    private custButtonListener customListener;
+    private customButtonListener customListener;
 
     public ListViewAdapterAddNegation(Context context, ArrayList<String> workoutItems) {
         super(context, R.layout.calorie_list_item, workoutItems);
         this.context = context;
     }
 
-    public interface custButtonListener {
-        public void onButtonClickListener(int position, String value);
+    public interface customButtonListener {
+        void onButtonClickListener(int position, String value);
     }
 
-    public void setCustButtonListener(custButtonListener listener) {
+    public void setCustomButtonListener(customButtonListener listener) {
         this.customListener = listener;
     }
 

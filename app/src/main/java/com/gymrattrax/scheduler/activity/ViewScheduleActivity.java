@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.CalendarContract;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -22,7 +22,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class ViewScheduleActivity extends ActionBarActivity implements ListViewAdapterEdit.custButtonListener {
+public class ViewScheduleActivity extends AppCompatActivity implements ListViewAdapterEdit.customButtonListener {
 
     private ArrayList<String> workoutItems = new ArrayList<>();
     private String name;
@@ -77,7 +77,7 @@ public class ViewScheduleActivity extends ActionBarActivity implements ListViewA
 
         // custom listView adapter
         ListViewAdapterEdit adapter = new ListViewAdapterEdit(ViewScheduleActivity.this, workoutItems);
-        adapter.setCustButtonListener(ViewScheduleActivity.this);
+        adapter.setCustomButtonListener(ViewScheduleActivity.this);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

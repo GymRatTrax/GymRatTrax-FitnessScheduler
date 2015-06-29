@@ -1,16 +1,17 @@
 package com.gymrattrax.scheduler.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.gymrattrax.scheduler.BuildConfig;
 
-public class LoginBaseActivity extends Activity implements
+public class LoginBaseActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
@@ -34,7 +35,7 @@ public class LoginBaseActivity extends Activity implements
      */
     @Override
     protected void onPause() {
-        Log.v(TAG, "onPause()");
+        if (BuildConfig.DEBUG_MODE) Log.v(TAG, "onPause()");
         if (mGoogleApiClient != null) {
             mGoogleApiClient.disconnect();
         }
@@ -101,6 +102,6 @@ public class LoginBaseActivity extends Activity implements
     @Override
     protected void onResume() {
         super.onResume();
-        Log.v(TAG, "onResume() - not implemented");
+        if (BuildConfig.DEBUG_MODE) Log.v(TAG, "onResume() - not implemented");
     }
 }

@@ -10,20 +10,20 @@ import android.widget.TextView;
 import com.gymrattrax.scheduler.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ListViewAdapterView extends ArrayAdapter<String> {
 
-    private ArrayList<String> item = new ArrayList<>();
     private Context context;
 
     public ListViewAdapterView(Context context, ArrayList<String> workoutItems) {
         super(context, R.layout.view_list_item, workoutItems);
-        this.item = workoutItems;
+        ArrayList<String> item = workoutItems;
         this.context = context;
     }
 
-    public interface custButtonListener {
-        public void onButtonClickListener(int position, String value);
+    public interface customButtonListener {
+        void onButtonClickListener(int position, String value);
     }
 
     //    items in each row in listView
@@ -50,9 +50,7 @@ public class ListViewAdapterView extends ArrayAdapter<String> {
 
         final String nameTemp = getItem(position);
         ArrayList<String> arrayList = new ArrayList<>();
-        for (String str: nameTemp.split("!", 3)){
-            arrayList.add(str);
-        }
+        Collections.addAll(arrayList, nameTemp.split("!", 3));
 
         viewHolder.workout_name.setText(arrayList.get(0));
         viewHolder.workout_date.setText(arrayList.get(1));

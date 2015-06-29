@@ -1,8 +1,8 @@
 package com.gymrattrax.scheduler.activity;
 
-import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -12,7 +12,7 @@ import com.gymrattrax.scheduler.data.DatabaseHelper;
 
 import java.util.Map;
 
-public class StatisticsActivity extends Activity {
+public class StatisticsActivity extends AppCompatActivity {
     public static final String TAG = "StatisticsActivity";
 
     @Override

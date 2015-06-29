@@ -11,28 +11,28 @@ import android.widget.TextView;
 import com.gymrattrax.scheduler.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import static android.view.View.OnClickListener;
 
 public class ListViewAdapterEdit extends ArrayAdapter<String> {
 
-    private ArrayList<String> item = new ArrayList<>();
     private Context context;
-    private custButtonListener customListener;
+    private customButtonListener customListener;
 
     public ListViewAdapterEdit(Context context, ArrayList<String> workoutItems) {
         super(context, R.layout.edit_list_item, workoutItems);
-        this.item = workoutItems;
+        ArrayList<String> item = workoutItems;
         this.context = context;
     }
 
 
 
-    public interface custButtonListener {
-        public void onButtonClickListener(int position, String value);
+    public interface customButtonListener {
+        void onButtonClickListener(int position, String value);
     }
 
-    public void setCustButtonListener(custButtonListener listener) {
+    public void setCustomButtonListener(customButtonListener listener) {
         this.customListener = listener;
     }
 
@@ -61,9 +61,7 @@ public class ListViewAdapterEdit extends ArrayAdapter<String> {
 
         final String nameTemp = getItem(position);
         ArrayList<String> arrayList = new ArrayList<>();
-        for (String str: nameTemp.split(":", 3)){
-            arrayList.add(str);
-        }
+        Collections.addAll(arrayList, nameTemp.split(":", 3));
 
         final String workoutId = arrayList.get(0);
         viewHolder.workout_name.setText(arrayList.get(1));

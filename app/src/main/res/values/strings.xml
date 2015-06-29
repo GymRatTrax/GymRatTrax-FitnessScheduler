@@ -168,4 +168,6 @@
     <string name="cardio_workout_exertion_level_moderate">Moderate</string>
     <string name="cardio_workout_exertion_level_hard">Hard</string>
     <string name="cardio_workout_button_complete">COMPLETE</string>
+    <string name="calorie_negation_instruction">Enter Number of Calories to Negate:</string>
+    <string name="calorie_negation_button">SUGGEST WORKOUTS</string>
 </resources>

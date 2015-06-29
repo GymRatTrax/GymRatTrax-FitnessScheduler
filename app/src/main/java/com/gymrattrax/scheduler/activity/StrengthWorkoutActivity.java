@@ -468,7 +468,7 @@ public class StrengthWorkoutActivity extends LoginActivity {
         Games.Events.increment(mGoogleApiClient,
                 getString(R.string.event_workouts_completed), 1);
         Games.Events.increment(mGoogleApiClient,
-                getString(R.string.event_time_spent_tracking_workouts), (int)timeRecorded);
+                getString(R.string.event_time_spent_tracking_workouts), timeRecorded);
         for (String achievement : achievementsUnlocked) {
             Games.Achievements.unlock(mGoogleApiClient, achievement);
         }

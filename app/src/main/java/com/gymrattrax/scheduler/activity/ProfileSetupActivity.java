@@ -7,8 +7,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,7 +32,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-public class ProfileSetupActivity extends ActionBarActivity
+public class ProfileSetupActivity extends AppCompatActivity
         implements DatePickerDialog.OnDateSetListener, NumberPicker.OnValueChangeListener {
 
     private EditText nameEditText;
@@ -86,7 +86,6 @@ public class ProfileSetupActivity extends ActionBarActivity
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         dateFormat = sharedPref.getString(SettingsActivity.PREF_DATE_FORMAT, "MM/dd/yyyy");
-        if (dateFormat == null) dateFormat = "MM/dd/yyyy";
         textViewDate.setText("Birth date (" + dateFormat.toUpperCase() + ")");
 
         doneButton.setOnClickListener(new Button.OnClickListener() {

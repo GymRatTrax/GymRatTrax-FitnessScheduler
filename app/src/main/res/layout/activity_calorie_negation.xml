@@ -4,26 +4,21 @@
     android:orientation="vertical"
     android:background="@color/primary"
     android:weightSum="1">
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Enter Number of Calories to Negate:"
+        android:text="@string/calorie_negation_instruction"
         android:id="@+id/textView9"
         android:layout_gravity="center"
         android:textAlignment="center"
-        android:textSize="20dp"
-        android:textStyle="bold" />
-
-
-
+        android:textSize="20sp"
+        android:textStyle="bold"/>
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:layout_gravity="center">
-
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="50dp"
@@ -34,18 +29,15 @@
             android:background="@color/primary100"
             android:textCursorDrawable="@null"
             android:textAlignment="center"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:layout_gravity="center_vertical" />
-
     </RelativeLayout>
-
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="SUGGEST WORKOUTS"
+        android:text="@string/calorie_negation_button"
         android:id="@+id/negate_cal_button"
         android:clickable="true"
-        android:layout_below="@+id/add_workout_strength"
         android:layout_centerHorizontal="true"
         android:layout_margin="10dp"
         android:textStyle="bold"
@@ -55,13 +47,11 @@
         android:shadowDx="0"
         android:shadowDy="0"
         android:shadowRadius="5"
-        android:onClick="SuggestWorkout"/>
-
+        android:onClick="suggestWorkout"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp">
-
         <ListView
             android:layout_width="match_parent"
             android:background="@color/primary100"
@@ -78,5 +68,4 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
     </RelativeLayout>
-
 </LinearLayout>

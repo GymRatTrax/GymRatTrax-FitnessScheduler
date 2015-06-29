@@ -1,7 +1,7 @@
 package com.gymrattrax.scheduler.activity;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -17,7 +17,7 @@ import com.gymrattrax.scheduler.model.WorkoutItem;
 
 import java.util.Calendar;
 
-public class DatabaseDebugActivity extends ActionBarActivity {
+public class DatabaseDebugActivity extends AppCompatActivity {
     private Spinner tableSpinner;
     private TableLayout tableTable;
 

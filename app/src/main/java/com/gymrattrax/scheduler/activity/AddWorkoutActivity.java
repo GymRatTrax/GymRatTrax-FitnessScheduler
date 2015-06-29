@@ -2,21 +2,21 @@ package com.gymrattrax.scheduler.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterAdd;
-import com.gymrattrax.scheduler.adapter.ListViewAdapterEdit.custButtonListener;
 import com.gymrattrax.scheduler.model.ExerciseName;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AddWorkoutActivity extends ActionBarActivity implements custButtonListener, ListViewAdapterAdd.custButtonListener {
+public class AddWorkoutActivity extends AppCompatActivity implements com.gymrattrax.scheduler.adapter.ListViewAdapterEdit.customButtonListener,
+        ListViewAdapterAdd.customButtonListener {
     private ArrayList<String> workoutItems = new ArrayList<>();
 
     @Override
@@ -35,7 +35,7 @@ public class AddWorkoutActivity extends ActionBarActivity implements custButtonL
 
         // custom listView adapter
         ListViewAdapterAdd adapter = new ListViewAdapterAdd(AddWorkoutActivity.this, workoutItems);
-        adapter.setCustButtonListener(AddWorkoutActivity.this);
+        adapter.setCustomButtonListener(AddWorkoutActivity.this);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

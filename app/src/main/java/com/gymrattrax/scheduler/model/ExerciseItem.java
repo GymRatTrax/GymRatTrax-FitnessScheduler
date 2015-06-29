@@ -10,21 +10,25 @@ public class ExerciseItem {
 
     private ExerciseItem(){}
     public ExerciseItem(ExerciseName.Abs abs) {
+        this();
         this.name = abs.toString();
         this.abs = abs;
         this.type = ExerciseType.ABS;
     }
     public ExerciseItem(ExerciseName.Arms arms) {
+        this();
         this.name = arms.toString();
         this.arms = arms;
         this.type = ExerciseType.ARMS;
     }
     public ExerciseItem(ExerciseName.Cardio cardio) {
+        this();
         this.name = cardio.toString();
         this.cardio = cardio;
         this.type = ExerciseType.CARDIO;
     }
     public ExerciseItem(ExerciseName.Legs legs) {
+        this();
         this.name = legs.toString();
         this.legs = legs;
         this.type = ExerciseType.LEGS;

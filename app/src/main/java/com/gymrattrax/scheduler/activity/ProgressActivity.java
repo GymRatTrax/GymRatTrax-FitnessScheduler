@@ -1,7 +1,7 @@
 package com.gymrattrax.scheduler.activity;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,8 +12,6 @@ import java.util.Map;
 
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.CardioWorkoutItem;
-import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.BarGraphSeries;
@@ -30,7 +28,7 @@ import android.widget.Toast;
 
 import com.jjoe64.graphview.ValueDependentColor;
 
-public class ProgressActivity extends ActionBarActivity {
+public class ProgressActivity extends AppCompatActivity {
 
     private Spinner GraphSpin;
     private GraphView graph;

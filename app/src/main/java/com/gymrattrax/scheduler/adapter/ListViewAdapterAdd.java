@@ -18,21 +18,20 @@ import static android.view.View.OnClickListener;
 
 public class ListViewAdapterAdd extends ArrayAdapter<String> {
 
-    private ArrayList<String> item = new ArrayList<>();
     private Context context;
-    private custButtonListener customListener;
+    private customButtonListener customListener;
 
     public ListViewAdapterAdd(Context context, ArrayList<String> workoutItems) {
         super(context, R.layout.add_list_item, workoutItems);
-        this.item = workoutItems;
+        ArrayList<String> item = workoutItems;
         this.context = context;
     }
 
-    public interface custButtonListener {
-        public void onButtonClickListener(int position, String value);
+    public interface customButtonListener {
+        void onButtonClickListener(int position, String value);
     }
 
-    public void setCustButtonListener(custButtonListener listener) {
+    public void setCustomButtonListener(customButtonListener listener) {
         this.customListener = listener;
     }
 

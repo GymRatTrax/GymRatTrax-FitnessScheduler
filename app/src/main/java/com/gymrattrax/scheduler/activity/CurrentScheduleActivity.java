@@ -1,7 +1,7 @@
 package com.gymrattrax.scheduler.activity;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
@@ -14,7 +14,7 @@ import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
-public class CurrentScheduleActivity extends ActionBarActivity {
+public class CurrentScheduleActivity extends AppCompatActivity {
 
     LinearLayout linearContainer;
     TextView textDateRange;
@@ -63,7 +63,7 @@ public class CurrentScheduleActivity extends ActionBarActivity {
             main.setOrientation(LinearLayout.HORIZONTAL);
             stack.setOrientation(LinearLayout.VERTICAL);
 
-            viewTitle.setText(w.getName().toString());
+            viewTitle.setText(w.getName());
             viewTitle.setTextSize(20);
 
 

@@ -28,6 +28,7 @@ public class SettingsActivity extends PreferenceActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         super.onPostCreate(savedInstanceState);
         if (BuildConfig.DEBUG_MODE)
             Log.v(TAG, "Starting...");

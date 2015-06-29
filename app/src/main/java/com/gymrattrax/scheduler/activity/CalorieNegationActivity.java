@@ -1,8 +1,8 @@
 package com.gymrattrax.scheduler.activity;
 
 import android.content.Context;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -14,9 +14,7 @@ import android.widget.Toast;
 
 import com.gymrattrax.scheduler.adapter.ListViewAdapterAddNegation;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.CardioWorkoutItem;
 import com.gymrattrax.scheduler.model.ExerciseName;
-import com.gymrattrax.scheduler.model.StrengthWorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 import com.gymrattrax.scheduler.model.ProfileItem;
 import com.gymrattrax.scheduler.R;
@@ -27,13 +25,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class CalorieNegationActivity extends ActionBarActivity implements ListViewAdapterAddNegation.custButtonListener {
+public class CalorieNegationActivity extends AppCompatActivity implements ListViewAdapterAddNegation.customButtonListener {
 
     private static final String TAG = "CalorieNegationActivity";
     Button SuggestWorkoutButton;
     EditText NegateEditText;
     private List<WorkoutItem> workoutItems = new ArrayList<>();
-//    String time, name;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,51 +42,6 @@ public class CalorieNegationActivity extends ActionBarActivity implements ListVi
         NegateEditText = (EditText) findViewById(R.id.negate_calories);
 //        times = new double[5];
 //        exName = new ExerciseName.Cardio[5];
-
-        SuggestWorkoutButton.setOnClickListener(new Button.OnClickListener() {
-
-            /**
-             * Grabs random WorkoutItem ID, calculates how long it will take to burn a specific
-             * number of calories, and returns workouts.
-             */
-            @Override
-            public void onClick(View view) {
-                InputMethodManager inputManager = (InputMethodManager)
-                        getSystemService(Context.INPUT_METHOD_SERVICE);
-
-                if (getCurrentFocus() != null)
-                    inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                            InputMethodManager.HIDE_NOT_ALWAYS);
-
-                int caloriesToNegate;
-                try {
-                    caloriesToNegate = Integer.parseInt(NegateEditText.getText().toString());
-                } catch (NumberFormatException e) {
-                    Toast t = Toast.makeText(getApplicationContext(), "Invalid input.",
-                            Toast.LENGTH_SHORT);
-                    t.show();
-                    return;
-                }
-                if (caloriesToNegate > 400) {
-                    Toast t = Toast.makeText(getApplicationContext(),
-                            "Do not use this feature to 'work off' an entire meal. " +
-                                    "Try a smaller number.",
-                            Toast.LENGTH_SHORT);
-                    t.show();
-                } else if (caloriesToNegate < 0) {
-                    Toast t = Toast.makeText(getApplicationContext(), "Calories must be positive.",
-                            Toast.LENGTH_SHORT);
-                    t.show();
-                } else if (caloriesToNegate == 0) {
-                    Toast t = Toast.makeText(getApplicationContext(),
-                            "Zero calories? No workout needed!",
-                            Toast.LENGTH_SHORT);
-                    t.show();
-                } else {
-                    displayWorkouts(caloriesToNegate);
-                }
-            }
-        });
     }
 
     private void displayWorkouts(int caloriesToNegate) {
@@ -99,7 +51,7 @@ public class CalorieNegationActivity extends ActionBarActivity implements ListVi
         ListView listView = (ListView) findViewById(R.id.calorie_list);
 
         ListViewAdapterAddNegation adapter = new ListViewAdapterAddNegation(CalorieNegationActivity.this, workoutStrings);
-        adapter.setCustButtonListener(CalorieNegationActivity.this);
+        adapter.setCustomButtonListener(CalorieNegationActivity.this);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -139,9 +91,8 @@ public class CalorieNegationActivity extends ActionBarActivity implements ListVi
 
     // add exName and time params
     private void addCardioWorkout(String name) {
-        CardioWorkoutItem item = new CardioWorkoutItem();
+        WorkoutItem item = new WorkoutItem(name);
         item.setDistanceScheduled(2);
-        item.setName(name);
         item.setTimeScheduled(workoutItems.get(4).getTimeScheduled());
 
         addThisWorkout(item);
@@ -150,11 +101,10 @@ public class CalorieNegationActivity extends ActionBarActivity implements ListVi
 
     // add exName and time params
     private void addStrengthWorkout(String name) {
-        StrengthWorkoutItem item = new StrengthWorkoutItem();
+        WorkoutItem item = new WorkoutItem(name);
         item.setRepsScheduled(12);
         item.setSetsScheduled(4);
         item.setWeightUsed(10);
-        item.setName(name);
         item.setTimeScheduled(workoutItems.get(0).getTimeScheduled());
 
         addThisWorkout(item);
@@ -164,7 +114,7 @@ public class CalorieNegationActivity extends ActionBarActivity implements ListVi
     public ArrayList<String> getWorkoutsToNegate(int caloriesToNegate) {
 
         ProfileItem profileItem = new ProfileItem(CalorieNegationActivity.this);
-        ArrayList<String> workoutsArray = new ArrayList<String>();
+        ArrayList<String> workoutsArray = new ArrayList<>();
 
         //TODO: Come up with a better way of creating METs values on-the-fly.
         double BMR = profileItem.getBMR();
@@ -194,7 +144,7 @@ public class CalorieNegationActivity extends ActionBarActivity implements ListVi
             } else if (i == 4) {
                 workoutItem = new WorkoutItem(ExerciseName.Legs.getRandom());
             }
-            String details = "";
+            String details;
             String time = minutes + " minutes, " + seconds + " seconds";
             if (i <= 1) {
                 details = "2 miles";
@@ -214,5 +164,46 @@ public class CalorieNegationActivity extends ActionBarActivity implements ListVi
             }
         }
         return workoutsArray;
+    }
+
+    /**
+     * Grabs random WorkoutItem ID, calculates how long it will take to burn a specific
+     * number of calories, and returns workouts.
+     */
+    public void suggestWorkout(View view) {
+        InputMethodManager inputManager = (InputMethodManager)
+                getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        if (getCurrentFocus() != null)
+            inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+                    InputMethodManager.HIDE_NOT_ALWAYS);
+
+        int caloriesToNegate;
+        try {
+            caloriesToNegate = Integer.parseInt(NegateEditText.getText().toString());
+        } catch (NumberFormatException e) {
+            Toast t = Toast.makeText(getApplicationContext(), "Invalid input.",
+                    Toast.LENGTH_SHORT);
+            t.show();
+            return;
+        }
+        if (caloriesToNegate > 400) {
+            Toast t = Toast.makeText(getApplicationContext(),
+                    "Do not use this feature to 'work off' an entire meal. " +
+                            "Try a smaller number.",
+                    Toast.LENGTH_SHORT);
+            t.show();
+        } else if (caloriesToNegate < 0) {
+            Toast t = Toast.makeText(getApplicationContext(), "Calories must be positive.",
+                    Toast.LENGTH_SHORT);
+            t.show();
+        } else if (caloriesToNegate == 0) {
+            Toast t = Toast.makeText(getApplicationContext(),
+                    "Zero calories? No workout needed!",
+                    Toast.LENGTH_SHORT);
+            t.show();
+        } else {
+            displayWorkouts(caloriesToNegate);
+        }
     }
 }

@@ -23,6 +23,7 @@ import android.util.Log;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.games.Games;
+import com.gymrattrax.scheduler.BuildConfig;
 
 public class LoginActivity extends LoginBaseActivity {
     public static final String TAG = "LoginActivity";
@@ -37,8 +38,9 @@ public class LoginActivity extends LoginBaseActivity {
      */
     @Override
     protected void onResume() {
-        Log.v(TAG, "onResume()");
+        if (BuildConfig.DEBUG_MODE) Log.v(TAG, "onResume()");
         super.onResume();
+        //TODO: Handle mGoogleApiClient better
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
@@ -55,6 +57,6 @@ public class LoginActivity extends LoginBaseActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        Log.v(TAG, "onPause() - not implemented");
+        if (BuildConfig.DEBUG_MODE) Log.v(TAG, "onPause() - not implemented");
     }
 }

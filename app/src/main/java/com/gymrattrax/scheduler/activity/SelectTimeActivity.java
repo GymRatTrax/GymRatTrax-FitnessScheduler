@@ -9,7 +9,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,7 +28,7 @@ import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 import java.util.Calendar;
 import java.util.Date;
 
-public class SelectTimeActivity extends ActionBarActivity {
+public class SelectTimeActivity extends AppCompatActivity {
     private static final String TAG = "SelectTimeActivity";
     private TextView timeText;
     private String name;
@@ -275,7 +275,7 @@ public class SelectTimeActivity extends ActionBarActivity {
             timeText.setText(hour + ":" + minutes + " " + am);
         }
         else if (selectedHour == 12) {
-            hour = (selectedHour > 9) ? "" + selectedHour : "" + selectedHour;
+            hour = "" + selectedHour;
             minutes = (selectedMinutes > 9) ? "" + selectedMinutes : "0" + selectedMinutes;
             timeText.setText(hour + ":" + minutes + " " + pm);
         }
