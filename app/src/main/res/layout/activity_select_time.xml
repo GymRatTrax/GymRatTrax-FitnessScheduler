@@ -1,110 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/primary"
-    android:baselineAligned="true"
-    android:weightSum="1" >
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/select_time"
-        android:text="@string/select_time"
-        android:layout_margin="2dp"
-        android:textStyle="bold"
-        android:layout_gravity="center"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/exercise_name"
-        android:layout_marginLeft="10dp"
-        android:layout_marginStart="10dp"
-        android:textStyle="bold"
-        android:id="@+id/ex_name" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text=""
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:id="@+id/ex_details" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text=""
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:id="@+id/ex_date" />
-
-    <RelativeLayout
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="5dp">
-
-        <TimePicker
+        android:background="@color/primary"
+        android:baselineAligned="true"
+        android:weightSum="1" >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/select_time"
+            android:text="@string/select_time"
+            android:layout_margin="2dp"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/exercise_name"
+            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
+            android:textStyle="bold"
+            android:id="@+id/ex_name" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text=""
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/ex_details" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text=""
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/ex_date" />
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/time_picker"
-            android:textCursorDrawable="@null"
-            android:layout_gravity="center_horizontal"
-            android:background="@color/primary100"
-            android:headerBackground="@color/primary" >
-        </TimePicker>
-
-    </RelativeLayout>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/notifications_text"
-        android:text="@string/notification"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/TimeSelected"
-        android:text="@string/time"
-        android:visibility="gone" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+            android:layout_gravity="center"
+            android:layout_margin="5dp">
+            <TimePicker
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/time_picker"
+                android:textCursorDrawable="@null"
+                android:layout_gravity="center_horizontal"
+                android:background="@color/primary100"
+                android:headerBackground="@color/primary" >
+            </TimePicker>
+        </RelativeLayout>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@id/addGoogleCalButton"
-            android:text="@string/add_to_google_cal"
-            android:clickable="true"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/notifications_text"
+            android:text="@string/notification"
             android:layout_marginStart="10dp"
-            android:layout_marginLeft="10dp" />
-
-        <Button
-            android:layout_width="120dp"
+            android:layout_marginLeft="10dp"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@id/doneButton"
-            android:text="@string/Done"
-            android:clickable="true"
-            android:layout_margin="5dp"
-            android:textStyle="bold"
-            android:textSize="25sp"
-            android:background="@drawable/button_shp_rvrs_press"
-            android:layout_gravity="center_horizontal" />
+            android:id="@+id/TimeSelected"
+            android:text="@string/time"
+            android:visibility="gone" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@id/addGoogleCalButton"
+                android:text="@string/add_to_google_cal"
+                android:clickable="true"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_marginStart="10dp"
+                android:layout_marginLeft="10dp"/>
+            <Button
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:id="@id/doneButton"
+                android:text="@string/Done"
+                android:clickable="true"
+                android:layout_margin="5dp"
+                android:textStyle="bold"
+                android:textSize="25sp"
+                android:background="@drawable/button_shp_rvrs_press"
+                android:layout_gravity="center_horizontal" />
+        </LinearLayout>
     </LinearLayout>
-
-
-</LinearLayout>
+</ScrollView>

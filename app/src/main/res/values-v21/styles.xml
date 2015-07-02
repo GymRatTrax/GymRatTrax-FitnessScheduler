@@ -1,20 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppTheme" parent="AppTheme.NoBar.Base">
+    <style name="AppTheme" parent="AppTheme.Base">
         <item name="android:colorAccent">@color/secondary</item>
         <item name="android:colorPrimary">@color/primary</item>
         <item name="android:colorPrimaryDark">@color/primary700</item>
         <item name="android:navigationBarColor">@color/primary900</item>
     </style>
-    <style name="AppTheme.Base" parent="android:Theme.Material.Light">
-        <item name="colorAccent">@color/secondary</item>
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary700</item>
-        <item name="android:colorAccent">@color/secondary</item>
-        <item name="android:colorPrimary">@color/primary</item>
-        <item name="android:colorPrimaryDark">@color/primary700</item>
-        <item name="android:navigationBarColor">@color/primary900</item>
-    </style>
-    <style name="cust_dialog" parent="@android:style/Theme.NoTitleBar.Fullscreen" />
-    <style name="NewTheme" parent="AppTheme.Base" />
 </resources>

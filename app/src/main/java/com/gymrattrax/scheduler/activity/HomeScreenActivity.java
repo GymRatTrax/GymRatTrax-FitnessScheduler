@@ -5,7 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
+//import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
@@ -40,6 +40,7 @@ public class HomeScreenActivity extends LoginActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate()");
         super.onCreate(savedInstanceState);
+        getSupportActionBar();
 
         //initiate tutorial/profile creation if there is no ProfileItem ID in database
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -77,14 +78,6 @@ public class HomeScreenActivity extends LoginActivity {
                 }
             });
         }
-
-        beginWorkoutButton.setOnClickListener(new Button.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
         viewProgressButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -101,8 +94,12 @@ public class HomeScreenActivity extends LoginActivity {
                                         break;
                                     case 2:
                                         int REQUEST_ACHIEVEMENTS = 991;
-//                                        mGoogleApiClient.connect();
-                                        startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleApiClient), REQUEST_ACHIEVEMENTS);
+                                        if (mGoogleApiClient.isConnected())
+                                            startActivityForResult(Games.Achievements
+                                                    .getAchievementsIntent(mGoogleApiClient),
+                                                    REQUEST_ACHIEVEMENTS);
+                                        else
+                                            mGoogleApiClient.connect();
                                         break;
                                 }
                             }
@@ -148,27 +145,34 @@ public class HomeScreenActivity extends LoginActivity {
             @Override
             public void onClick(View view) {
                 loadActivity(SettingsActivity.class);
+                //TODO: Should there be an easy way to log out from the home screen?
+//                if (mGoogleApiClient.isConnected()) {
+//                    Log.d(TAG, "You're connected, but you want to disconnect?");
+//                    mGoogleApiClient.disconnect();
+//                } else {
+//                    retryConnection();
+//                }
             }
         });
 
     }
 
-    private Boolean exit = false;
+//    private Boolean exit = false;
     @Override
     public void onBackPressed() {
-        if (exit) {
-            finish(); // finish activity
-        } else {
-            Toast.makeText(this, "Press Back again to Exit.",
-                    Toast.LENGTH_SHORT).show();
-            exit = true;
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    exit = false;
-                }
-            }, 3 * 1000);
-        }
+//        if (exit) {
+        finish(); // finish activity
+//        } else {
+//            Toast.makeText(this, "Press Back again to Exit.",
+//                    Toast.LENGTH_SHORT).show();
+//            exit = true;
+//            new Handler().postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    exit = false;
+//                }
+//            }, 3 * 1000);
+//        }
     }
 
     @Override
@@ -299,7 +303,8 @@ public class HomeScreenActivity extends LoginActivity {
                 } else {
                     reps = reps + " reps";
                 }
-                String infoString = "" + w.getName() + "!" + weightUsed + sets + reps + "!" + dateTime;
+                String infoString = "" + w.getName() + "!" + weightUsed + sets + reps + "!" +
+                        dateTime;
                 workoutsArray[i] = infoString;
             }
             i++;

@@ -1,4 +1,4 @@
-package com.gymrattrax.scheduler.model;
+package com.gymrattrax.scheduler.data;
 
 import android.content.Context;
 import android.content.res.TypedArray;

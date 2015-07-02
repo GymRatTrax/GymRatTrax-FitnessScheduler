@@ -15,7 +15,8 @@
         android:screenOrientation="portrait"
         android:theme="@style/AppTheme"
         android:logo="@drawable/ic_launcher"
-        android:backupAgent=".data.BackupAgent">
+        android:backupAgent=".data.BackupAgent"
+        android:name="android.support.multidex.MultiDexApplication">
 
         <meta-data android:name="com.google.android.gms.games.APP_ID"
             android:value="@string/app_id" />
@@ -116,7 +117,6 @@
             android:name=".activity.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:screenOrientation="portrait"
-            android:theme="@style/NewTheme"
             android:parentActivityName=".activity.HomeScreenActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -145,14 +145,16 @@
             android:label="@string/title_activity_view_schedule"
             android:screenOrientation="portrait" >
         </activity>
-
+        <activity
+            android:name=".activity.SignInPrefActivity"
+            android:label="Sign In Help"
+            android:screenOrientation="portrait" >
+        </activity>
         <receiver android:name=".receiver.NotifyReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
         <service android:name=".service.NotifyService" />
-
     </application>
-
 </manifest>

@@ -12,6 +12,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.games.Games;
+import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.R;
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
@@ -30,6 +31,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (BuildConfig.DEBUG_MODE) Log.v(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -48,6 +50,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
      */
     @Override
     protected void onStart() {
+        if (BuildConfig.DEBUG_MODE) Log.v(TAG, "onStart");
         super.onStart();
         mGoogleApiClient.connect();
     }
@@ -57,8 +60,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
      */
     @Override
     protected void onStop() {
+        if (BuildConfig.DEBUG_MODE) Log.v(TAG, "onStop");
         super.onStop();
-
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
@@ -66,6 +69,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        if (BuildConfig.DEBUG_MODE) Log.v(TAG, "onCreateOptionsMenu");
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_home_screen, menu);
         return true;
@@ -78,6 +82,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
      */
     @Override
     public void onConnectionFailed(ConnectionResult result) {
+        if (BuildConfig.DEBUG_MODE) Log.v(TAG, "onConnectionFailed");
         Log.i(TAG, "GoogleApiClient connection failed: " + result.toString());
         if (!mIntentInProgress) { // Not already attempting to resolve an error...
             if (!result.hasResolution()) {
@@ -102,6 +107,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
      */
     @Override
     public void onConnected(Bundle connectionHint) {
+        if (BuildConfig.DEBUG_MODE) Log.v(TAG, "onConnected");
         Log.i(TAG, "GoogleApiClient is connected!");
     }
 
@@ -110,12 +116,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
      */
     @Override
     public void onConnectionSuspended(int cause) {
+        if (BuildConfig.DEBUG_MODE) Log.v(TAG, "onConnectionSuspended");
         Log.i(TAG, "GoogleApiClient connection suspended");
         mGoogleApiClient.connect();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (BuildConfig.DEBUG_MODE) Log.v(TAG, "onActivityResult");
         if (requestCode == REQUEST_CODE_RESOLUTION) {
             mIntentInProgress = false;
             if (resultCode == RESULT_OK) {

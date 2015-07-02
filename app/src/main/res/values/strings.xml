@@ -47,8 +47,8 @@
     <string name="schedule_activity_view_google_calendar">View Google Calendar</string>
     <string name="UpcomingWorkouts">Scheduled Workouts</string>
     <string name="select_workout_type">Select a workout type:</string>
-    <string name="add_workout_activity_add_strength">AddStrength</string>
-    <string name="title_activity_add_workout">Add A Workout</string>
+    <string name="add_workout_activity_add_strength">Add strength workout</string>
+    <string name="title_activity_add_workout">Add a workout</string>
     <string name="choose_an_exercise">Choose an exercise</string>
     <string name="strength_workout_activity_add_exercise">Add exercise</string>
     <string name="Select_Exercise">Select Exercise</string>
@@ -56,7 +56,7 @@
     <string name="Sets">Sets</string>
     <string name="Reps">Reps</string>
     <string name="Cardio">Cardio</string>
-    <string name="add_workout_activity_add_cardio">AddCardio</string>
+    <string name="add_workout_activity_add_cardio">Add cardio workout</string>
     <string name="Strength">Strength</string>
     <string name="Schedule">Schedule</string>
     <string name="select_strength_to_add">Select An Exercise</string>
@@ -66,7 +66,7 @@
     <string name="add_strength_workout_button">add to schedule</string>
     <string name="Esets">Enter Sets</string>
     <string name="SetExDetails">Set Exercise Details</string>
-    <string name="add_workout_activity">AddWorkout</string>
+    <string name="add_workout_activity">Add workout</string>
     <string name="next">next</string>
     <string name="select_date_time_string">Select a Date</string>
     <string name="select_date_time_activity">SelectDateTime</string>
@@ -170,4 +170,5 @@
     <string name="cardio_workout_button_complete">COMPLETE</string>
     <string name="calorie_negation_instruction">Enter Number of Calories to Negate:</string>
     <string name="calorie_negation_button">SUGGEST WORKOUTS</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
 </resources>

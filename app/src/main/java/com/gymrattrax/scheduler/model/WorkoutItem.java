@@ -48,7 +48,8 @@ public class WorkoutItem {
      * @deprecated Please use {@link WorkoutItem#WorkoutItem(ExerciseItem)} to prevent issues
      * resulting from incorrect Strings. This was created to ease backwards compatibility issues.
      */
-     @Deprecated
+    @Deprecated
+    //TODO: This item was deprecated, but it is too widely used. Come back to this later.
     public WorkoutItem(String exerciseName) {
         this();
         setName(exerciseName);
@@ -99,10 +100,6 @@ public class WorkoutItem {
                 }
             }
         }
-    }
-    //TODO: If there are no use cases for this, delete it.
-    public void setExercise(ExerciseItem exercise) {
-        this.exercise = exercise;
     }
 
     public int getID() {

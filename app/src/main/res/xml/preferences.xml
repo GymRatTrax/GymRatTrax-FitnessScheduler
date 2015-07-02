@@ -50,7 +50,7 @@
                 android:dependency="pref_notify_enabled_all"
                 android:title="Enable weigh-in notification"
                 android:defaultValue="false" />
-            <com.gymrattrax.scheduler.model.TimePreference
+            <com.gymrattrax.scheduler.data.TimePreference
                 android:dependency="pref_notify_weigh_enabled"
                 android:key="pref_notify_weigh_time"
                 android:title="Time of day for notification"
@@ -82,4 +82,14 @@
         android:entries="@array/date_format_array"
         android:entryValues="@array/date_format_array"
         android:defaultValue="MM/dd/yyyy" />
+    <!--<Preference-->
+        <!--android:key="pref_sign_in"-->
+        <!--android:title="Google account settings"-->
+        <!--android:summary="Not connected"-->
+        <!--android:defaultValue="null">-->
+        <!--<intent-->
+            <!--android:action="android.intent.action.VIEW"-->
+            <!--android:targetPackage="com.gymrattrax.scheduler"-->
+            <!--android:targetClass="com.gymrattrax.scheduler.activity.SignInPrefActivity" />-->
+    <!--</Preference>-->
 </PreferenceScreen>

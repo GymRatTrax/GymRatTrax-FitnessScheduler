@@ -9,35 +9,60 @@ import android.util.Log;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.fitness.Fitness;
+import com.google.android.gms.games.Games;
 import com.gymrattrax.scheduler.BuildConfig;
 
-public class LoginBaseActivity extends AppCompatActivity implements
-        GoogleApiClient.ConnectionCallbacks,
+/**
+ * This class takes the processes of the previous LoginActivity and LoginBaseActivity to simply
+ * become one activity.
+ */
+public class LoginActivityMerge extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
-
-    private static final String TAG = "LoginBaseActivity";
-
+    public static final String TAG = "LoginActivity";
     /**
      * Google API client.
      */
     protected GoogleApiClient mGoogleApiClient;
-
     /**
      * Request code for auto Google Play Services error resolution.
      */
     protected static final int REQUEST_CODE_RESOLUTION = 1;
-
     // Bool to track whether the app is already resolving an error
     private boolean mResolvingError = false;
+
+    /**
+     * Called when activity gets visible. A connection to Drive services need to
+     * be initiated as soon as the activity is visible. Registers
+     * {@code ConnectionCallbacks} and {@code OnConnectionFailedListener} on the
+     * activities itself.
+     */
+    @Override
+    protected void onResume() {
+        if (BuildConfig.DEBUG_MODE) Log.v(TAG, "onResume()");
+        super.onResume();
+        //TODO: Handle mGoogleApiClient better
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(Fitness.HISTORY_API).addScope(Fitness.SCOPE_ACTIVITY_READ_WRITE)
+                    .addApi(Fitness.SESSIONS_API).addScope(Fitness.SCOPE_LOCATION_READ_WRITE)
+                    .addApi(Fitness.RECORDING_API).addScope(Fitness.SCOPE_BODY_READ_WRITE)
+                    .addApi(Games.API).addScope(Games.SCOPE_GAMES)
+                    .build();
+        }
+        mGoogleApiClient.connect();
+    }
 
     /**
      * Called when activity gets invisible.
      */
     @Override
     protected void onPause() {
-        if (BuildConfig.DEBUG_MODE) Log.v(TAG, "onPause()");
         if (mGoogleApiClient != null) {
             mGoogleApiClient.disconnect();
+            if (BuildConfig.DEBUG_MODE) Log.v(TAG, "mGoogleApiClient has been disconnected");
         }
         super.onPause();
     }
@@ -47,7 +72,7 @@ public class LoginBaseActivity extends AppCompatActivity implements
      */
     @Override
     public void onConnected(Bundle connectionHint) {
-        Log.i(TAG, "GoogleApiClient connected");
+        Log.i(TAG, "GoogleApiClient is connected!");
     }
 
     /**
@@ -94,14 +119,5 @@ public class LoginBaseActivity extends AppCompatActivity implements
                 }
             }
         }
-    }
-
-    /**
-     * Called when activity gets invisible.
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (BuildConfig.DEBUG_MODE) Log.v(TAG, "onResume() - not implemented");
     }
 }

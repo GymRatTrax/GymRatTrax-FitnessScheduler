@@ -50,7 +50,6 @@ public class SettingsActivity extends PreferenceActivity {
                     @Override
                     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
                                                           String key) {
-
                         if (BuildConfig.DEBUG_MODE) Log.d(TAG, "setNotifications called.");
                         NotifyReceiver.setNotifications(getApplicationContext());
                     }

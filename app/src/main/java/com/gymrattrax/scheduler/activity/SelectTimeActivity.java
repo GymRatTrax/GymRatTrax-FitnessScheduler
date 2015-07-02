@@ -147,6 +147,7 @@ public class SelectTimeActivity extends AppCompatActivity {
                 String defaultTone = sharedPref.getString(SettingsActivity.PREF_NOTIFY_TONE, "");
                 String defaultAdvance = sharedPref.getString(SettingsActivity.PREF_NOTIFY_ADVANCE, "0");
 
+                //TODO: #55 Improve the edit notifications per workout dialog(s)
                 AlertDialog.Builder alertBuilder = new AlertDialog.Builder(SelectTimeActivity.this);
                 alertBuilder.setMessage("Use default notification values?\n" +
                         "Enabled: " + defaultEnabled + "\n" +
