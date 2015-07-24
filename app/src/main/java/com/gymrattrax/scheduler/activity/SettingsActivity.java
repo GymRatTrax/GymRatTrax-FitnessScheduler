@@ -3,15 +3,15 @@ package com.gymrattrax.scheduler.activity;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.fragment.SettingsFragment;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends AppCompatActivity {
     public static final String TAG = "SettingsActivity";
     public static final String PREF_DATE_FORMAT          = "pref_date_format";
     public static final String PREF_NOTIFY_ENABLED_ALL   = "pref_notify_enabled_all";
@@ -31,7 +31,7 @@ public class SettingsActivity extends PreferenceActivity {
         super.onCreate(savedInstanceState);
         super.onPostCreate(savedInstanceState);
         if (BuildConfig.DEBUG_MODE)
-            Log.v(TAG, "Starting...");
+            Log.v(TAG, "659 Starting...");
         if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             setTheme(android.R.style.Theme_Holo_Light);
         } else {

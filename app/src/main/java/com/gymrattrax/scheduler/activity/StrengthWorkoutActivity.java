@@ -1,5 +1,6 @@
 package com.gymrattrax.scheduler.activity;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,16 +8,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Button;
 import android.app.AlertDialog;
-import android.text.*;
 import android.content.DialogInterface;
 
 import com.google.android.gms.common.api.ResultCallback;
@@ -276,28 +276,26 @@ public class StrengthWorkoutActivity extends LoginActivity {
                 viewSet.append(" Complete!");
 
             } else {
-
                 row.setOnClickListener(new View.OnClickListener() {
-
                     @Override
                     public void onClick(View v) {
                         //check to see if all sets have been completed
-
-                        AlertDialog.Builder builder = new AlertDialog.Builder(StrengthWorkoutActivity.this);
-                        builder.setTitle("Seconds Taken to Complete Set");
-
-                        // Set up the input
-                        final EditText input = new EditText(StrengthWorkoutActivity.this);
-
-                        // Specify the type of input expected; this, for example, sets the input as a password,
-                        // and will mask the text
-                        input.setInputType(InputType.TYPE_CLASS_DATETIME | InputType.TYPE_DATETIME_VARIATION_TIME);
-                        builder.setView(input);
-
-                        // Set up the buttons
-                        builder.setPositiveButton("FINISHED!", new DialogInterface.OnClickListener() {
+                        final Dialog d = new Dialog(StrengthWorkoutActivity.this);
+                        //TODO: 1.0.1 Figure out why no titles display on virtual device.
+                        d.setTitle("Seconds taken to complete this set");
+                        d.setContentView(R.layout.dialog_integer);
+                        Button b1 = (Button) d.findViewById(R.id.decimal_button_set);
+                        Button b2 = (Button) d.findViewById(R.id.decimal_button_cancel);
+                        final NumberPicker np = (NumberPicker) d.findViewById(R.id.decimal_number_picker_integer);
+                        np.setMaxValue(300);
+                        np.setMinValue(0);
+                        //TODO: Consider pre-filling in this value with an average of their previous workouts.
+                        np.setValue(0);
+                        np.setWrapSelectorWheel(false);
+//                        np.setOnValueChangedListener(this);
+                        b1.setOnClickListener(new View.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                            public void onClick(View view) {
                                 counter += 1;
                                 //disable row from being clicked again
                                 row.setClickable(false);
@@ -305,33 +303,31 @@ public class StrengthWorkoutActivity extends LoginActivity {
 
                                 // Error Check EditText Input *************************
                                 // add time spent to existing value
-                                double timeInMinutes = Double.parseDouble(input.getText().toString()) / 60;
+                                double timeInMinutes = (double)(np.getValue()) / 60.0;
                                 workoutItem.setTimeSpent(workoutItem.getTimeSpent() + timeInMinutes);
 
                                 workoutItem.setSetsCompleted(counter);
                                 workoutItem.setRepsCompleted(counter * reps);
                                 //setRepsCompleted
 
-                                setsCompleted.setText("Sets Completed: " + Integer.toString(workoutItem.getSetsCompleted()));
+                                setsCompleted.setText("Sets Completed: " +
+                                        Integer.toString(workoutItem.getSetsCompleted()));
 
                                 DatabaseHelper dbh = new DatabaseHelper(StrengthWorkoutActivity.this);
                                 dbh.completeWorkout(workoutItem, false);
                                 dbh.close();
+                                d.dismiss();
                             }
                         });
-                        builder.setNegativeButton("I'M NOT DONE!", new DialogInterface.OnClickListener() {
+                        b2.setOnClickListener(new View.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
+                            public void onClick(View view) {
+                                d.dismiss();
                             }
                         });
-
-                        builder.show();
-
+                        d.show();
                     }
-
                 });
-
             }
         }
     }

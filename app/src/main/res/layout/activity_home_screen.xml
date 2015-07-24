@@ -10,7 +10,7 @@
     android:id="@+id/home_screen"
     android:orientation="vertical"
     android:weightSum="1">
-
+<!--TODO: Improve the layout for tablets.-->
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="109dp"
@@ -21,8 +21,8 @@
         android:clickable="false"
         android:layout_gravity="center"
         android:onClick="@anim/anim_rotate"
-        android:paddingBottom="10dp" />
-
+        android:paddingBottom="10dp"
+        android:contentDescription="@string/gymrat_name"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,7 +30,6 @@
         android:background="@color/primary"
         android:id="@+id/Row1"
         android:orientation="horizontal"
-
         android:weightSum="1"
         android:paddingTop="15dp">
         <Button
@@ -49,7 +48,7 @@
             android:shadowDy="2"
             android:shadowRadius="5"
             android:singleLine="false"
-            android:layout_weight="0.31"
+            android:layout_weight="0.5"
             android:layout_marginRight="2dp"
             android:layout_marginEnd="2dp"
             android:longClickable="false" />
@@ -73,7 +72,7 @@
             android:shadowDx="0"
             android:shadowDy="0"
             android:shadowRadius="5"
-            android:layout_weight="0.42" />
+            android:layout_weight="0.5" />
 
     </LinearLayout>
 
@@ -100,7 +99,7 @@
             android:shadowDx="0"
             android:shadowDy="0"
             android:shadowRadius="5"
-            android:layout_weight="0.30"
+            android:layout_weight="0.5"
             android:layout_marginRight="2dp" />
 
         <Button
@@ -118,7 +117,7 @@
             android:shadowDy="0"
             android:shadowRadius="5"
             android:onClick="loadProgress"
-            android:layout_weight="0.38" />
+            android:layout_weight="0.5" />
     </LinearLayout>
 
     <LinearLayout
@@ -145,7 +144,7 @@
             android:shadowDy="0"
             android:shadowRadius="5"
             android:onClick="loadCalorieNegation"
-            android:layout_weight="0.43"
+            android:layout_weight="0.5"
             android:layout_marginRight="2dp" />
 
         <Button
@@ -162,6 +161,7 @@
             android:shadowDx="0"
             android:shadowDy="0"
             android:shadowRadius="5"
+            android:layout_weight="0.5"
             android:onClick="loadSettings" />
 
     </LinearLayout>
