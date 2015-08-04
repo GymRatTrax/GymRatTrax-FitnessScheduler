@@ -281,6 +281,7 @@ public class StrengthWorkoutActivity extends LoginActivity {
                     public void onClick(View v) {
                         //check to see if all sets have been completed
                         final Dialog d = new Dialog(StrengthWorkoutActivity.this);
+                        //TODO: #67 Continue manual testing on virtual devices
                         //TODO: 1.0.1 Figure out why no titles display on virtual device.
                         d.setTitle("Seconds taken to complete this set");
                         d.setContentView(R.layout.dialog_integer);

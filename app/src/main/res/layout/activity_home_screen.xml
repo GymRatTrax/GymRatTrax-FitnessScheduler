@@ -10,7 +10,6 @@
     android:id="@+id/home_screen"
     android:orientation="vertical"
     android:weightSum="1">
-<!--TODO: Improve the layout for tablets.-->
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="109dp"

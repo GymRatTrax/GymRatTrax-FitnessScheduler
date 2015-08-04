@@ -17,7 +17,6 @@ import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
-import com.jjoe64.graphview.GridLabelRenderer;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
 import java.util.Calendar;

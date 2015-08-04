@@ -145,7 +145,7 @@ public class HomeScreenActivity extends LoginActivity {
             @Override
             public void onClick(View view) {
                 loadActivity(SettingsActivity.class);
-                //TODO: Should there be an easy way to log out from the home screen?
+                //TODO: #66 Allow users to easily sign out of Google APIs
 //                if (mGoogleApiClient.isConnected()) {
 //                    Log.d(TAG, "You're connected, but you want to disconnect?");
 //                    mGoogleApiClient.disconnect();
