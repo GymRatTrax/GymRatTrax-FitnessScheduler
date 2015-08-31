@@ -172,4 +172,6 @@
     <string name="calorie_negation_button">SUGGEST WORKOUTS</string>
     <string name="sign_in_with_google">Sign in with Google</string>
     <string name="gymrat_name">GymRatTrax</string>
+    <string name="edit_strength_workout">Edit Strength Workout</string>
+    <string name="pounds">lb(s)</string>
 </resources>

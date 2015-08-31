@@ -1,17 +1,18 @@
 package com.gymrattrax.scheduler.activity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 
-import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.R;
+import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
 public class CurrentScheduleActivity extends AppCompatActivity {
@@ -52,7 +53,12 @@ public class CurrentScheduleActivity extends AppCompatActivity {
             viewTitle.setId(4000 + i);
             viewTime.setId(5000 + i);
             row.removeAllViews();
-            row.setBackgroundColor(getResources().getColor(R.color.primary200));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                row.setBackgroundColor(getResources().getColor(R.color.primary200, null));
+            } else {
+                //noinspection deprecation
+                row.setBackgroundColor(getResources().getColor(R.color.primary200));
+            }
             row.setPadding(5,10,5,10);
             TableLayout.LayoutParams trParams = new TableLayout.LayoutParams(
                     LayoutParams.MATCH_PARENT,

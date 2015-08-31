@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.TextView;
+
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.model.ExerciseName;
 
@@ -141,8 +142,11 @@ public class SelectDateActivity extends AppCompatActivity {
     private void initializeCalendar(CalendarView calendar) {
         calendar.setShowWeekNumber(false);
         calendar.setFirstDayOfWeek(1);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN &&
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            //noinspection deprecation
             calendar.setSelectedWeekBackgroundColor(getResources().getColor(R.color.primary200));
+            //noinspection deprecation
             calendar.setSelectedDateVerticalBar(R.color.primary700);
         }
 

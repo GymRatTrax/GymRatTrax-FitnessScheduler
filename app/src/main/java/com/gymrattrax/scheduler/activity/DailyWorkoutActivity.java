@@ -1,6 +1,7 @@
 package com.gymrattrax.scheduler.activity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -13,8 +14,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.R;
+import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.ExerciseType;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
@@ -43,9 +44,6 @@ public class DailyWorkoutActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
 
         return super.onOptionsItemSelected(item);
     }
@@ -78,7 +76,12 @@ public class DailyWorkoutActivity extends AppCompatActivity {
             viewTitle.setId(4000 + i);
             viewTime.setId(5000 + i);
             row.removeAllViews();
-            row.setBackgroundColor(getResources().getColor(R.color.primary200));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                row.setBackgroundColor(getResources().getColor(R.color.primary200, null));
+            } else {
+                //noinspection deprecation
+                row.setBackgroundColor(getResources().getColor(R.color.primary200));
+            }
             row.setPadding(5,10,5,10);
             TableLayout.LayoutParams trParams = new TableLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,

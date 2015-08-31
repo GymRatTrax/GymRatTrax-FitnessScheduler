@@ -81,7 +81,12 @@ public class AddTemplatesActivity extends AppCompatActivity {
             viewTitle.setId(4000 + i);
             viewTime.setId(5000 + i);
             row.removeAllViews();
-            row.setBackgroundColor(getResources().getColor(R.color.primary200));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                row.setBackgroundColor(getResources().getColor(R.color.primary200, null));
+            } else {
+                //noinspection deprecation
+                row.setBackgroundColor(getResources().getColor(R.color.primary200));
+            }
             row.setPadding(5,10,5,10);
             TableLayout.LayoutParams trParams = new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                     LayoutParams.WRAP_CONTENT);
@@ -120,8 +125,10 @@ public class AddTemplatesActivity extends AppCompatActivity {
                 buttons[i].setBackground(getResources().getDrawable(R.drawable.add_button_press,
                         null));
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                //noinspection deprecation
                 buttons[i].setBackground(getResources().getDrawable(R.drawable.add_button_press));
             } else {
+                //noinspection deprecation
                 buttons[i].setBackgroundDrawable(getResources().getDrawable(R.drawable
                         .add_button_press));
             }

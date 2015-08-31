@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -225,8 +226,17 @@ public class SelectTimeActivity extends AppCompatActivity {
         int month = Integer.parseInt(divDate[0]) - 1;
         int day = Integer.parseInt(divDate[1]);
         int year = Integer.parseInt(divDate[2]);
-        int hourInt = timepicker.getCurrentHour();
-        int minInt = timepicker.getCurrentMinute();
+        int hourInt;
+        int minInt;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            hourInt = timepicker.getHour();
+            minInt = timepicker.getMinute();
+        } else {
+            //noinspection deprecation
+            hourInt = timepicker.getCurrentHour();
+            //noinspection deprecation
+            minInt = timepicker.getCurrentMinute();
+        }
         String title;
         Calendar beginTime = Calendar.getInstance();
         beginTime.set(year, month, day, hourInt, minInt);
@@ -303,8 +313,17 @@ public class SelectTimeActivity extends AppCompatActivity {
         int month = Integer.parseInt(dateArray[0]);
         int day = Integer.parseInt(dateArray[1]);
         int year = Integer.parseInt(dateArray[2]);
-        int hourInt = timepicker.getCurrentHour();
-        int minInt = timepicker.getCurrentMinute();
+        int hourInt;
+        int minInt;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            hourInt = timepicker.getHour();
+            minInt = timepicker.getMinute();
+        } else {
+            //noinspection deprecation
+            hourInt = timepicker.getCurrentHour();
+            //noinspection deprecation
+            minInt = timepicker.getCurrentMinute();
+        }
 
         Calendar cal = Calendar.getInstance();
         cal.set(year, month - 1, day, hourInt, minInt);
@@ -344,8 +363,17 @@ public class SelectTimeActivity extends AppCompatActivity {
         int month = Integer.parseInt(dateArray[0]);
         int day = Integer.parseInt(dateArray[1]);
         int year = Integer.parseInt(dateArray[2]);
-        int hour = timepicker.getCurrentHour();
-        int minute = timepicker.getCurrentMinute();
+        int hour;
+        int minute;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            hour = timepicker.getHour();
+            minute = timepicker.getMinute();
+        } else {
+            //noinspection deprecation
+            hour = timepicker.getCurrentHour();
+            //noinspection deprecation
+            minute = timepicker.getCurrentMinute();
+        }
 
         Calendar cal = Calendar.getInstance();
         cal.set(year, month-1, day, hour, minute);

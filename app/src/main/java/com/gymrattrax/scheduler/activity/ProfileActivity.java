@@ -1,7 +1,9 @@
 package com.gymrattrax.scheduler.activity;
 
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +31,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+@TargetApi(15)
 public class ProfileActivity extends AppCompatActivity {
 
     private Button editProfileButton;
@@ -258,39 +261,57 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    @TargetApi(15)
     private void lockInput() {
 
         // make edit text unclickable until edit button is clicked
-        nameEditText.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
         nameEditText.setEnabled(false);
-        nameEditText.setClickable(false);
-
-        birthDateEditText.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
         birthDateEditText.setEnabled(false);
-        birthDateEditText.setClickable(false);
-
-        weightEditText.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
         weightEditText.setEnabled(false);
-        weightEditText.setClickable(false);
-
-        heightEditText.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
         heightEditText.setEnabled(false);
-        heightEditText.setClickable(false);
-
-        fatPercentageEditText.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
         fatPercentageEditText.setEnabled(false);
-        fatPercentageEditText.setClickable(false);
-
         littleExercise.setEnabled(false);
-        littleExercise.setClickable(false);
         lightExercise.setEnabled(false);
-        lightExercise.setClickable(false);
         modExercise.setEnabled(false);
-        modExercise.setClickable(false);
         heavyExercise.setEnabled(false);
-        heavyExercise.setClickable(false);
         profileSpinner.setEnabled(false);
+
+        nameEditText.setClickable(false);
+        birthDateEditText.setClickable(false);
+        weightEditText.setClickable(false);
+        heightEditText.setClickable(false);
+        fatPercentageEditText.setClickable(false);
+        littleExercise.setClickable(false);
+        lightExercise.setClickable(false);
+        modExercise.setClickable(false);
+        heavyExercise.setClickable(false);
         profileSpinner.setClickable(false);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            nameEditText.setBackgroundColor(getResources()
+                    .getColor(android.R.color.darker_gray, null));
+            birthDateEditText.setBackgroundColor(getResources()
+                    .getColor(android.R.color.darker_gray, null));
+            weightEditText.setBackgroundColor(getResources()
+                    .getColor(android.R.color.darker_gray, null));
+            heightEditText.setBackgroundColor(getResources()
+                    .getColor(android.R.color.darker_gray, null));
+            fatPercentageEditText.setBackgroundColor(getResources()
+                    .getColor(android.R.color.darker_gray, null));
+        } else {
+            //noinspection deprecation
+            nameEditText.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+            //noinspection deprecation
+            birthDateEditText.setBackgroundColor(getResources()
+                    .getColor(android.R.color.darker_gray));
+            //noinspection deprecation
+            weightEditText.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+            //noinspection deprecation
+            heightEditText.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+            //noinspection deprecation
+            fatPercentageEditText.setBackgroundColor(getResources()
+                    .getColor(android.R.color.darker_gray));
+        }
     }
 
     public void saveChanges(View view){
@@ -353,11 +374,30 @@ public class ProfileActivity extends AppCompatActivity {
      */
     public void editProfile(){
         editing = true;
-        nameEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            nameEditText.setBackgroundColor(getResources().getColor(android.R.color.white, null));
+            birthDateEditText.setBackgroundColor(getResources()
+                    .getColor(android.R.color.white, null));
+            weightEditText.setBackgroundColor(getResources().getColor(android.R.color.white, null));
+            heightEditText.setBackgroundColor(getResources().getColor(android.R.color.white, null));
+            fatPercentageEditText.setBackgroundColor(getResources()
+                    .getColor(android.R.color.white, null));
+        } else {
+            //noinspection deprecation
+            nameEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
+            //noinspection deprecation
+            birthDateEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
+            //noinspection deprecation
+            weightEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
+            //noinspection deprecation
+            heightEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
+            //noinspection deprecation
+            fatPercentageEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
+        }
         nameEditText.setEnabled(true);
         nameEditText.setClickable(true);
 
-        birthDateEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
         birthDateEditText.setEnabled(true);
         birthDateEditText.setClickable(true);
         birthDateEditText.setOnClickListener(new View.OnClickListener() {
@@ -367,7 +407,6 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        weightEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
         weightEditText.setEnabled(true);
         weightEditText.setClickable(true);
         weightEditText.setOnClickListener(new View.OnClickListener() {
@@ -377,7 +416,6 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        heightEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
         heightEditText.setEnabled(true);
         heightEditText.setClickable(true);
         heightEditText.setOnClickListener(new View.OnClickListener() {
@@ -387,7 +425,6 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        fatPercentageEditText.setBackgroundColor(getResources().getColor(android.R.color.white));
         fatPercentageEditText.setEnabled(true);
         fatPercentageEditText.setClickable(true);
 

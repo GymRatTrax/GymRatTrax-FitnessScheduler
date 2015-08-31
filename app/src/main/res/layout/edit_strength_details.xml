@@ -14,7 +14,7 @@
         android:textStyle="bold"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/strength_title"
-        android:text="Edit Strength Workout"
+        android:text="@string/edit_strength_workout"
         android:layout_gravity="center_horizontal" />
 
     <TextView
@@ -131,7 +131,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="lb(s)"
+            android:text="@string/pounds"
             android:id="@+id/textView14"
             android:layout_alignTop="@+id/editText"
             android:layout_toRightOf="@+id/editText"

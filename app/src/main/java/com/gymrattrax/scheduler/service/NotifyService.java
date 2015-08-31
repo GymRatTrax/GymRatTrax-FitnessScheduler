@@ -124,12 +124,18 @@ public class NotifyService extends Service {
         NotificationCompat.Builder mNotificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.drawable.ic_stat_name)
                 .setAutoCancel(true)
-                .setOngoing(false)
-                .setColor(getResources().getColor(R.color.primary));
+                .setOngoing(false);
+//
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
             mNotificationBuilder.setPriority(Notification.PRIORITY_HIGH);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             mNotificationBuilder.setCategory(Notification.CATEGORY_EVENT);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mNotificationBuilder.setColor(getResources().getColor(R.color.primary, null));
+        } else {
+            //noinspection deprecation
+            mNotificationBuilder.setColor(getResources().getColor(R.color.primary));
+        }
 
         Intent intent = new Intent(this, DailyWorkoutActivity.class);
         if (workoutItem != null) {

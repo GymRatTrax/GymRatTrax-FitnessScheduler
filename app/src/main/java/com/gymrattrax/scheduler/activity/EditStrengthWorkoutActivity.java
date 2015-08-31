@@ -2,17 +2,18 @@ package com.gymrattrax.scheduler.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 
-public class EditStrengthWorkoutActivity extends ActionBarActivity {
+public class EditStrengthWorkoutActivity extends AppCompatActivity {
     final DatabaseHelper dbh = new DatabaseHelper(this);
     private int id;
     private EditText weight, sets, reps;
@@ -110,9 +111,6 @@ public class EditStrengthWorkoutActivity extends ActionBarActivity {
                 EditStrengthWorkoutActivity.this.loadSchedule();
             }
         });
-    }
-    private void showError() {
-        weight.setError("Weight should be between 0 and 500 lbs.");
     }
 
     // Return to schedule after deleting workout

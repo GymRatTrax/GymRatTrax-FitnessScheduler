@@ -44,11 +44,6 @@ public class WorkoutItem {
         this.exercise = exercise;
     }
 
-    /**
-     * @deprecated Please use {@link WorkoutItem#WorkoutItem(ExerciseItem)} to prevent issues
-     * resulting from incorrect Strings. This was created to ease backwards compatibility issues.
-     */
-    @Deprecated
     //TODO: This item was deprecated, but it is too widely used. Come back to this later.
     public WorkoutItem(String exerciseName) {
         this();
@@ -76,12 +71,7 @@ public class WorkoutItem {
         return exercise.getType();
     }
 
-    //TODO: Delete this method when it is no longer used anywhere.
-    /**
-     * @deprecated The name and type of a workout must not be changed. If a workout is being edited,
-     * the WorkoutItem object needs to be re-instantiated with a
-     */
-    @Deprecated
+    //TODO: Come up with a better way.
     public void setName(String name) {
         if (ExerciseName.Abs.fromString(name) != null)
             this.exercise = new ExerciseItem(ExerciseName.Abs.fromString(name));

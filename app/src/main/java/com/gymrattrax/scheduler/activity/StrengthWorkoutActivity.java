@@ -1,13 +1,18 @@
 package com.gymrattrax.scheduler.activity;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
@@ -15,9 +20,6 @@ import android.widget.RadioButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Button;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
@@ -30,14 +32,12 @@ import com.google.android.gms.fitness.data.DataType;
 import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.games.Games;
 import com.gymrattrax.scheduler.BuildConfig;
-import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.R;
+import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.data.SendToGoogleFitHistory;
 import com.gymrattrax.scheduler.model.ProfileItem;
 import com.gymrattrax.scheduler.model.WorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
-
-import android.net.Uri;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -247,7 +247,12 @@ public class StrengthWorkoutActivity extends LoginActivity {
             stack.setId(3000 + i);
             viewSet.setId(5000 + i);
             row.removeAllViews();
-            row.setBackgroundColor(getResources().getColor(R.color.primary200));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                row.setBackgroundColor(getResources().getColor(R.color.primary200, null));
+            } else {
+                //noinspection deprecation
+                row.setBackgroundColor(getResources().getColor(R.color.primary200));
+            }
             row.setPadding(5, 10, 5, 10);
             TableLayout.LayoutParams trParams = new TableLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,

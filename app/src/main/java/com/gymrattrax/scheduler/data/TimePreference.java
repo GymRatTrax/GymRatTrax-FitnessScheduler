@@ -2,6 +2,7 @@ package com.gymrattrax.scheduler.data;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Build;
 import android.preference.DialogPreference;
 import android.support.annotation.NonNull;
 import android.text.format.DateFormat;
@@ -18,14 +19,6 @@ import java.util.GregorianCalendar;
 public class TimePreference extends DialogPreference {
     private Calendar calendar;
     private TimePicker picker = null;
-
-    public TimePreference(Context context) {
-        this(context, null);
-    }
-
-    public TimePreference(Context context, AttributeSet attributes) {
-        this(context, attributes, android.R.attr.dialogPreferenceStyle);
-    }
 
     public TimePreference(Context context, AttributeSet attributes, int defaultStyle) {
         super(context, attributes, defaultStyle);
@@ -44,8 +37,16 @@ public class TimePreference extends DialogPreference {
     @Override
     protected void onBindDialogView(@NonNull View v) {
         super.onBindDialogView(v);
-        picker.setCurrentHour(calendar.get(Calendar.HOUR_OF_DAY));
-        picker.setCurrentMinute(calendar.get(Calendar.MINUTE));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            picker.setHour(calendar.get(Calendar.HOUR_OF_DAY));
+            picker.setMinute(calendar.get(Calendar.MINUTE));
+        } else {
+            //noinspection deprecation
+            picker.setCurrentHour(calendar.get(Calendar.HOUR_OF_DAY));
+            //noinspection deprecation
+            picker.setCurrentMinute(calendar.get(Calendar.MINUTE));
+        }
     }
 
     @Override
@@ -53,8 +54,15 @@ public class TimePreference extends DialogPreference {
         super.onDialogClosed(positiveResult);
 
         if (positiveResult) {
-            calendar.set(Calendar.HOUR_OF_DAY, picker.getCurrentHour());
-            calendar.set(Calendar.MINUTE, picker.getCurrentMinute());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                calendar.set(Calendar.HOUR_OF_DAY, picker.getHour());
+                calendar.set(Calendar.MINUTE, picker.getMinute());
+            } else {
+                //noinspection deprecation
+                calendar.set(Calendar.HOUR_OF_DAY, picker.getCurrentHour());
+                //noinspection deprecation
+                calendar.set(Calendar.MINUTE, picker.getCurrentMinute());
+            }
 
             setSummary(getSummary());
             if (callChangeListener(calendar.getTimeInMillis())) {
