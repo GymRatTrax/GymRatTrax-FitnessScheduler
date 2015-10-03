@@ -83,7 +83,7 @@ public class SelectDateActivity extends AppCompatActivity {
                 reps = extras.getString("reps");
                 if (weight != null && sets != null && reps != null) {
                     if (Double.parseDouble(weight) == 1) {
-                        wString = weight + " lb ";
+                        wString = weight + " pound ";
                     } else {
                         wString = weight + " lbs x ";
                     }

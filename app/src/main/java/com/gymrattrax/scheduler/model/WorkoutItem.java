@@ -1,7 +1,9 @@
 package com.gymrattrax.scheduler.model;
 
+import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
+
+import com.gymrattrax.scheduler.data.DatabaseHelper;
 
 import java.util.Date;
 
@@ -9,7 +11,6 @@ public class WorkoutItem {
     private static final String TAG = "WorkoutItem";
 
     private int ID;
-    private ExerciseItem exercise;
     private Date dateScheduled;
     private Date dateCompleted;
     private double caloriesBurned;
@@ -33,36 +34,66 @@ public class WorkoutItem {
     private double weightUsed;
     private Date dateModified;
 
+    private Exercise exercise;
+
     /**
      * This constructor is private because all WorkoutItem objects should be instantiated.
      */
     private WorkoutItem() {
         this.complete = false;
     }
-    public WorkoutItem(ExerciseItem exercise) {
+    private WorkoutItem(String[] exercise) {
+        this();
+        Exercise exerciseB = new Exercise(exercise[0], exercise[1]);
+        exerciseType = ExerciseType.valueOf(exercise[9]);
+        exerciseName = exercise[1];
+    }
+    private WorkoutItem(Exercise exercise) {
         this();
         this.exercise = exercise;
+        exerciseType = ExerciseType.valueOf(exercise[9]);
+        exerciseName = exercise[1];
     }
 
     //TODO: This item was deprecated, but it is too widely used. Come back to this later.
-    public WorkoutItem(String exerciseName) {
+    private WorkoutItem(String exerciseName) {
         this();
         setName(exerciseName);
     }
-
-    public WorkoutItem(ExerciseName.Abs abs) {
+    private WorkoutItem(ExerciseName.Abs abs) {
         exercise = new ExerciseItem(abs);
     }
-    public WorkoutItem(ExerciseName.Arms arms) {
+    private WorkoutItem(ExerciseName.Arms arms) {
         exercise = new ExerciseItem(arms);
     }
-    public WorkoutItem(ExerciseName.Cardio cardio) {
+    private WorkoutItem(ExerciseName.Cardio cardio) {
         exercise = new ExerciseItem(cardio);
     }
-    public WorkoutItem(ExerciseName.Legs legs) {
+    private WorkoutItem(ExerciseName.Legs legs) {
         exercise = new ExerciseItem(legs);
     }
 
+    /* Static factory methods */
+    public static WorkoutItem createNew(Context context, long databaseId) {
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
+        String[] exercise = databaseHelper.getExerciseById(databaseId);
+        WorkoutItem workoutItem = new WorkoutItem(exercise);
+        databaseHelper.close();
+        return workoutItem;
+    }
+
+    public static WorkoutItem createNew(Exercise exercise) {
+        return new WorkoutItem(exerc9se);
+    }
+
+    public static WorkoutItem getById(Context context, long databaseId) {
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
+        WorkoutItem workoutItem = databaseHelper.getWorkoutById(databaseId);
+        databaseHelper.close();
+        return workoutItem;
+    }
+
+    /* Getters and setters */
     public String getName() {
         return exercise.getName();
     }
@@ -71,26 +102,26 @@ public class WorkoutItem {
         return exercise.getType();
     }
 
-    //TODO: Come up with a better way.
-    public void setName(String name) {
-        if (ExerciseName.Abs.fromString(name) != null)
-            this.exercise = new ExerciseItem(ExerciseName.Abs.fromString(name));
-        else {
-            if (ExerciseName.Arms.fromString(name) != null)
-                this.exercise = new ExerciseItem(ExerciseName.Arms.fromString(name));
-            else {
-                if (ExerciseName.Cardio.fromString(name) != null)
-                    this.exercise = new ExerciseItem(ExerciseName.Cardio.fromString(name));
-                else {
-                    if (ExerciseName.Legs.fromString(name) != null)
-                        this.exercise = new ExerciseItem(ExerciseName.Legs.fromString(name));
-                    else {
-                        Log.e(TAG, "Unexpected workout name. No operation made.");
-                    }
-                }
-            }
-        }
-    }
+//    @Deprecated
+//    private void setName(String name) {
+//        if (ExerciseName.Abs.fromString(name) != null)
+//            this.exercise = new ExerciseItem(ExerciseName.Abs.fromString(name));
+//        else {
+//            if (ExerciseName.Arms.fromString(name) != null)
+//                this.exercise = new ExerciseItem(ExerciseName.Arms.fromString(name));
+//            else {
+//                if (ExerciseName.Cardio.fromString(name) != null)
+//                    this.exercise = new ExerciseItem(ExerciseName.Cardio.fromString(name));
+//                else {
+//                    if (ExerciseName.Legs.fromString(name) != null)
+//                        this.exercise = new ExerciseItem(ExerciseName.Legs.fromString(name));
+//                    else {
+//                        Log.e(TAG, "Unexpected workout name. No operation made.");
+//                    }
+//                }
+//            }
+//        }
+//    }
 
     public int getID() {
         return ID;
@@ -292,4 +323,6 @@ public class WorkoutItem {
     public void setDateModified(Date dateModified) {
         this.dateModified = dateModified;
     }
+
+
 }

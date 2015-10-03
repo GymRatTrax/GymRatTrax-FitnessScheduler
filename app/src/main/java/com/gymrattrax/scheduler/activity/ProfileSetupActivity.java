@@ -6,24 +6,25 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.RadioButton;
-import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseContract;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.R;
+import com.gymrattrax.scheduler.model.ProfileItem;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,7 +36,6 @@ import java.util.regex.Pattern;
 public class ProfileSetupActivity extends AppCompatActivity
         implements DatePickerDialog.OnDateSetListener, NumberPicker.OnValueChangeListener {
 
-    private EditText nameEditText;
     private EditText birthDateEditText;
     private EditText weightEditText;
     private EditText heightEditText;
@@ -46,14 +46,15 @@ public class ProfileSetupActivity extends AppCompatActivity
     private RadioButton heavyExercise;
     private Spinner profileSpinner;
     private String dateFormat;
+    private ProfileItem mProfileItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_setup);
+        mProfileItem = new ProfileItem(this);
 
         Button doneButton = (Button) findViewById(R.id.DoneProfileButton);
-        nameEditText = (EditText) findViewById(R.id.profile_name);
         birthDateEditText = (EditText) findViewById(R.id.birth_date);
         birthDateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,7 +77,7 @@ public class ProfileSetupActivity extends AppCompatActivity
                 showHeightDialog();
             }
         });
-        fatPercentageEditText = (EditText) findViewById(R.id.fat_percentage);
+        fatPercentageEditText = (EditText) findViewById(R.id.profile_body_fat);
         littleExercise = (RadioButton) findViewById(R.id.little_exercise);
         lightExercise = (RadioButton) findViewById(R.id.light_exercise);
         modExercise = (RadioButton) findViewById(R.id.mod_exercise);
@@ -282,8 +283,7 @@ public class ProfileSetupActivity extends AppCompatActivity
     public void saveChanges(View view){
         // update database profile
         DatabaseHelper dbh = new DatabaseHelper(this);
-        dbh.setProfileInfo(DatabaseContract.ProfileTable.KEY_NAME, nameEditText.getText().toString());
-        dbh.setProfileInfo(DatabaseContract.ProfileTable.KEY_HEIGHT_INCHES, heightEditText.getText().toString());
+        mProfileItem.setHeight(Float.parseFloat(heightEditText.getText().toString()));
 
         String date = birthDateEditText.getText().toString();
         SimpleDateFormat inputFormat = new SimpleDateFormat(dateFormat, Locale.US);
@@ -296,7 +296,7 @@ public class ProfileSetupActivity extends AppCompatActivity
         if (d != null) {
             SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
             date = dbFormat.format(d) + " 00:00:00.000";
-            dbh.setProfileInfo(DatabaseContract.ProfileTable.KEY_BIRTH_DATE, date);
+            mProfileItem.setDOB(date);
         }
 
         double bodyFat = -1;
@@ -317,17 +317,18 @@ public class ProfileSetupActivity extends AppCompatActivity
             System.out.println("No activity level checked");
 
         dbh.addWeight(Double.valueOf(weightEditText.getText().toString()), bodyFat, activityLevel);
+        mProfileItem.setWeight(Float.valueOf(weightEditText.getText().toString()));
+        mProfileItem.setBodyFatPercentage((float) bodyFat);
+        mProfileItem.setActivityLevel((float) activityLevel);
 
 
         switch (profileSpinner.getItemAtPosition(
                 profileSpinner.getSelectedItemPosition()).toString().toUpperCase().substring(0,1)) {
             case "M":
-                dbh.setProfileInfo(DatabaseContract.ProfileTable.KEY_SEX,
-                        DatabaseContract.ProfileTable.VAL_SEX_MALE);
+                mProfileItem.setGender('M');
                 break;
             case "F":
-                dbh.setProfileInfo(DatabaseContract.ProfileTable.KEY_SEX,
-                        DatabaseContract.ProfileTable.VAL_SEX_FEMALE);
+                mProfileItem.setGender('F');
                 break;
         }
 

@@ -73,6 +73,5 @@ public class WeightsTest extends AndroidTestCase {
         dbh.addWeight(weight, -1, DatabaseContract.WeightTable.ACT_LVL_MOD);
         Map<Date, Double> weightsNew = dbh.getWeights(lastWeek.getTime(), today.getTime());
         assertEquals (weights.size(), weightsNew.size());
-
    }
 }

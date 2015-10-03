@@ -29,31 +29,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:weightSum="1"
-        android:paddingBottom="5dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Name (optional)"
-            android:layout_weight="1" />
-
-        <EditText
-            android:layout_width="126dp"
-            android:layout_height="wrap_content"
-            android:background="#ffffffff"
-            android:inputType="none"
-            android:id="@+id/profile_name"
-            />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
         android:paddingBottom="5dp">
 
         <TextView
@@ -169,7 +144,7 @@
             android:layout_height="wrap_content"
             android:background="#ffffffff"
             android:inputType="none"
-            android:id="@+id/fat_percentage"/>
+            android:id="@+id/profile_body_fat"/>
     </LinearLayout>
 
 

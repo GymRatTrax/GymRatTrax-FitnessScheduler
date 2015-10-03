@@ -1,19 +1,20 @@
 package com.gymrattrax.scheduler.activity;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.NumberPicker;
-import android.widget.TextView;
-import android.widget.Button;
 import android.widget.RadioButton;
-import android.content.*;
-import android.os.*;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.PendingResult;
@@ -33,8 +34,8 @@ import com.google.android.gms.fitness.request.SessionInsertRequest;
 import com.google.android.gms.fitness.result.ListSubscriptionsResult;
 import com.google.android.gms.games.Games;
 import com.gymrattrax.scheduler.BuildConfig;
-import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.R;
+import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.data.SendToGoogleFitHistory;
 import com.gymrattrax.scheduler.data.UnitUtil;
 import com.gymrattrax.scheduler.model.ExerciseName;
@@ -298,6 +299,12 @@ public class CardioWorkoutActivity extends LoginActivity {
         ProfileItem profileItem = new ProfileItem(this);
         double caloriesBurned = METs * (profileItem.getBMR() / 24) * (timeRecordedInMinutes / 60);
         workoutItem.setCaloriesBurned(caloriesBurned);
+
+        WorkoutItem.Builder workoutItem = new WorkoutItem.Builder(this)
+                .setSmallIcon(R.drawable.ic_stat_name)
+                .setAutoCancel(true)
+                .setOngoing(false);
+
         DatabaseHelper dbh = new DatabaseHelper(CardioWorkoutActivity.this);
         dbh.completeWorkout(workoutItem, true);
         List<String> achievementsUnlocked = dbh.checkForAchievements();
@@ -306,8 +313,9 @@ public class CardioWorkoutActivity extends LoginActivity {
             insertIntoGoogleFitHistory(
                     (long)(timeRecordedInMinutes*60*1000),
                     (float)caloriesBurned,
-                    (float)UnitUtil.mileToMeter(
-                            Double.valueOf(editTextDistanceComplete.getText().toString())));
+                    (float)UnitUtil.convert(
+                            Double.valueOf(editTextDistanceComplete.getText().toString()),
+                            UnitUtil.DistanceUnit.mile, UnitUtil.DistanceUnit.meter));
             unlockGooglePlayGamesAchievements((int)timeRecordedInMinutes, achievementsUnlocked);
         } else {
             Log.e(TAG, "Could not connect to Google APIs.");

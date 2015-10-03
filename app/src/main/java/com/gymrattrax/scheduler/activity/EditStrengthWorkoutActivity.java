@@ -49,7 +49,7 @@ public class EditStrengthWorkoutActivity extends AppCompatActivity {
         reps.setText("" + repsInt);
         String weightStr;
         if (weightD == 1) {
-            weightStr = "" + weightD + " lb x ";
+            weightStr = "" + weightD + " pound x ";
         } else {
             weightStr = weightD + " lbs x ";
         }

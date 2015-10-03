@@ -205,7 +205,7 @@ public class ViewScheduleActivity extends AppCompatActivity implements ListViewA
                 String sets = "" + w.getSetsScheduled();
                 String dateTime = dbh.displayDateTime(this, w.getDateScheduled()) + "\n";
                 if (Double.parseDouble(weightUsed) == 1) {
-                    weightUsed = weightUsed + " lb x ";
+                    weightUsed = weightUsed + " pound x ";
                 } else {
                     weightUsed = weightUsed + " lbs x ";
                 }

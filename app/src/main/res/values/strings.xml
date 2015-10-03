@@ -174,4 +174,8 @@
     <string name="gymrat_name">GymRatTrax</string>
     <string name="edit_strength_workout">Edit Strength Workout</string>
     <string name="pounds">lb(s)</string>
+    <string name="profile_label_weight">Weight</string>
+    <string name="profile_label_body_fat">Body Fat % (Optional)</string>
+    <string name="profile_label_activity_level">Activity Level</string>
+    <string name="profile_label_update">Update</string>
 </resources>

@@ -1,8 +1,10 @@
 package com.gymrattrax.scheduler.model;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
-import com.gymrattrax.scheduler.data.DatabaseContract;
+import com.gymrattrax.scheduler.activity.SettingsActivity;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 
 import java.text.ParseException;
@@ -10,39 +12,50 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class ProfileItem {
-    private String name;
-    private char gender;
-    private Date DOB;
-    private int age;
-    private double height;
-    private double weight;
-    private double BMR;
-    private double fatPercentage;
-    private double activityLevel;
-    private boolean complete;
+    private static final String PREF_BIRTH_DATE = "BIRTH DATE";
+    private static final String PREF_HEIGHT = "HEIGHT";
+    private static final String PREF_WEIGHT = "WEIGHT";
+    private static final String PREF_BODY_FAT = "BODY_FAT";
+    private static final String PREF_ACTIVITY = "ACTIVITY";
+    private SharedPreferences mSharedPreferences;
+    public static final String PREF_GENDER = "GENDER";
 
-    public ProfileItem(Context c) {
-        complete = false;
-        DatabaseHelper dbh = new DatabaseHelper(c);
-        name = dbh.getProfileInfo(DatabaseContract.ProfileTable.KEY_NAME);
-        try {
-            height = Double.parseDouble(dbh.getProfileInfo(DatabaseContract.ProfileTable.KEY_HEIGHT_INCHES));
-        } catch (NumberFormatException nfe) {
-            height = -1.0;
-        }
+    public ProfileItem(Context context) {
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    }
 
-        String date = dbh.getProfileInfo(DatabaseContract.ProfileTable.KEY_BIRTH_DATE);
-        if (!date.trim().isEmpty()) {
+    public char getGender() {
+        return mSharedPreferences.getString(PREF_GENDER, "M").charAt(0);
+    }
+
+    public void setGender(char gender) {
+        mSharedPreferences.edit().putString(PREF_GENDER, String.valueOf(gender)).apply();
+    }
+
+    public Date getDOB() {
+        String dobString = mSharedPreferences.getString(PREF_BIRTH_DATE, "");
+        Date dobDate = null;
+        if (!dobString.trim().isEmpty()) {
             try {
-                DOB = dbh.convertDate(date);
+                dobDate = DatabaseHelper.convertDate(dobString);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
-        if (DOB != null) {
+        return dobDate;
+    }
+
+    public void setDOB(String dob) {
+        mSharedPreferences.edit().putString(PREF_BIRTH_DATE, dob).apply();
+    }
+
+    public int getAge() {
+        int age;
+        Date dobDate = getDOB();
+        if (dobDate != null) {
             Calendar now = Calendar.getInstance();
             Calendar dob = Calendar.getInstance();
-            dob.setTime(DOB);
+            dob.setTime(dobDate);
             int year1 = now.get(Calendar.YEAR);
             int year2 = dob.get(Calendar.YEAR);
             age = year1 - year2;
@@ -61,81 +74,85 @@ public class ProfileItem {
         else {
             age = -1;
         }
-
-        double[] weightInfo = dbh.getLatestWeight();
-        weight = weightInfo[0];
-        fatPercentage = weightInfo[1] * .01;
-        activityLevel = weightInfo[2];
-
-        if (!dbh.getProfileInfo(DatabaseContract.ProfileTable.KEY_SEX).trim().isEmpty())
-            gender = dbh.getProfileInfo(DatabaseContract.ProfileTable.KEY_SEX).toUpperCase().charAt(0);
-        else
-            gender = 0;
-
-        if (weight > 0 && height > 0 && gender > 0 && age > 0 && activityLevel > 0) {
-            BMR = calculateBMR(weight, height, gender, age, activityLevel, fatPercentage);
-            if (BMR > 0)
-                complete = true;
-        }
-
-        dbh.close();
-    }
-
-    public char getGender() {
-        return gender;
-    }
-
-    public Date getDOB() {
-        return DOB;
-    }
-
-    public int getAge() {
         return age;
     }
 
     public double getHeight() {
-        return height;
+        return mSharedPreferences.getFloat(PREF_HEIGHT, -1.0f);
+    }
+
+    public void setHeight(float height) {
+        mSharedPreferences.edit().putFloat(PREF_HEIGHT, height).apply();
     }
 
     public double getWeight() {
-        return weight;
+        return mSharedPreferences.getFloat(PREF_WEIGHT, 180f);
     }
 
-    public double getBMR() {
-        return BMR;
+    public void setWeight(float weight) {
+        mSharedPreferences.edit().putFloat(PREF_WEIGHT, weight).apply();
     }
 
-    public double getFatPercentage() {
-        return fatPercentage;
+    public double getBodyFatPercentage() {
+        return mSharedPreferences.getFloat(PREF_BODY_FAT, -1f);
+    }
+
+    public void setBodyFatPercentage(float bodyFatPercentage) {
+        mSharedPreferences.edit().putFloat(PREF_BODY_FAT, bodyFatPercentage).apply();
     }
 
     public double getActivityLevel() {
-        return activityLevel;
+        return mSharedPreferences.getFloat(PREF_ACTIVITY, 1.2f);
     }
 
-    private double calculateBMR(double weight, double height, char gender, double age, double activityLvl, double bodyFatPercentage){
+    public void setActivityLevel(float activityLevel) {
+        mSharedPreferences.edit().putFloat(PREF_ACTIVITY, activityLevel).apply();
+    }
 
-        if (fatPercentage < 0) {  //Harris-Benedict method
-            if (gender == 'M') {
-                BMR = (66 + (6.23*weight) + (12.7*height) - (6.8*age)) * activityLvl;
-            } else if (gender == 'F') {
-                BMR = (655 + (4.35*weight) + (4.7*height) - (4.7*age)) * activityLvl;
-            }
+    private double calculateBMR(double weight, double height, char gender, double age,
+                          double activityLevel, double bodyFatPercentage){
+        double BMR;
+        if (bodyFatPercentage < 0) {  //Harris-Benedict method
+            if (gender == 'M')
+                BMR = (66 + (6.23*weight) + (12.7*height) - (6.8*age)) * activityLevel;
+            else //if (gender == 'F')
+                BMR = (655 + (4.35*weight) + (4.7*height) - (4.7*age)) * activityLevel;
         } else {  //Katch & McArdle method
             double weightInKg = weight/2.2;
             double leanMass = weightInKg - (weightInKg *bodyFatPercentage);
-            BMR = (370 + (21.6 * leanMass)) * activityLvl;
+            BMR = (370 + (21.6 * leanMass)) * activityLevel;
         }
 
         return BMR;
-
     }
-
-    public String getName() {
-        return name;
+    public double getBMR(){
+        double height = getHeight();
+        char gender = getGender();
+        int age = getAge();
+        double weight = getWeight();
+        double bodyFatPercentage = getBodyFatPercentage();
+        double activityLevel = getActivityLevel();
+        if (weight > 0 && height > 0 && gender > 0 && age > 0 && activityLevel > 0)
+            return calculateBMR(weight, height, gender, age, activityLevel, bodyFatPercentage);
+        else
+            return 0;
     }
 
     public boolean isComplete() {
-        return complete;
+        return getBMR() > 0;
+    }
+    
+    private static final String PREF_LAST_UPDATE = "LAST_UPDATE";
+
+    public String getLastWeightUpdate() {
+        return mSharedPreferences.getString(PREF_LAST_UPDATE, "");
+    }
+
+    public void setLastWeightUpdate(String date) {
+        mSharedPreferences.edit().putString(PREF_LAST_UPDATE, date).apply();
+    }
+
+    public String getDateFormat() {
+        return mSharedPreferences.getString(SettingsActivity.PREF_DATE_FORMAT, "MM/dd/yyyy");
     }
 }

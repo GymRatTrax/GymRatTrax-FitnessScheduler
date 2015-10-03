@@ -108,7 +108,7 @@ public class SelectTimeActivity extends AppCompatActivity {
                 String repsStr;
 
                 if (Double.parseDouble(weight) == 1) {
-                    weightStr = weight + " lb x ";
+                    weightStr = weight + " pound x ";
                 } else {
                     weightStr = weight + " lbs x ";
                 }

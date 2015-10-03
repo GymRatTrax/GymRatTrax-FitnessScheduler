@@ -12,13 +12,13 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterAddNegation;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.model.ExerciseName;
-import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 import com.gymrattrax.scheduler.model.ProfileItem;
-import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.model.WorkoutItem;
+import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -151,11 +151,11 @@ public class CalorieNegationActivity extends AppCompatActivity implements ListVi
             } else if (i == 2) {
                 time = time.replaceAll("minutes", "mins");
                 time = time.replaceAll("seconds", "secs");
-                details = "12 reps, 4 sets, 10 lb weights";
+                details = "12 reps, 4 sets, 10 pound weights";
             } else {
                 time = time.replaceAll("minutes", "mins");
                 time = time.replaceAll("seconds", "secs");
-                details = "20 reps, 6 sets, 20 lb weights";
+                details = "20 reps, 6 sets, 20 pound weights";
             }
 
             if (workoutItem != null) {

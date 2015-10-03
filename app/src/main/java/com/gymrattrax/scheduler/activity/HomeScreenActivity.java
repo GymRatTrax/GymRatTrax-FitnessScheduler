@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-//import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
@@ -30,6 +29,8 @@ import com.gymrattrax.scheduler.model.WorkoutItem;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+//import android.os.Handler;
 
 public class HomeScreenActivity extends LoginActivity {
     private static final String TAG = "HomeScreenActivity";
@@ -289,7 +290,7 @@ public class HomeScreenActivity extends LoginActivity {
                 String sets = "" + w.getSetsScheduled();
                 String dateTime = dbh.displayDateTime(this, w.getDateScheduled());
                 if (Double.parseDouble(weightUsed) == 1) {
-                    weightUsed = weightUsed + " lb x ";
+                    weightUsed = weightUsed + " pound x ";
                 } else {
                     weightUsed = weightUsed + " lbs x ";
                 }
