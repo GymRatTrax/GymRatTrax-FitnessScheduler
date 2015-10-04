@@ -16,7 +16,7 @@ import android.widget.Toast;
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.activity.SettingsActivity;
-import com.gymrattrax.scheduler.model.WorkoutItem;
+import com.gymrattrax.scheduler.object.WorkoutItem;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;

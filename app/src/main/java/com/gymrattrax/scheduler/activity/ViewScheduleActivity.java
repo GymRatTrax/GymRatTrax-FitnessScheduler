@@ -14,7 +14,7 @@ import android.widget.ListView;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterEdit;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.WorkoutItem;
+import com.gymrattrax.scheduler.object.WorkoutItem;
 
 import java.util.ArrayList;
 import java.util.Arrays;

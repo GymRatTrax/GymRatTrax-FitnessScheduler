@@ -1,44 +1,27 @@
-package com.gymrattrax.scheduler.model;
+package com.gymrattrax.scheduler.object;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class ExerciseLegs extends Exercise {
-
-    ExerciseLegs() {
-
-    }
-
-    @Override
-    String getName() {
-        return null;
-    }
-
-    @Override
-    ExerciseType getType() {
-        return ExerciseType.ABS;
-    }
-
-    public enum ExerciseNames {
-        SQUAT("Squats"),
-        LEG_PRESS("Leg presses"),
-        LUNGE("Lunges"),
-        DEADLIFT("Deadlift"),
-        LEG_EXTENSION("Leg extensions"),
-        LEG_CURL("Leg curls"),
-        STANDING_CALF_RAISE("Standing calf raises"),
-        SEATED_CALF_RAISE("Seated calf raises"),
-        HIP_ADDUCTOR("Hip adductor"),
+public enum Arms implements ExerciseName {
+        BENCH_PRESS("Bench press"),
+        CHEST_FLY("Chest fly"),
+        PUSH_UP("Push-ups"),
         PULLDOWN("Pulldown"),
         PULL_UP("Pull-ups"),
         BENT_OVER_ROW("Bent-over row"),
-        LEG_RAISE("Leg raises"),
-        BACK_EXTENSION("Back extensions"),
-        OTHER("Legs - Other");
+        UPRIGHT_ROW("Upright row"),
+        SHOULDER_PRESS("Shoulder presses"),
+        SHOULDER_FLY("Shoulder fly"),
+        LATERAL_RAISE("Lateral raise"),
+        SHOULDER_SHRUG("Shoulder shrugs"),
+        PUSHDOWN("Pushdowns"),
+        TRICEPS_EXTENSION("Triceps extensions"),
+        BICEPS_CURL("Biceps curls");
         private final String name;
 
-        ExerciseNames(String name) {
+        Arms(String name) {
             this.name = name;
         }
 
@@ -46,18 +29,18 @@ public class ExerciseLegs extends Exercise {
             return name;
         }
 
-        ExerciseType getType(ExerciseNames ex) {
-            return ExerciseType.LEGS;
+        ExerciseType getType(Arms ex) {
+            return ExerciseType.ARMS;
         }
 
-        public static ExerciseNames getRandom() {
-            ExerciseNames[] array = ExerciseNames.values();
+        public static Arms getRandom() {
+            Arms[] array = Arms.values();
             return array[new Random().nextInt(array.length)];
         }
 
-        public static ExerciseNames fromString(String text) {
+        public static Arms fromString(String text) {
             if (text != null) {
-                for (ExerciseNames ex : ExerciseNames.values()) {
+                for (Arms ex : Arms.values()) {
                     if (text.equalsIgnoreCase(ex.name)) {
                         return ex;
                     }
@@ -75,11 +58,10 @@ public class ExerciseLegs extends Exercise {
          * @return A String array with all values corresponding to ExerciseName enum values.
          */
         public static String[] getAll() {
-            List<ExerciseNames> exerciseNames = Arrays.asList(ExerciseNames.values());
+            List<Arms> exerciseNames = Arrays.asList(Arms.values());
             String[] returnArr = new String[exerciseNames.size()];
             for (int i = 0; i < exerciseNames.size(); i++)
                 returnArr[i] = exerciseNames.get(i).toString();
             return returnArr;
         }
     }
-}

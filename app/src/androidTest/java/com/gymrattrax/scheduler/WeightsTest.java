@@ -5,7 +5,7 @@ import android.test.RenamingDelegatingContext;
 
 import com.gymrattrax.scheduler.data.DatabaseContract;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.ProfileItem;
+import com.gymrattrax.scheduler.object.ProfileItem;
 
 import java.util.Calendar;
 import java.util.Date;

@@ -16,8 +16,8 @@ import android.widget.TextView;
 
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.ExerciseType;
-import com.gymrattrax.scheduler.model.WorkoutItem;
+import com.gymrattrax.scheduler.object.ExerciseType;
+import com.gymrattrax.scheduler.object.WorkoutItem;
 
 public class DailyWorkoutActivity extends AppCompatActivity {
 

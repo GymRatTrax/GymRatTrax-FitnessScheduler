@@ -1,4 +1,4 @@
-package com.gymrattrax.scheduler.model;
+package com.gymrattrax.scheduler.object;
 
 import android.content.Context;
 import android.net.Uri;
@@ -10,6 +10,7 @@ import java.util.Date;
 public class WorkoutItem {
     private static final String TAG = "WorkoutItem";
 
+    //region Instance variables
     private int ID;
     private Date dateScheduled;
     private Date dateCompleted;
@@ -34,19 +35,24 @@ public class WorkoutItem {
     private double weightUsed;
     private Date dateModified;
 
-    private Exercise exercise;
+    private ExerciseType exerciseType;
+    private ExerciseName exerciseName;
+    //endregion
 
-    /**
-     * This constructor is private because all WorkoutItem objects should be instantiated.
-     */
+    //region Private constructors
     private WorkoutItem() {
         this.complete = false;
     }
-    private WorkoutItem(String[] exercise) {
+    public WorkoutItem(String[] exerciseDetails) {
         this();
-        Exercise exerciseB = new Exercise(exercise[0], exercise[1]);
-        exerciseType = ExerciseType.valueOf(exercise[9]);
-        exerciseName = exercise[1];
+        Exercise exercise = new Exercise(exerciseDetails[0], exerciseDetails[1]);
+        exerciseType = ExerciseType.valueOf(exerciseDetails[9]);
+        exerciseName = exerciseDetails[1];
+    }
+    public WorkoutItem(ExerciseType exerciseType, ExerciseName exerciseName) {
+        this();
+        this.exerciseType = exerciseType;
+        this.exerciseName = exerciseName;
     }
     private WorkoutItem(Exercise exercise) {
         this();
@@ -54,8 +60,6 @@ public class WorkoutItem {
         exerciseType = ExerciseType.valueOf(exercise[9]);
         exerciseName = exercise[1];
     }
-
-    //TODO: This item was deprecated, but it is too widely used. Come back to this later.
     private WorkoutItem(String exerciseName) {
         this();
         setName(exerciseName);
@@ -72,8 +76,9 @@ public class WorkoutItem {
     private WorkoutItem(ExerciseName.Legs legs) {
         exercise = new ExerciseItem(legs);
     }
+    //endregion
 
-    /* Static factory methods */
+    //region Static factory methods
     public static WorkoutItem createNew(Context context, long databaseId) {
         DatabaseHelper databaseHelper = new DatabaseHelper(context);
         String[] exercise = databaseHelper.getExerciseById(databaseId);
@@ -83,7 +88,7 @@ public class WorkoutItem {
     }
 
     public static WorkoutItem createNew(Exercise exercise) {
-        return new WorkoutItem(exerc9se);
+        return new WorkoutItem(exercise);
     }
 
     public static WorkoutItem getById(Context context, long databaseId) {
@@ -92,8 +97,9 @@ public class WorkoutItem {
         databaseHelper.close();
         return workoutItem;
     }
+    //endregion
 
-    /* Getters and setters */
+    //region Getters and setters
     public String getName() {
         return exercise.getName();
     }
@@ -180,9 +186,11 @@ public class WorkoutItem {
     }
 
     public double calculateMETs() {
-        switch (exercise.getType()) {
+        switch (exerciseType) {
             case CARDIO:
-                switch (exercise.getCardio()) {
+                if (exerciseName instanceof Cardio)
+                if (exerciseName == Cardio.CYCLING)
+                switch (exerciseName) {
                     case CYCLING:
                     case ELLIPTICAL:
                         if (exertionLevel < 2)
@@ -323,6 +331,12 @@ public class WorkoutItem {
     public void setDateModified(Date dateModified) {
         this.dateModified = dateModified;
     }
+    //endregion
 
-
+    //region Data methods
+    public int save(Context context, boolean completeInFull) {
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
+        return databaseHelper.completeWorkout(this, completeInFull);
+    }
+    //endregion
 }

@@ -22,9 +22,9 @@ import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterView;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.ExerciseType;
-import com.gymrattrax.scheduler.model.ProfileItem;
-import com.gymrattrax.scheduler.model.WorkoutItem;
+import com.gymrattrax.scheduler.object.ExerciseType;
+import com.gymrattrax.scheduler.object.ProfileItem;
+import com.gymrattrax.scheduler.object.WorkoutItem;
 
 import java.util.ArrayList;
 import java.util.Arrays;

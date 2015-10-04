@@ -4,8 +4,8 @@ import android.test.AndroidTestCase;
 import android.test.RenamingDelegatingContext;
 
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.ExerciseName;
-import com.gymrattrax.scheduler.model.WorkoutItem;
+import com.gymrattrax.scheduler.object.ExerciseName;
+import com.gymrattrax.scheduler.object.WorkoutItem;
 
 import java.text.ParseException;
 

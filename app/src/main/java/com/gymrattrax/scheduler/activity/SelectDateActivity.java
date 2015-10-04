@@ -10,7 +10,7 @@ import android.widget.CalendarView;
 import android.widget.TextView;
 
 import com.gymrattrax.scheduler.R;
-import com.gymrattrax.scheduler.model.ExerciseName;
+import com.gymrattrax.scheduler.object.ExerciseName;
 
 import java.util.Calendar;
 

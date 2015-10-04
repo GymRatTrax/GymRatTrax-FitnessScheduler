@@ -38,9 +38,9 @@ import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.data.SendToGoogleFitHistory;
 import com.gymrattrax.scheduler.data.UnitUtil;
-import com.gymrattrax.scheduler.model.ExerciseName;
-import com.gymrattrax.scheduler.model.ProfileItem;
-import com.gymrattrax.scheduler.model.WorkoutItem;
+import com.gymrattrax.scheduler.object.ExerciseName;
+import com.gymrattrax.scheduler.object.ProfileItem;
+import com.gymrattrax.scheduler.object.WorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
 import java.util.Calendar;
@@ -132,8 +132,7 @@ public class CardioWorkoutActivity extends LoginActivity {
 
         Bundle bundle = getIntent().getExtras();
         ID = bundle.getInt("ID");
-        DatabaseHelper dbh = new DatabaseHelper(this);
-        workoutItem = dbh.getWorkoutById(ID);
+        workoutItem = WorkoutItem.getById(this, ID);
         Log.d(TAG, "ID = " + ID);
 
         String name = workoutItem.getName();
@@ -300,13 +299,8 @@ public class CardioWorkoutActivity extends LoginActivity {
         double caloriesBurned = METs * (profileItem.getBMR() / 24) * (timeRecordedInMinutes / 60);
         workoutItem.setCaloriesBurned(caloriesBurned);
 
-        WorkoutItem.Builder workoutItem = new WorkoutItem.Builder(this)
-                .setSmallIcon(R.drawable.ic_stat_name)
-                .setAutoCancel(true)
-                .setOngoing(false);
-
-        DatabaseHelper dbh = new DatabaseHelper(CardioWorkoutActivity.this);
-        dbh.completeWorkout(workoutItem, true);
+        workoutItem.save(this, true);
+        DatabaseHelper dbh = new DatabaseHelper(this);
         List<String> achievementsUnlocked = dbh.checkForAchievements();
         dbh.close();
         if (mGoogleApiClient != null) {

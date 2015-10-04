@@ -11,11 +11,11 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.gymrattrax.scheduler.BuildConfig;
-import com.gymrattrax.scheduler.data.DatabaseContract;
-import com.gymrattrax.scheduler.service.NotifyService;
 import com.gymrattrax.scheduler.activity.SettingsActivity;
+import com.gymrattrax.scheduler.data.DatabaseContract;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.WorkoutItem;
+import com.gymrattrax.scheduler.object.WorkoutItem;
+import com.gymrattrax.scheduler.service.NotifyService;
 
 import java.text.ParseException;
 import java.util.Calendar;
@@ -202,7 +202,7 @@ public class NotifyReceiver extends BroadcastReceiver {
     /**
      * Create a PendingIntent for the NotifyService. For a WorkoutItem, use
      * {@link com.gymrattrax.scheduler.receiver.NotifyReceiver#createPendingIntent(
-     * android.content.Context, com.gymrattrax.scheduler.model.WorkoutItem)} instead.
+     * android.content.Context, com.gymrattrax.scheduler.object.WorkoutItem)} instead.
      * @param context A Context of the application package implementing this class.
      * @param id Sets the int {@link com.gymrattrax.scheduler.service.NotifyService#ID} field.
      * @param name Sets the String {@link com.gymrattrax.scheduler.service.NotifyService#NAME}

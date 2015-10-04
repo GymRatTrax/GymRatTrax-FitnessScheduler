@@ -24,7 +24,7 @@ import android.widget.Toast;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseContract;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.ProfileItem;
+import com.gymrattrax.scheduler.object.ProfileItem;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

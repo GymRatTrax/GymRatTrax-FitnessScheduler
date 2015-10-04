@@ -26,7 +26,7 @@ import com.gymrattrax.scheduler.activity.SettingsActivity;
 import com.gymrattrax.scheduler.activity.StrengthWorkoutActivity;
 import com.gymrattrax.scheduler.data.DatabaseContract;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.WorkoutItem;
+import com.gymrattrax.scheduler.object.WorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
 import java.util.Calendar;

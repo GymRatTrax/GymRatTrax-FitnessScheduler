@@ -1,12 +1,12 @@
-package com.gymrattrax.scheduler.model;
+package com.gymrattrax.scheduler.object;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-public class ExerciseAbs extends Exercise {
+public class ExerciseArms extends Exercise {
 
-    ExerciseAbs() {
+    ExerciseArms() {
 
     }
 
@@ -21,9 +21,20 @@ public class ExerciseAbs extends Exercise {
     }
 
     public enum ExerciseNames {
-        CRUNCH("Crunches"),
-        RUSSIAN_TWIST("Russian twist"),
-        OTHER("Abs - Other");
+        BENCH_PRESS("Bench press"),
+        CHEST_FLY("Chest fly"),
+        PUSH_UP("Push-ups"),
+        PULLDOWN("Pulldown"),
+        PULL_UP("Pull-ups"),
+        BENT_OVER_ROW("Bent-over row"),
+        UPRIGHT_ROW("Upright row"),
+        SHOULDER_PRESS("Shoulder presses"),
+        SHOULDER_FLY("Shoulder fly"),
+        LATERAL_RAISE("Lateral raise"),
+        SHOULDER_SHRUG("Shoulder shrugs"),
+        PUSHDOWN("Pushdowns"),
+        TRICEPS_EXTENSION("Triceps extensions"),
+        BICEPS_CURL("Biceps curls");
         private final String name;
 
         ExerciseNames(String name) {
@@ -35,7 +46,7 @@ public class ExerciseAbs extends Exercise {
         }
 
         ExerciseType getType(ExerciseNames ex) {
-            return ExerciseType.ABS;
+            return ExerciseType.ARMS;
         }
 
         public static ExerciseNames getRandom() {

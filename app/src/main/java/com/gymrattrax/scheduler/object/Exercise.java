@@ -1,10 +1,14 @@
-package com.gymrattrax.scheduler.model;
+package com.gymrattrax.scheduler.object;
 
 import java.util.Arrays;
 import java.util.List;
 
-@Deprecated
-class ExerciseName {
+public class Exercise {
+//    public String getName();
+//    public ExerciseType getType();
+    private Exercise(){}
+    public Exercise(ExerciseType exerciseType, String name) {
+    }
     /**
      * If you want to return all ExerciseName enum values, use
      * ExerciseName.getDeclaringClass().getEnumConstants(). If you want just the String values that
@@ -14,10 +18,10 @@ class ExerciseName {
      * @return A String array with all values corresponding to ExerciseName enum values.
      */
     public static String[] getAllExerciseNames() {
-        List<ExerciseCardio.ExerciseNames> ex1 = Arrays.asList(ExerciseCardio.ExerciseNames.values());
-        List<ExerciseArms.ExerciseNames> ex2 = Arrays.asList(ExerciseArms.ExerciseNames.values());
-        List<ExerciseLegs.ExerciseNames> ex3 = Arrays.asList(ExerciseLegs.ExerciseNames.values());
-        List<ExerciseAbs.ExerciseNames> ex4 = Arrays.asList(ExerciseAbs.ExerciseNames.values());
+        List<Cardio> ex1 = Arrays.asList(Cardio.values());
+        List<Arms> ex2 = Arrays.asList(Arms.values());
+        List<Legs> ex3 = Arrays.asList(Legs.values());
+        List<Abs> ex4 = Arrays.asList(Abs.values());
         String[] returnArr = new String[ex1.size() + ex2.size() + ex3.size() + ex4.size()];
 
         for (int i = 0; i < ex1.size(); i++)

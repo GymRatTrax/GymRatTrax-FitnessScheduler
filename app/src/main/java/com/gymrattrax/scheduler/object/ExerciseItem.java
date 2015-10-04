@@ -1,4 +1,4 @@
-package com.gymrattrax.scheduler.model;
+package com.gymrattrax.scheduler.object;
 
 @Deprecated
 class ExerciseItem {

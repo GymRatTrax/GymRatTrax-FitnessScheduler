@@ -9,7 +9,7 @@ import android.widget.ListView;
 
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterAdd;
-import com.gymrattrax.scheduler.model.ExerciseName;
+import com.gymrattrax.scheduler.object.ExerciseName;
 
 import java.util.ArrayList;
 import java.util.Arrays;
