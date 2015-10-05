@@ -22,6 +22,7 @@ import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterView;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
+import com.gymrattrax.scheduler.data.DateUtil;
 import com.gymrattrax.scheduler.object.ExerciseType;
 import com.gymrattrax.scheduler.object.ProfileItem;
 import com.gymrattrax.scheduler.object.WorkoutItem;
@@ -281,14 +282,14 @@ public class HomeScreenActivity extends LoginActivity {
                 }
 
                 String details = "" + distanceStr + minString + secString;
-                details = details + "!" + dbh.displayDateTime(this, w.getDateScheduled());
+                details = details + "!" + DateUtil.displayDateTime(this, w.getDateScheduled());
                 String infoString = "" + w.getName() + "!" + details;
                 workoutsArray[i] = infoString;
             } else {
                 String weightUsed = "" + w.getWeightUsed();
                 String reps = "" + w.getRepsScheduled();
                 String sets = "" + w.getSetsScheduled();
-                String dateTime = dbh.displayDateTime(this, w.getDateScheduled());
+                String dateTime = DateUtil.displayDateTime(this, w.getDateScheduled());
                 if (Double.parseDouble(weightUsed) == 1) {
                     weightUsed = weightUsed + " pound x ";
                 } else {

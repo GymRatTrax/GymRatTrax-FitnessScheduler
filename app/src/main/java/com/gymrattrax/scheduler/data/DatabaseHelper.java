@@ -3,19 +3,17 @@ package com.gymrattrax.scheduler.data;
 import android.app.backup.BackupManager;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.R;
-import com.gymrattrax.scheduler.activity.SettingsActivity;
+import com.gymrattrax.scheduler.object.Exercises;
 import com.gymrattrax.scheduler.object.WorkoutItem;
 
 import java.text.DecimalFormat;
@@ -234,7 +232,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         while (cursor.moveToNext()) {
             Date d1;
             try {
-                d1 = convertDate(cursor.getString(0));
+                d1 = DateUtil.convertDate(cursor.getString(0));
             } catch (ParseException e) {
                 Calendar cal = new GregorianCalendar();
                 d1 = cal.getTime();
@@ -261,7 +259,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         double[] old = getLatestWeight();
         String timestamp = "";
         if (weight != old[0] || bodyFat != old[1] || activityLevel != old[2]) {
-            timestamp = now();
+            timestamp = DateUtil.now();
             SQLiteDatabase db = this.getWritableDatabase();
 
             ContentValues values = new ContentValues();
@@ -298,16 +296,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         values.put(DatabaseContract.WorkoutTable.COL_EXERCISE_NAME, workoutItem.getName());
         values.put(DatabaseContract.WorkoutTable.COL_EXERCISE_TYPE,
-                workoutItem.getType().getChar());
+                String.valueOf(workoutItem.getType()));
         if (workoutItem.isComplete())
             values.put(DatabaseContract.WorkoutTable.COL_COMPLETE, 1);
         else
             values.put(DatabaseContract.WorkoutTable.COL_COMPLETE, 0);
         values.put(DatabaseContract.WorkoutTable.COL_DATE_SCHEDULED,
-                convertDate(workoutItem.getDateScheduled()));
+                DateUtil.convertDate(workoutItem.getDateScheduled()));
         Calendar now = Calendar.getInstance();
         values.put(DatabaseContract.WorkoutTable.COL_DATE_MODIFIED,
-                convertDate(now.getTime()));
+                DateUtil.convertDate(now.getTime()));
 
         switch (workoutItem.getType()) {
             case CARDIO:
@@ -402,7 +400,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public WorkoutItem[] getWorkoutsForToday() {
         Calendar cal = new GregorianCalendar();
-        return getWorkoutsInRange(cal.getTime(),cal.getTime());
+        return getWorkoutsInRange(cal.getTime(), cal.getTime());
     }
 
     /**
@@ -454,32 +452,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return null;
     }
 
-    /**
-     * Retrieve a single WorkoutItem based on its database ID. If the ID provided does not match
-     * a workout in the table, WorkoutItem will be returned null.
-     * @param id A long value representing the database ID of the workout item that is intended to
-     *           be returned.
-     * @return A complete WorkoutItem with workoutItem.getID() equal to the passed in id value,
-     * unless no such WorkoutItem can be found, in which case a null Object is returned.
-     */
-    public String[] getExerciseById(long id) {
-        /*
-        Convert the Date values into string matching the format, “yyyy-MM-dd HH:mm:ss.SSS,” but set
-        “HH:mm:ss.SSS” to “00:00:00.000” for variable fromStr and “11:59:59.999” for variable
-        endStr. Perform a database query operation, “select * from WORKOUT where DATE >= fromStr
-        and DATE <= endStr.” Take the output values and assign them to WorkoutItem values.
-         */
-        String query = "SELECT * FROM " + DatabaseContract.ExerciseTable.TABLE_NAME + " WHERE " +
-                DatabaseContract.ExerciseTable._ID + " =  \"" + id + "\"";
-
-        WorkoutItem[] workouts = storeWorkouts(query);
-
-        if (workouts.length == 1)
-            return workouts[0];
-        else
-            return null;
-    }
-
     public int completeWorkout(WorkoutItem workout, boolean completeInFull) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -487,7 +459,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Calendar cal = Calendar.getInstance();
         Date date = cal.getTime();
-        String dateStr = convertDate(date);
+        String dateStr = DateUtil.convertDate(date);
         workout.setDateCompleted(date);
         if (completeInFull) {
             workout.setComplete(true);
@@ -569,54 +541,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result;
     }
 
-    public static Date convertDate(String d) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
-        return sdf.parse(d);
-    }
-    public static String convertDate(Date d) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
-        return sdf.format(d);
-    }
-
-    /**
-     * Displays a passed in Date value (date only) according to the preferred date format.
-     * @param context The Context that will be passed into the getDefaultSharedPreferences routine.
-     * @param date The Date that will be displayed.
-     * @return A String value that represents the passed in date according to the preferred format.
-     * @see DatabaseHelper#displayDateTime(android.content.Context,
-     * java.util.Date) displayDateTime returns a formatted string that includes the time value.
-     */
-    public static String displayDate(Context context, Date date) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        String dateFormat = sharedPref.getString(SettingsActivity.PREF_DATE_FORMAT, "MM/dd/yyyy");
-        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat, Locale.US);
-        return sdf.format(date);
-    }
-
-    /**
-     * Displays a passed in Date value (date with time) according to the preferred date format.
-     * @param context The Context that will be passed into the getDefaultSharedPreferences routine.
-     * @param date The Date that will be displayed.
-     * @return A String value that represents the passed in date (Date with time) according to the
-     * preferred format.
-     * @see DatabaseHelper#displayDate(android.content.Context, java.util.Date)
-     * displayDate returns a formatted string that does not also include any time value.
-     */
-    public String displayDateTime(Context context, Date date) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        String dateFormat = sharedPref.getString(SettingsActivity.PREF_DATE_FORMAT, "");
-        if (dateFormat.trim().isEmpty())
-            dateFormat = "MM/dd/yyyy";
-        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat + " hh:mm a", Locale.US);
-        return sdf.format(date);
-    }
-
-    public String now() {
-        Calendar cal = new GregorianCalendar();
-        Date dat = cal.getTime();
-        return convertDate(dat);
-    }
-
     public String[][] debugRawQuery(String table) {
         if (BuildConfig.DEBUG_MODE) {
             switch (table) {
@@ -664,7 +588,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             switch (cursor.getString(cursor.getColumnIndex(
                     DatabaseContract.WorkoutTable.COL_EXERCISE_TYPE))) {
                 case "A":
-                    workouts[i] = new WorkoutItem(ExerciseName.Arms.fromString(
+                    workouts[i] = WorkoutItem.createNew(Exercises.Arms.fromString(
                             cursor.getString(cursor.getColumnIndex(
                                     DatabaseContract.WorkoutTable.COL_EXERCISE_NAME))));
                     workouts[i].setRepsScheduled(cursor.getInt(cursor.getColumnIndex(
@@ -679,7 +603,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             DatabaseContract.WorkoutTable.COL_STRENGTH_WEIGHT)));
                     break;
                 case "B":
-                    workouts[i] = new WorkoutItem(ExerciseName.Abs.fromString(
+                    workouts[i] = WorkoutItem.createNew(Exercises.Abs.fromString(
                             cursor.getString(cursor.getColumnIndex(
                                     DatabaseContract.WorkoutTable.COL_EXERCISE_NAME))));
                     workouts[i].setRepsScheduled(cursor.getInt(cursor.getColumnIndex(
@@ -694,7 +618,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             DatabaseContract.WorkoutTable.COL_STRENGTH_WEIGHT)));
                     break;
                 case "C":
-                    workouts[i] = new WorkoutItem(ExerciseName.Cardio.fromString(
+                    workouts[i] = WorkoutItem.createNew(Exercises.Cardio.fromString(
                             cursor.getString(cursor.getColumnIndex(
                                     DatabaseContract.WorkoutTable.COL_EXERCISE_NAME))));
                     workouts[i].setDistanceScheduled(cursor.getDouble(cursor.getColumnIndex(
@@ -703,7 +627,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             DatabaseContract.WorkoutTable.COL_CARDIO_DISTANCE_COMPLETED)));
                     break;
                 case "L":
-                    workouts[i] = new WorkoutItem(ExerciseName.Legs.fromString(
+                    workouts[i] = WorkoutItem.createNew(Exercises.Legs.fromString(
                             cursor.getString(cursor.getColumnIndex(
                                     DatabaseContract.WorkoutTable.COL_EXERCISE_NAME))));
                     workouts[i].setRepsScheduled(cursor.getInt(cursor.getColumnIndex(
@@ -718,7 +642,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             DatabaseContract.WorkoutTable.COL_STRENGTH_WEIGHT)));
                     break;
                 default:
-                    workouts[i] = new WorkoutItem(cursor.getString(cursor.getColumnIndex(
+                    workouts[i] = WorkoutItem.oldMethodByString(cursor.getString(cursor.getColumnIndex(
                             DatabaseContract.WorkoutTable.COL_EXERCISE_NAME)));
                     switch (workouts[i].getType()) {
                         case CARDIO:
@@ -753,13 +677,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             //date
             try {
-                workouts[i].setDateScheduled(convertDate(cursor.getString(cursor.getColumnIndex(
+                workouts[i].setDateScheduled(DateUtil.convertDate(cursor.getString(cursor.getColumnIndex(
                         DatabaseContract.WorkoutTable.COL_DATE_SCHEDULED))));
             } catch (ParseException e) {
                 Calendar cal = Calendar.getInstance();
                 workouts[i].setDateScheduled(cal.getTime());
             } try {
-                workouts[i].setDateModified(convertDate(cursor.getString(cursor.getColumnIndex(
+                workouts[i].setDateModified(DateUtil.convertDate(cursor.getString(cursor.getColumnIndex(
                         DatabaseContract.WorkoutTable.COL_DATE_MODIFIED))));
             } catch (ParseException e) {
                 Calendar cal = Calendar.getInstance();
@@ -767,7 +691,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } try {
                 if (!cursor.isNull(cursor.getColumnIndex(
                         DatabaseContract.WorkoutTable.COL_DATE_COMPLETED))) {
-                    workouts[i].setDateCompleted(convertDate(cursor.getString(cursor.getColumnIndex(
+                    workouts[i].setDateCompleted(DateUtil.convertDate(cursor.getString(cursor.getColumnIndex(
                             DatabaseContract.WorkoutTable.COL_DATE_COMPLETED))));
                 }
             } catch (ParseException e) {

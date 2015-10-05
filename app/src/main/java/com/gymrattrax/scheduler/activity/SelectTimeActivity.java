@@ -19,7 +19,7 @@ import android.widget.Toast;
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.object.ExerciseName;
+import com.gymrattrax.scheduler.object.Exercises;
 import com.gymrattrax.scheduler.object.WorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
@@ -70,7 +70,7 @@ public class SelectTimeActivity extends AppCompatActivity {
             name = extras.getString("name");
             date = extras.getString("date");
 
-            if (ExerciseName.Cardio.fromString(name) != null) {
+            if (Exercises.Cardio.fromString(name) != null) {
                 distance = extras.getString("distance");
                 duration = extras.getString("duration");
                 String dStr;
@@ -268,34 +268,34 @@ public class SelectTimeActivity extends AppCompatActivity {
         String hour;
         String minutes;
 
-
+        //TODO: Use user's local time preferences
         if (selectedHour > 12) {
 
             selectedHour -= 12;
             hour = (selectedHour > 9) ? "" + selectedHour : "" + selectedHour;
             minutes = (selectedMinutes > 9) ? "" + selectedMinutes : "0" + selectedMinutes;
-            timeText.setText(hour + ":" + minutes + " " + pm);
+            timeText.setText(String.format("%s:%s %s", hour, minutes, pm));
         }
         else if (selectedHour == 0) {
             selectedHour += 12;
             hour = (selectedHour > 9) ? "" + selectedHour : "" + selectedHour;
             minutes = (selectedMinutes > 9) ? "" + selectedMinutes : "0" + selectedMinutes;
-            timeText.setText(hour + ":" + minutes + " " + am);
+            timeText.setText(String.format("%s:%s %s", hour, minutes, am));
         }
         else if (selectedHour == 12) {
             hour = "" + selectedHour;
             minutes = (selectedMinutes > 9) ? "" + selectedMinutes : "0" + selectedMinutes;
-            timeText.setText(hour + ":" + minutes + " " + pm);
+            timeText.setText(String.format("%s:%s %s", hour, minutes, pm));
         }
         else {
             hour = (selectedHour > 9) ? "" + selectedHour : "0" + selectedHour;
             minutes = (selectedMinutes > 9) ? "" + selectedMinutes : "0" + selectedMinutes;
-            timeText.setText(hour + ":" + minutes + " " + am);
+            timeText.setText(String.format("%s:%s %s", hour, minutes, am));
         }
     }
 
     private void addThisWorkout() {
-        if (ExerciseName.Cardio.fromString(name) != null)
+        if (Exercises.Cardio.fromString(name) != null)
             addThisCardioWorkout();
         else
             addThisStrengthWorkout();
@@ -305,7 +305,7 @@ public class SelectTimeActivity extends AppCompatActivity {
         if (BuildConfig.DEBUG_MODE) Log.d(TAG, "cancelNotifications called.");
         NotifyReceiver.cancelNotifications(this);
         DatabaseHelper dbh = new DatabaseHelper(SelectTimeActivity.this);
-        WorkoutItem cItem = new WorkoutItem(ExerciseName.Cardio.fromString(name));
+        WorkoutItem cItem = WorkoutItem.createNew(Exercises.Cardio.fromString(name));
         updateTimeUI();
 
         // Set cardio item date
@@ -354,7 +354,7 @@ public class SelectTimeActivity extends AppCompatActivity {
         if (BuildConfig.DEBUG_MODE) Log.d(TAG, "cancelNotifications called.");
         NotifyReceiver.cancelNotifications(this);
         DatabaseHelper dbh = new DatabaseHelper(SelectTimeActivity.this);
-        WorkoutItem sItem = new WorkoutItem(name);
+        WorkoutItem sItem = WorkoutItem.oldMethodByString(name);
         updateTimeUI();
 
         // Set Strength date and duration

@@ -15,7 +15,7 @@ import android.widget.Toast;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterAddNegation;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.object.ExerciseName;
+import com.gymrattrax.scheduler.object.Exercises;
 import com.gymrattrax.scheduler.object.ProfileItem;
 import com.gymrattrax.scheduler.object.WorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
@@ -41,7 +41,7 @@ public class CalorieNegationActivity extends AppCompatActivity implements ListVi
         SuggestWorkoutButton = (Button) findViewById(R.id.negate_cal_button);
         NegateEditText = (EditText) findViewById(R.id.negate_calories);
 //        times = new double[5];
-//        exName = new ExerciseName.Cardio[5];
+//        exName = new Exercise.Cardio[5];
     }
 
     private void displayWorkouts(int caloriesToNegate) {
@@ -91,7 +91,7 @@ public class CalorieNegationActivity extends AppCompatActivity implements ListVi
 
     // add exName and time params
     private void addCardioWorkout(String name) {
-        WorkoutItem item = new WorkoutItem(name);
+        WorkoutItem item = WorkoutItem.oldMethodByString(name);
         item.setDistanceScheduled(2);
         item.setTimeScheduled(workoutItems.get(4).getTimeScheduled());
 
@@ -101,7 +101,7 @@ public class CalorieNegationActivity extends AppCompatActivity implements ListVi
 
     // add exName and time params
     private void addStrengthWorkout(String name) {
-        WorkoutItem item = new WorkoutItem(name);
+        WorkoutItem item = WorkoutItem.oldMethodByString(name);
         item.setRepsScheduled(12);
         item.setSetsScheduled(4);
         item.setWeightUsed(10);
@@ -136,13 +136,13 @@ public class CalorieNegationActivity extends AppCompatActivity implements ListVi
 
             WorkoutItem workoutItem = null;
             if (i <= 1) {
-                workoutItem = new WorkoutItem(ExerciseName.Cardio.getRandom());
+                workoutItem = WorkoutItem.createNew(Exercises.Cardio.getRandom());
             } else if (i == 2) {
-                workoutItem = new WorkoutItem(ExerciseName.Abs.getRandom());
+                workoutItem = WorkoutItem.createNew(Exercises.Abs.getRandom());
             } else if (i == 3) {
-                workoutItem = new WorkoutItem(ExerciseName.Arms.getRandom());
+                workoutItem = WorkoutItem.createNew(Exercises.Arms.getRandom());
             } else if (i == 4) {
-                workoutItem = new WorkoutItem(ExerciseName.Legs.getRandom());
+                workoutItem = WorkoutItem.createNew(Exercises.Legs.getRandom());
             }
             String details;
             String time = minutes + " minutes, " + seconds + " seconds";

@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseContract;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
+import com.gymrattrax.scheduler.data.DateUtil;
 import com.gymrattrax.scheduler.object.ProfileItem;
 
 import java.text.DateFormat;
@@ -207,7 +208,7 @@ public class ProfileActivity extends AppCompatActivity {
         mActivityLevelTextViewNew.setText(activityLevelFromInt(activityLevelInt));
 
         try {
-            Date lastUpdated = DatabaseHelper.convertDate(lastUpdatedDate);
+            Date lastUpdated = DateUtil.convertDate(lastUpdatedDate);
             Date now = Calendar.getInstance().getTime();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.US);
             String updateText;

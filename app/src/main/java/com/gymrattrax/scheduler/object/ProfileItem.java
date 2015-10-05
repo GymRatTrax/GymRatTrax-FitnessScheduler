@@ -5,39 +5,34 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.gymrattrax.scheduler.activity.SettingsActivity;
-import com.gymrattrax.scheduler.data.DatabaseHelper;
+import com.gymrattrax.scheduler.data.DateUtil;
+import com.gymrattrax.scheduler.data.PreferenceKeys;
 
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
 public class ProfileItem {
-    private static final String PREF_BIRTH_DATE = "BIRTH DATE";
-    private static final String PREF_HEIGHT = "HEIGHT";
-    private static final String PREF_WEIGHT = "WEIGHT";
-    private static final String PREF_BODY_FAT = "BODY_FAT";
-    private static final String PREF_ACTIVITY = "ACTIVITY";
     private SharedPreferences mSharedPreferences;
-    public static final String PREF_GENDER = "GENDER";
 
     public ProfileItem(Context context) {
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     public char getGender() {
-        return mSharedPreferences.getString(PREF_GENDER, "M").charAt(0);
+        return mSharedPreferences.getString(PreferenceKeys.GENDER, "M").charAt(0);
     }
 
     public void setGender(char gender) {
-        mSharedPreferences.edit().putString(PREF_GENDER, String.valueOf(gender)).apply();
+        mSharedPreferences.edit().putString(PreferenceKeys.GENDER, String.valueOf(gender)).apply();
     }
 
     public Date getDOB() {
-        String dobString = mSharedPreferences.getString(PREF_BIRTH_DATE, "");
+        String dobString = mSharedPreferences.getString(PreferenceKeys.BIRTH_DATE, "");
         Date dobDate = null;
         if (!dobString.trim().isEmpty()) {
             try {
-                dobDate = DatabaseHelper.convertDate(dobString);
+                dobDate = DateUtil.convertDate(dobString);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -46,7 +41,7 @@ public class ProfileItem {
     }
 
     public void setDOB(String dob) {
-        mSharedPreferences.edit().putString(PREF_BIRTH_DATE, dob).apply();
+        mSharedPreferences.edit().putString(PreferenceKeys.BIRTH_DATE, dob).apply();
     }
 
     public int getAge() {
@@ -78,35 +73,35 @@ public class ProfileItem {
     }
 
     public double getHeight() {
-        return mSharedPreferences.getFloat(PREF_HEIGHT, -1.0f);
+        return mSharedPreferences.getFloat(PreferenceKeys.HEIGHT, -1.0f);
     }
 
     public void setHeight(float height) {
-        mSharedPreferences.edit().putFloat(PREF_HEIGHT, height).apply();
+        mSharedPreferences.edit().putFloat(PreferenceKeys.HEIGHT, height).apply();
     }
 
     public double getWeight() {
-        return mSharedPreferences.getFloat(PREF_WEIGHT, 180f);
+        return mSharedPreferences.getFloat(PreferenceKeys.WEIGHT, 180f);
     }
 
     public void setWeight(float weight) {
-        mSharedPreferences.edit().putFloat(PREF_WEIGHT, weight).apply();
+        mSharedPreferences.edit().putFloat(PreferenceKeys.WEIGHT, weight).apply();
     }
 
     public double getBodyFatPercentage() {
-        return mSharedPreferences.getFloat(PREF_BODY_FAT, -1f);
+        return mSharedPreferences.getFloat(PreferenceKeys.BODY_FAT, -1f);
     }
 
     public void setBodyFatPercentage(float bodyFatPercentage) {
-        mSharedPreferences.edit().putFloat(PREF_BODY_FAT, bodyFatPercentage).apply();
+        mSharedPreferences.edit().putFloat(PreferenceKeys.BODY_FAT, bodyFatPercentage).apply();
     }
 
     public double getActivityLevel() {
-        return mSharedPreferences.getFloat(PREF_ACTIVITY, 1.2f);
+        return mSharedPreferences.getFloat(PreferenceKeys.ACTIVITY, 1.2f);
     }
 
     public void setActivityLevel(float activityLevel) {
-        mSharedPreferences.edit().putFloat(PREF_ACTIVITY, activityLevel).apply();
+        mSharedPreferences.edit().putFloat(PreferenceKeys.ACTIVITY, activityLevel).apply();
     }
 
     private double calculateBMR(double weight, double height, char gender, double age,
@@ -142,17 +137,31 @@ public class ProfileItem {
         return getBMR() > 0;
     }
     
-    private static final String PREF_LAST_UPDATE = "LAST_UPDATE";
-
     public String getLastWeightUpdate() {
-        return mSharedPreferences.getString(PREF_LAST_UPDATE, "");
+        return mSharedPreferences.getString(PreferenceKeys.LAST_UPDATE_WEIGHT, "");
     }
 
     public void setLastWeightUpdate(String date) {
-        mSharedPreferences.edit().putString(PREF_LAST_UPDATE, date).apply();
+        mSharedPreferences.edit().putString(PreferenceKeys.LAST_UPDATE_WEIGHT, date).apply();
     }
 
     public String getDateFormat() {
         return mSharedPreferences.getString(SettingsActivity.PREF_DATE_FORMAT, "MM/dd/yyyy");
+    }
+
+    public String getLastWorkoutNotification() {
+        return mSharedPreferences.getString(PreferenceKeys.LAST_NOTIFY_WORKOUT, "");
+    }
+
+    public void setLastWorkoutNotification(String date) {
+        mSharedPreferences.edit().putString(PreferenceKeys.LAST_NOTIFY_WORKOUT, date).apply();
+    }
+
+    public String getLastWeightNotification() {
+        return mSharedPreferences.getString(PreferenceKeys.LAST_NOTIFY_WEIGHT, "");
+    }
+
+    public void setLastWeightNotification(String date) {
+        mSharedPreferences.edit().putString(PreferenceKeys.LAST_NOTIFY_WEIGHT, date).apply();
     }
 }

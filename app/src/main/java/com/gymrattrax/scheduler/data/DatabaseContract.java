@@ -101,9 +101,10 @@ public final class DatabaseContract {
         public static final String DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
     }
 
-    /* Deprecated tables, no longer used. */
+    //region Deprecated tables, no longer used.
     public static abstract class ProfileTable implements BaseColumns {
         public static final String TABLE_NAME = "profile";
         public static final String DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
     }
+    //endregion
 }

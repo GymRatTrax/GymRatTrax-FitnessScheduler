@@ -38,7 +38,7 @@ import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.data.SendToGoogleFitHistory;
 import com.gymrattrax.scheduler.data.UnitUtil;
-import com.gymrattrax.scheduler.object.ExerciseName;
+import com.gymrattrax.scheduler.object.Exercises;
 import com.gymrattrax.scheduler.object.ProfileItem;
 import com.gymrattrax.scheduler.object.WorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
@@ -212,7 +212,7 @@ public class CardioWorkoutActivity extends LoginActivity {
             // 2. Create a session object
             // (provide a name, identifier, description and start time)
             String activity = FitnessActivities.RUNNING;
-            switch (ExerciseName.Cardio.fromString(workoutItem.getName())) {
+            switch (Exercises.Cardio.fromString(workoutItem.getName())) {
                 case WALK:
                     activity = FitnessActivities.WALKING;
                     break;
@@ -447,7 +447,7 @@ public class CardioWorkoutActivity extends LoginActivity {
         // 2. Create a session object
         // (provide a name, identifier, description and start time)
         String activity = FitnessActivities.RUNNING;
-        switch (ExerciseName.Cardio.fromString(workoutItem.getName())) {
+        switch (Exercises.Cardio.fromString(workoutItem.getName())) {
             case WALK:
                 activity = FitnessActivities.WALKING;
                 break;

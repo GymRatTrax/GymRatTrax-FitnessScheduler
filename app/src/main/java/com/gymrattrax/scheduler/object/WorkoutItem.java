@@ -2,6 +2,8 @@ package com.gymrattrax.scheduler.object;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 
@@ -35,58 +37,26 @@ public class WorkoutItem {
     private double weightUsed;
     private Date dateModified;
 
-    private ExerciseType exerciseType;
-    private ExerciseName exerciseName;
+    private Exercise exercise;
     //endregion
 
     //region Private constructors
     private WorkoutItem() {
         this.complete = false;
     }
-    public WorkoutItem(String[] exerciseDetails) {
-        this();
-        Exercise exercise = new Exercise(exerciseDetails[0], exerciseDetails[1]);
-        exerciseType = ExerciseType.valueOf(exerciseDetails[9]);
-        exerciseName = exerciseDetails[1];
-    }
-    public WorkoutItem(ExerciseType exerciseType, ExerciseName exerciseName) {
-        this();
-        this.exerciseType = exerciseType;
-        this.exerciseName = exerciseName;
-    }
     private WorkoutItem(Exercise exercise) {
         this();
         this.exercise = exercise;
-        exerciseType = ExerciseType.valueOf(exercise[9]);
-        exerciseName = exercise[1];
     }
+    @Deprecated
     private WorkoutItem(String exerciseName) {
         this();
-        setName(exerciseName);
-    }
-    private WorkoutItem(ExerciseName.Abs abs) {
-        exercise = new ExerciseItem(abs);
-    }
-    private WorkoutItem(ExerciseName.Arms arms) {
-        exercise = new ExerciseItem(arms);
-    }
-    private WorkoutItem(ExerciseName.Cardio cardio) {
-        exercise = new ExerciseItem(cardio);
-    }
-    private WorkoutItem(ExerciseName.Legs legs) {
-        exercise = new ExerciseItem(legs);
+        Exercise exercise = setName(exerciseName);
+        this.exercise = exercise;
     }
     //endregion
 
     //region Static factory methods
-    public static WorkoutItem createNew(Context context, long databaseId) {
-        DatabaseHelper databaseHelper = new DatabaseHelper(context);
-        String[] exercise = databaseHelper.getExerciseById(databaseId);
-        WorkoutItem workoutItem = new WorkoutItem(exercise);
-        databaseHelper.close();
-        return workoutItem;
-    }
-
     public static WorkoutItem createNew(Exercise exercise) {
         return new WorkoutItem(exercise);
     }
@@ -97,37 +67,47 @@ public class WorkoutItem {
         databaseHelper.close();
         return workoutItem;
     }
+
+    @Deprecated
+    public static WorkoutItem oldMethodByString(String exerciseName) {
+        return new WorkoutItem(exerciseName);
+    }
     //endregion
 
     //region Getters and setters
     public String getName() {
-        return exercise.getName();
+        return exercise.toString();
+    }
+
+    public Exercise getExercise() {
+        return exercise;
     }
 
     public ExerciseType getType() {
         return exercise.getType();
     }
 
-//    @Deprecated
-//    private void setName(String name) {
-//        if (ExerciseName.Abs.fromString(name) != null)
-//            this.exercise = new ExerciseItem(ExerciseName.Abs.fromString(name));
-//        else {
-//            if (ExerciseName.Arms.fromString(name) != null)
-//                this.exercise = new ExerciseItem(ExerciseName.Arms.fromString(name));
-//            else {
-//                if (ExerciseName.Cardio.fromString(name) != null)
-//                    this.exercise = new ExerciseItem(ExerciseName.Cardio.fromString(name));
-//                else {
-//                    if (ExerciseName.Legs.fromString(name) != null)
-//                        this.exercise = new ExerciseItem(ExerciseName.Legs.fromString(name));
-//                    else {
-//                        Log.e(TAG, "Unexpected workout name. No operation made.");
-//                    }
-//                }
-//            }
-//        }
-//    }
+    @Deprecated @Nullable
+    private Exercise setName(String name) {
+        if (Exercises.Abs.fromString(name) != null)
+            return Exercises.Abs.fromString(name);
+        else {
+            if (Exercises.Arms.fromString(name) != null)
+                return Exercises.Arms.fromString(name);
+            else {
+                if (Exercises.Cardio.fromString(name) != null)
+                    return Exercises.Cardio.fromString(name);
+                else {
+                    if (Exercises.Legs.fromString(name) != null)
+                        return Exercises.Legs.fromString(name);
+                    else {
+                        Log.e(TAG, "Unexpected workout name. No operation made.");
+                        return null;
+                    }
+                }
+            }
+        }
+    }
 
     public int getID() {
         return ID;
@@ -186,37 +166,29 @@ public class WorkoutItem {
     }
 
     public double calculateMETs() {
-        switch (exerciseType) {
-            case CARDIO:
-                if (exerciseName instanceof Cardio)
-                if (exerciseName == Cardio.CYCLING)
-                switch (exerciseName) {
-                    case CYCLING:
-                    case ELLIPTICAL:
-                        if (exertionLevel < 2)
-                            return 5.5;
-                        else if (exertionLevel > 2)
-                            return 10.5;
-                        else
-                            return 7;
-                    case RUN:
-                    case JOG:
-                    case WALK:
-                    default:
-                        //miles per hour, multiplied by a factor of 1.6529
-                        if (getTimeSpent() > 0 && distanceCompleted > 0)
-                            return 1.6529 * distanceScheduled / (getTimeSpent() / 60);
-                        else
-                            return -1;
-                }
-            case ARMS:
-            case LEGS:
-            case ABS:
-                if (exertionLevel > 0 && exertionLevel <= 3)
-                    return (exertionLevel * 1.25) + 2.25;
+//        switch (exerciseType) {
+        if (exercise instanceof Exercises.Cardio) {
+            if (exercise == Exercises.Cardio.CYCLING || exercise == Exercises.Cardio.ELLIPTICAL) {
+                if (exertionLevel < 2)
+                    return 5.5;
+                else if (exertionLevel > 2)
+                    return 10.5;
+                else
+                    return 7;
+            } else { //RUN, JOG, WALK
+                //miles per hour, multiplied by a factor of 1.6529
+                if (getTimeSpent() > 0 && distanceCompleted > 0)
+                    return 1.6529 * distanceScheduled / (getTimeSpent() / 60);
                 else
                     return -1;
-            default:
+            }
+        } else if (exercise instanceof Exercises.Arms || exercise instanceof Exercises.Legs ||
+                exercise instanceof Exercises.Abs) {
+            if (exertionLevel > 0 && exertionLevel <= 3)
+                return (exertionLevel * 1.25) + 2.25;
+            else
+                return -1;
+        } else {
                 return -1;
         }
     }
