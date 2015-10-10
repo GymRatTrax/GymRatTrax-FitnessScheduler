@@ -39,8 +39,6 @@ public class NotifyService extends Service {
     private static final String TAG ="NotifyService";
 
     public static final int NOTIFICATION = 6010;
-    public static final int NOTIFY_ID_WORKOUT = 7010;
-    public static final int NOTIFY_ID_WEIGH = 7020;
 
     public static final String ID = "id";
     public static final String NAME = "name";
@@ -51,9 +49,6 @@ public class NotifyService extends Service {
 
     private int id = -1;
     private String name = "GymRatTrax";
-    //TODO: Use these variables consistently or not at all.
-    private int hour = -1;
-    private int minute = -1;
     private String tone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION).toString();
     private int vibrate = 0;
 
@@ -94,10 +89,8 @@ public class NotifyService extends Service {
         if (name.equals("CANCEL")) {
             cancelNotification();
         } else {
-            hour = intent.getIntExtra(HOUR, -1);
-            minute = intent.getIntExtra(MINUTE, -1);
-            if (intent.getBooleanExtra(VIBRATE, true)) vibrate = 300;
-
+            if (intent.getBooleanExtra(VIBRATE, true))
+                vibrate = 300;
             long wid = intent.getIntExtra(ID, -1);
             if (wid > 0) {
                 DatabaseHelper dbh = new DatabaseHelper(getApplicationContext());
@@ -202,7 +195,6 @@ public class NotifyService extends Service {
                     .setSound(Uri.parse(tone))
                     .setVibrate(new long[]{0, vibrate, 0});
             intent = new Intent(this, ProfileActivity.class);
-            id = NOTIFY_ID_WEIGH;
         } else {
             notificationBuilder.setContentTitle("Time to work out!")
                     .setContentText("Let's go!")

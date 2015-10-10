@@ -296,7 +296,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         values.put(DatabaseContract.WorkoutTable.COL_EXERCISE_NAME, workoutItem.getName());
         values.put(DatabaseContract.WorkoutTable.COL_EXERCISE_TYPE,
-                String.valueOf(workoutItem.getType()));
+                workoutItem.getType().getChar());
         if (workoutItem.isComplete())
             values.put(DatabaseContract.WorkoutTable.COL_COMPLETE, 1);
         else

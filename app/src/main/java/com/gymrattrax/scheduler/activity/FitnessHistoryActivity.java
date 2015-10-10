@@ -16,11 +16,10 @@ import com.google.android.gms.fitness.data.Field;
 import com.google.android.gms.fitness.request.DataReadRequest;
 import com.google.android.gms.fitness.result.DataReadResult;
 import com.gymrattrax.scheduler.R;
+import com.gymrattrax.scheduler.data.DateUtil;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class FitnessHistoryActivity extends LoginActivity {
@@ -83,16 +82,17 @@ public class FitnessHistoryActivity extends LoginActivity {
             dateStart.setTime(dpStart);
             Date dateEnd = new Date();
             dateEnd.setTime(dpEnd);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
             Log.i(TAG, "Data point:");
-            Log.i(TAG, "\tType: " + dp.getDataType().getName());
-            Log.i(TAG, "\tStart: " + sdf.format(dateStart));
-            Log.i(TAG, "\tEnd: " + sdf.format(dateEnd));
-            Log.d(TAG, "Size of dp.getDataType().getFields() in processDataSet: " + dp.getDataType().getFields().size());
+            Log.i(TAG, String.format("\tType: %s", dp.getDataType().getName()));
+            Log.i(TAG, String.format("\tStart: %s", DateUtil.convertDate(dateStart)));
+            Log.i(TAG, String.format("\tEnd: %s", DateUtil.convertDate(dateEnd)));
+            Log.d(TAG, String.format("Size of dp.getDataType().getFields() in processDataSet: %s",
+                    dp.getDataType().getFields().size()));
             for (Field field : dp.getDataType().getFields()) {
                 String fieldName = field.getName();
                 TextView textView = new TextView(this);
-                textView.setText("\tField: " + fieldName + " Value: " + dp.getValue(field));
+                textView.setText(String.format("\tField: %s Value: %s",
+                        fieldName, dp.getValue(field)));
                 stuff.addView(textView);
                 Log.i(TAG, "\tField: " + fieldName + " Value: " + dp.getValue(field));
             }

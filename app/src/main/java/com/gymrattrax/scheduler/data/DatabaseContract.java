@@ -24,10 +24,10 @@ public final class DatabaseContract {
         public static final String COL_BODY_FAT_PERCENTAGE = "body_fat_percentage";
         public static final String COL_ACTIVITY_LEVEL = "activity_level";
 
-        public static final double ACT_LVL_LITTLE = 1.2;
-        public static final double ACT_LVL_LIGHT  = 1.375;
-        public static final double ACT_LVL_MOD    = 1.55;
-        public static final double ACT_LVL_HEAVY  = 1.725;
+        public static final float ACT_LVL_LITTLE = 1.2f;
+        public static final float ACT_LVL_LIGHT  = 1.375f;
+        public static final float ACT_LVL_MOD    = 1.55f;
+        public static final float ACT_LVL_HEAVY  = 1.725f;
 
         public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + L_PAREN +
                 COL_DATE                + TYPE_TEXT + PRIMARY_KEY + COMMA_SEP +

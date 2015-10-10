@@ -6,7 +6,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.RingtonePreference;
@@ -42,7 +41,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         // Set up a listener whenever a key changes
         getPreferenceScreen().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
-        updatePreference(SettingsActivity.PREF_DATE_FORMAT);
+//        updatePreference(SettingsActivity.PREF_DATE_FORMAT);
         updatePreference(SettingsActivity.PREF_NOTIFY_TONE);
         updatePreference(SettingsActivity.PREF_NOTIFY_ADVANCE);
         updatePreference(SettingsActivity.PREF_NOTIFY_WEIGH_TONE);
@@ -68,13 +67,13 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     private void updatePreference(String key){
         Preference preference;
         switch (key) {
-            case SettingsActivity.PREF_DATE_FORMAT:
-                preference = findPreference(key);
-                if (preference instanceof ListPreference){
-                    ListPreference listPreference =  (ListPreference)preference;
-                    listPreference.setSummary(listPreference.getEntry());
-                }
-                break;
+//            case SettingsActivity.PREF_DATE_FORMAT:
+//                preference = findPreference(key);
+//                if (preference instanceof ListPreference){
+//                    ListPreference listPreference =  (ListPreference)preference;
+//                    listPreference.setSummary(listPreference.getEntry());
+//                }
+//                break;
             case SettingsActivity.PREF_NOTIFY_TONE:
             case SettingsActivity.PREF_NOTIFY_WEIGH_TONE:
                 preference = findPreference(key);

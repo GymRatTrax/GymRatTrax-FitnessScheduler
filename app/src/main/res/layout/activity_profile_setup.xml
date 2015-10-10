@@ -32,10 +32,10 @@
         android:paddingBottom="5dp">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Birth Date"
+            android:text="@string/profile_birth_date_label"
             android:id="@+id/textViewDate"
             android:layout_weight="0.08"
             android:focusable="false"/>

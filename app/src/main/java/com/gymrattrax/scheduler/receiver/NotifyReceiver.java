@@ -27,6 +27,7 @@ import java.util.Date;
  */
 public class NotifyReceiver extends BroadcastReceiver {
     public static final String TAG = "NotifyReceiver";
+    private static final int ID_WEIGH = 999;
 
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "Broadcast received.");
@@ -129,10 +130,10 @@ public class NotifyReceiver extends BroadcastReceiver {
                     calendar.add(Calendar.DAY_OF_MONTH, 1);
                 PendingIntent pIntent;
                 if (sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_WEIGH_INHERIT, true)) {
-                    pIntent = createPendingIntent(context, 999, "Time to weigh-in", calendar,
+                    pIntent = createPendingIntent(context, ID_WEIGH, "Time to weigh-in", calendar,
                             defaultVibrate, defaultTone);
                 } else {
-                    pIntent = createPendingIntent(context, 999, "Time to weigh-in", calendar,
+                    pIntent = createPendingIntent(context, ID_WEIGH, "Time to weigh-in", calendar,
                             sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_WEIGH_VIBRATE, true),
                             Uri.parse(sharedPref.getString(
                                     SettingsActivity.PREF_NOTIFY_WEIGH_TONE, "")));
@@ -220,8 +221,6 @@ public class NotifyReceiver extends BroadcastReceiver {
         Intent intent = new Intent(context, NotifyService.class);
         intent.putExtra(NotifyService.ID, id);
         intent.putExtra(NotifyService.NAME, name);
-        intent.putExtra(NotifyService.HOUR, calendar.get(Calendar.HOUR_OF_DAY));
-        intent.putExtra(NotifyService.MINUTE, calendar.get(Calendar.MINUTE));
         intent.putExtra(NotifyService.VIBRATE, vibrate);
         intent.putExtra(NotifyService.TONE, tone.toString());
         return PendingIntent.getService(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);

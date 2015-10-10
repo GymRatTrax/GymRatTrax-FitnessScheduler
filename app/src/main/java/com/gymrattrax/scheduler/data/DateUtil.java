@@ -1,10 +1,6 @@
 package com.gymrattrax.scheduler.data;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-
-import com.gymrattrax.scheduler.activity.SettingsActivity;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -45,10 +41,11 @@ public class DateUtil {
      * java.util.Date) displayDateTime returns a formatted string that includes the time value.
      */
     public static String displayDate(Context context, Date date) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        String dateFormat = sharedPref.getString(SettingsActivity.PREF_DATE_FORMAT, "MM/dd/yyyy");
-        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat, Locale.US);
-        return sdf.format(date);
+//        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+//        String dateFormat = sharedPref.getString(SettingsActivity.PREF_DATE_FORMAT, "MM/dd/yyyy");
+//        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat, Locale.US);
+//        return sdf.format(date);
+        return android.text.format.DateFormat.getDateFormat(context).format(date);
     }
 
     /**
@@ -61,10 +58,11 @@ public class DateUtil {
      * displayDate returns a formatted string that does not also include any time value.
      */
     public static String displayDateTime(Context context, Date date) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        String dateFormat = sharedPref.getString(SettingsActivity.PREF_DATE_FORMAT, "MM/dd/yyyy");
-        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat + " hh:mm a", Locale.US);
-        return sdf.format(date);
+//        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+//        String dateFormat = sharedPref.getString(SettingsActivity.PREF_DATE_FORMAT, "MM/dd/yyyy");
+//        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat + " hh:mm a", Locale.US);
+//        return sdf.format(date);
+        return android.text.format.DateFormat.getTimeFormat(context).format(date);
     }
 
     public static String now() {

@@ -17,9 +17,24 @@
         <item>Cardio Suggestions</item>
     </string-array>
 
-    <string-array name="date_format_array">
-        <item>MM/dd/yyyy</item>
-        <item>dd/MM/yyyy</item>
+    <string-array name="unit_distance_array_readable">
+        <item>mi - Miles</item>
+        <item>km - Kilometers</item>
+        <item>m - Meters</item>
+    </string-array>
+    <string-array name="unit_distance_array">
+        <item>mi</item>
+        <item>km</item>
+        <item>m</item>
+    </string-array>
+
+    <string-array name="unit_weight_array_readable">
+        <item>lb - Pounds</item>
+        <item>kg - Kilograms</item>
+    </string-array>
+    <string-array name="unit_weight_array">
+        <item>lb</item>
+        <item>kg</item>
     </string-array>
 
     <string-array name="progress_array">

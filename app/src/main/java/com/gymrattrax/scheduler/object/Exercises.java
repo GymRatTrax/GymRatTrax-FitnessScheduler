@@ -234,18 +234,6 @@ public class Exercises {
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * If you want to return all Exercise enum values, use
      * Exercise.getDeclaringClass().getEnumConstants(). If you want just the String values that

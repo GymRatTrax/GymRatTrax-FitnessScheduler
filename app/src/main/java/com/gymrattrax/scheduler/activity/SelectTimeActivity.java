@@ -35,9 +35,9 @@ public class SelectTimeActivity extends AppCompatActivity {
     private TimePicker timepicker;
     private long eventId;
 
-    private Date d;
+    private Date date;
     private String weight;
-    private String date, distance, duration, details;
+    private String dateString, distance, duration, details;
     private String sets;
     private String reps;
 
@@ -60,7 +60,7 @@ public class SelectTimeActivity extends AppCompatActivity {
         Button notifications = (Button) findViewById(R.id.notifications_text);
         Button addToGoogle = (Button) findViewById(R.id.addGoogleCalButton);
         timeText = (TextView) findViewById(R.id.TimeSelected);
-        updateTimeUI();
+        updateTimeUI(selectedHour, selectedMinutes);
         final TextView exName = (TextView) findViewById(R.id.ex_name);
         TextView exDetails = (TextView) findViewById(R.id.ex_details);
         final TextView exDate = (TextView) findViewById(R.id.ex_date);
@@ -68,7 +68,7 @@ public class SelectTimeActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
             name = extras.getString("name");
-            date = extras.getString("date");
+            dateString = extras.getString("date");
 
             if (Exercises.Cardio.fromString(name) != null) {
                 distance = extras.getString("distance");
@@ -90,10 +90,10 @@ public class SelectTimeActivity extends AppCompatActivity {
 
                 int durInt = (int) Math.round(Double.parseDouble(duration));
                 duration = "" + (durInt * 60 * 1000);
-                exName.setText(name + " ");
-                exDetails.setText(dStr + " in " + tStr);
-                details = (dStr + " in " + tStr);
-                exDate.setText("on " + date);
+                exName.setText(String.format("%s ", name));
+                details = dStr + " in " + tStr;
+                exDetails.setText(details);
+                exDate.setText(String.format("on %s", dateString));
             } else {
                 // Display strength details
                 weight = extras.getString("weight");
@@ -122,10 +122,10 @@ public class SelectTimeActivity extends AppCompatActivity {
                 } else {
                     repsStr = reps + " reps";
                 }
-                exName.setText(name + " ");
-                exDetails.setText(weightStr + setsStr + repsStr);
-                details = (weightStr + setsStr + repsStr);
-                exDate.setText("on " + date);
+                exName.setText(String.format("%s ", name));
+                details = weightStr + setsStr + repsStr;
+                exDetails.setText(details);
+                exDate.setText(String.format("on %s", dateString));
             }
         }
 
@@ -221,7 +221,7 @@ public class SelectTimeActivity extends AppCompatActivity {
 
 
         // get workout date time
-        String[] divDate = date.split("/", 3);
+        String[] divDate = dateString.split("/", 3);
 
         int month = Integer.parseInt(divDate[0]) - 1;
         int day = Integer.parseInt(divDate[1]);
@@ -262,36 +262,40 @@ public class SelectTimeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void updateTimeUI() {
-        String am = "AM";
-        String pm = "PM";
-        String hour;
-        String minutes;
+    private void updateTimeUI(int hour, int minute) {
+//        String am = "AM";
+//        String pm = "PM";
+//        String hour;
+//        String minutes;
 
-        //TODO: Use user's local time preferences
-        if (selectedHour > 12) {
-
-            selectedHour -= 12;
-            hour = (selectedHour > 9) ? "" + selectedHour : "" + selectedHour;
-            minutes = (selectedMinutes > 9) ? "" + selectedMinutes : "0" + selectedMinutes;
-            timeText.setText(String.format("%s:%s %s", hour, minutes, pm));
-        }
-        else if (selectedHour == 0) {
-            selectedHour += 12;
-            hour = (selectedHour > 9) ? "" + selectedHour : "" + selectedHour;
-            minutes = (selectedMinutes > 9) ? "" + selectedMinutes : "0" + selectedMinutes;
-            timeText.setText(String.format("%s:%s %s", hour, minutes, am));
-        }
-        else if (selectedHour == 12) {
-            hour = "" + selectedHour;
-            minutes = (selectedMinutes > 9) ? "" + selectedMinutes : "0" + selectedMinutes;
-            timeText.setText(String.format("%s:%s %s", hour, minutes, pm));
-        }
-        else {
-            hour = (selectedHour > 9) ? "" + selectedHour : "0" + selectedHour;
-            minutes = (selectedMinutes > 9) ? "" + selectedMinutes : "0" + selectedMinutes;
-            timeText.setText(String.format("%s:%s %s", hour, minutes, am));
-        }
+//        if (selectedHour > 12) {
+//            selectedHour -= 12;
+//            hour = (selectedHour > 9) ? "" + selectedHour : "" + selectedHour;
+//            minutes = (selectedMinutes > 9) ? "" + selectedMinutes : "0" + selectedMinutes;
+//            timeText.setText(String.format("%s:%s %s", hour, minutes, pm));
+//        }
+//        else if (selectedHour == 0) {
+//            selectedHour += 12;
+//            hour = (selectedHour > 9) ? "" + selectedHour : "" + selectedHour;
+//            minutes = (selectedMinutes > 9) ? "" + selectedMinutes : "0" + selectedMinutes;
+//            timeText.setText(String.format("%s:%s %s", hour, minutes, am));
+//        }
+//        else if (selectedHour == 12) {
+//            hour = "" + selectedHour;
+//            minutes = (selectedMinutes > 9) ? "" + selectedMinutes : "0" + selectedMinutes;
+//            timeText.setText(String.format("%s:%s %s", hour, minutes, pm));
+//        }
+//        else {
+//            hour = (selectedHour > 9) ? "" + selectedHour : "0" + selectedHour;
+//            minutes = (selectedMinutes > 9) ? "" + selectedMinutes : "0" + selectedMinutes;
+//            timeText.setText(String.format("%s:%s %s", hour, minutes, am));
+//        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, 0);
+        timeText.setText(android.text.format.DateFormat.getTimeFormat(this)
+                .format(calendar.getTime()));
     }
 
     private void addThisWorkout() {
@@ -306,10 +310,10 @@ public class SelectTimeActivity extends AppCompatActivity {
         NotifyReceiver.cancelNotifications(this);
         DatabaseHelper dbh = new DatabaseHelper(SelectTimeActivity.this);
         WorkoutItem cItem = WorkoutItem.createNew(Exercises.Cardio.fromString(name));
-        updateTimeUI();
+        updateTimeUI(selectedHour, selectedMinutes);
 
         // Set cardio item date
-        String[] dateArray = date.split("/", 3);
+        String[] dateArray = dateString.split("/", 3);
         int month = Integer.parseInt(dateArray[0]);
         int day = Integer.parseInt(dateArray[1]);
         int year = Integer.parseInt(dateArray[2]);
@@ -327,8 +331,8 @@ public class SelectTimeActivity extends AppCompatActivity {
 
         Calendar cal = Calendar.getInstance();
         cal.set(year, month - 1, day, hourInt, minInt);
-        d = cal.getTime();
-        cItem.setDateScheduled(d);
+        date = cal.getTime();
+        cItem.setDateScheduled(date);
 
         // Set cardio item name (done at instantiation)
         // Set cardio item distance
@@ -355,10 +359,9 @@ public class SelectTimeActivity extends AppCompatActivity {
         NotifyReceiver.cancelNotifications(this);
         DatabaseHelper dbh = new DatabaseHelper(SelectTimeActivity.this);
         WorkoutItem sItem = WorkoutItem.oldMethodByString(name);
-        updateTimeUI();
+        updateTimeUI(selectedHour, selectedMinutes);
 
         // Set Strength date and duration
-        String dateString = date;
         String[] dateArray = dateString.split("/", 3);
         int month = Integer.parseInt(dateArray[0]);
         int day = Integer.parseInt(dateArray[1]);
@@ -377,8 +380,8 @@ public class SelectTimeActivity extends AppCompatActivity {
 
         Calendar cal = Calendar.getInstance();
         cal.set(year, month-1, day, hour, minute);
-        d = cal.getTime();
-        sItem.setDateScheduled(d);
+        date = cal.getTime();
+        sItem.setDateScheduled(date);
 
         // Set Strength name (done at instantiation)
         // Set strength details

@@ -4,13 +4,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.gymrattrax.scheduler.activity.SettingsActivity;
 import com.gymrattrax.scheduler.data.DateUtil;
 import com.gymrattrax.scheduler.data.PreferenceKeys;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class ProfileItem {
     private SharedPreferences mSharedPreferences;
@@ -40,8 +41,10 @@ public class ProfileItem {
         return dobDate;
     }
 
-    public void setDOB(String dob) {
-        mSharedPreferences.edit().putString(PreferenceKeys.BIRTH_DATE, dob).apply();
+    public void setDOB(Date dob) {
+        SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        String date = dbFormat.format(dob) + " 00:00:00.000";
+        mSharedPreferences.edit().putString(PreferenceKeys.BIRTH_DATE, date).apply();
     }
 
     public int getAge() {
@@ -143,10 +146,6 @@ public class ProfileItem {
 
     public void setLastWeightUpdate(String date) {
         mSharedPreferences.edit().putString(PreferenceKeys.LAST_UPDATE_WEIGHT, date).apply();
-    }
-
-    public String getDateFormat() {
-        return mSharedPreferences.getString(SettingsActivity.PREF_DATE_FORMAT, "MM/dd/yyyy");
     }
 
     public String getLastWorkoutNotification() {

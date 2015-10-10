@@ -17,7 +17,6 @@ import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.data.DateUtil;
 import com.gymrattrax.scheduler.object.ProfileItem;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -26,7 +25,6 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 public class ProfileActivity extends AppCompatActivity {
-    private Button mUpdateProfileButton;
     private EditText mWeightEditText;
     private TextView mWeightTextView;
     private EditText mBodyFatPercentageEditText;
@@ -44,7 +42,7 @@ public class ProfileActivity extends AppCompatActivity {
         mProfileItem = new ProfileItem(this);
 
         //database query and then set editTexts to display the appropriate data
-        mUpdateProfileButton = (Button) findViewById(R.id.update_profile_button);
+        Button mUpdateProfileButton = (Button) findViewById(R.id.update_profile_button);
         mWeightEditText = (EditText)findViewById(R.id.profile_weight);
         mWeightEditText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,7 +73,6 @@ public class ProfileActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String errors = validateInput();
                 if (errors.isEmpty()) {
-                    mUpdateProfileButton.setText("EDIT");
                     saveChanges(view);
                     finish();
                 } else {
@@ -129,7 +126,7 @@ public class ProfileActivity extends AppCompatActivity {
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mWeightEditText.setText(String.valueOf(np1.getValue()) + "." + String.valueOf(np2.getValue()));
+                mWeightEditText.setText(String.format("%s.%s", np1.getValue(), np2.getValue()));
                 dialogWeight.dismiss();
             }
         });
@@ -182,7 +179,6 @@ public class ProfileActivity extends AppCompatActivity {
         double bodyFatPercentage = mProfileItem.getBodyFatPercentage();
         double activityLevel = mProfileItem.getActivityLevel();
         String lastUpdatedDate = mProfileItem.getLastWeightUpdate();
-        String dateFormat = mProfileItem.getDateFormat();
 
         if (weight > 0) {
             mWeightEditText.setText(String.valueOf(weight));
@@ -213,10 +209,10 @@ public class ProfileActivity extends AppCompatActivity {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.US);
             String updateText;
             if (sdf.format(lastUpdated).equals(sdf.format(now)))
-                updateText = DateFormat.getTimeInstance().format(lastUpdated);
+                updateText = android.text.format.DateFormat.getTimeFormat(this).format(lastUpdated);
             else
-                updateText = DateFormat.getDateInstance().format(lastUpdated);
-            mLastUpdateTextView.setText("Last update: " + updateText);
+                updateText = android.text.format.DateFormat.getDateFormat(this).format(lastUpdated);
+            mLastUpdateTextView.setText(String.format("Last update: %s", updateText));
         } catch (ParseException e) {
             e.printStackTrace();
         }
