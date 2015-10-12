@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
+import com.gymrattrax.scheduler.object.ExerciseType;
 import com.gymrattrax.scheduler.object.Exercises;
 import com.gymrattrax.scheduler.object.WorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
@@ -29,7 +30,7 @@ import java.util.Date;
 public class SelectTimeActivity extends AppCompatActivity {
     private static final String TAG = "SelectTimeActivity";
     private TextView timeText;
-    private String name;
+    private String mExerciseName;
 
     private int selectedHour = 0, selectedMinutes = 0;
     private TimePicker timepicker;
@@ -67,10 +68,10 @@ public class SelectTimeActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         if(extras != null) {
-            name = extras.getString("name");
+            mExerciseName = extras.getString("name");
             dateString = extras.getString("date");
 
-            if (Exercises.Cardio.fromString(name) != null) {
+            if (Exercises.Cardio.fromString(mExerciseName) != null) {
                 distance = extras.getString("distance");
                 duration = extras.getString("duration");
                 String dStr;
@@ -90,7 +91,7 @@ public class SelectTimeActivity extends AppCompatActivity {
 
                 int durInt = (int) Math.round(Double.parseDouble(duration));
                 duration = "" + (durInt * 60 * 1000);
-                exName.setText(String.format("%s ", name));
+                exName.setText(String.format("%s ", mExerciseName));
                 details = dStr + " in " + tStr;
                 exDetails.setText(details);
                 exDate.setText(String.format("on %s", dateString));
@@ -122,7 +123,7 @@ public class SelectTimeActivity extends AppCompatActivity {
                 } else {
                     repsStr = reps + " reps";
                 }
-                exName.setText(String.format("%s ", name));
+                exName.setText(String.format("%s ", mExerciseName));
                 details = weightStr + setsStr + repsStr;
                 exDetails.setText(details);
                 exDate.setText(String.format("on %s", dateString));
@@ -242,7 +243,7 @@ public class SelectTimeActivity extends AppCompatActivity {
         beginTime.set(year, month, day, hourInt, minInt);
         int eventDuration = Integer.parseInt(duration);
 
-        title = "Workout: " + name + "\n" + details;
+        title = String.format("Workout: %s\n%s", mExerciseName, details);
         Intent intent = new Intent(Intent.ACTION_EDIT);
         intent.setType("vnd.android.cursor.item/event");
         intent.putExtra("beginTime", beginTime.getTimeInMillis());
@@ -299,17 +300,21 @@ public class SelectTimeActivity extends AppCompatActivity {
     }
 
     private void addThisWorkout() {
-        if (Exercises.Cardio.fromString(name) != null)
+        if (Exercises.Cardio.fromString(mExerciseName) != null)
             addThisCardioWorkout();
-        else
-            addThisStrengthWorkout();
+        else if (Exercises.Arms.fromString(mExerciseName) != null)
+            addThisStrengthWorkout(ExerciseType.ARMS);
+        else if (Exercises.Abs.fromString(mExerciseName) != null)
+            addThisStrengthWorkout(ExerciseType.ABS);
+        else if (Exercises.Legs.fromString(mExerciseName) != null)
+            addThisStrengthWorkout(ExerciseType.LEGS);
     }
 
     public void addThisCardioWorkout( ) {
         if (BuildConfig.DEBUG_MODE) Log.d(TAG, "cancelNotifications called.");
         NotifyReceiver.cancelNotifications(this);
         DatabaseHelper dbh = new DatabaseHelper(SelectTimeActivity.this);
-        WorkoutItem cItem = WorkoutItem.createNew(Exercises.Cardio.fromString(name));
+        WorkoutItem cItem = WorkoutItem.createNew(Exercises.Cardio.fromString(mExerciseName));
         updateTimeUI(selectedHour, selectedMinutes);
 
         // Set cardio item date
@@ -348,17 +353,17 @@ public class SelectTimeActivity extends AppCompatActivity {
         cItem.setNotificationTone(notificationTone);
         cItem.setNotificationMinutesInAdvance(notificationAdvance);
         dbh.addWorkout(cItem);
-        Toast.makeText(this, name + " added to schedule", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, mExerciseName + " added to schedule", Toast.LENGTH_SHORT).show();
         dbh.close();
         if (BuildConfig.DEBUG_MODE) Log.d(TAG, "setNotifications called.");
         NotifyReceiver.setNotifications(this);
     }
 
-    public void addThisStrengthWorkout() {
+    public void addThisStrengthWorkout(ExerciseType exerciseType) {
         if (BuildConfig.DEBUG_MODE) Log.d(TAG, "cancelNotifications called.");
         NotifyReceiver.cancelNotifications(this);
         DatabaseHelper dbh = new DatabaseHelper(SelectTimeActivity.this);
-        WorkoutItem sItem = WorkoutItem.oldMethodByString(name);
+        WorkoutItem sItem = WorkoutItem.createNew(exerciseType, mExerciseName);
         updateTimeUI(selectedHour, selectedMinutes);
 
         // Set Strength date and duration
@@ -395,7 +400,7 @@ public class SelectTimeActivity extends AppCompatActivity {
         sItem.setNotificationTone(notificationTone);
         sItem.setNotificationMinutesInAdvance(notificationAdvance);
         dbh.addWorkout(sItem);
-        Toast.makeText(this, name + " added to schedule", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, mExerciseName + " added to schedule", Toast.LENGTH_SHORT).show();
         dbh.close();
         if (BuildConfig.DEBUG_MODE) Log.d(TAG, "setNotifications called.");
         NotifyReceiver.setNotifications(this);

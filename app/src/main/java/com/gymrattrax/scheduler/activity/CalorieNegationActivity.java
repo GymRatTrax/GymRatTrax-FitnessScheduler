@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterAddNegation;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
+import com.gymrattrax.scheduler.object.ExerciseType;
 import com.gymrattrax.scheduler.object.Exercises;
 import com.gymrattrax.scheduler.object.ProfileItem;
 import com.gymrattrax.scheduler.object.WorkoutItem;
@@ -84,14 +85,18 @@ public class CalorieNegationActivity extends AppCompatActivity implements ListVi
 
         if (position <= 1) {
             addCardioWorkout(val_arr[0]);
-        } else {
-            addStrengthWorkout(val_arr[0]);
+        } else if (position == 2) {
+            addStrengthWorkout(ExerciseType.ABS, val_arr[0]);
+        } else if (position == 3) {
+            addStrengthWorkout(ExerciseType.ARMS, val_arr[0]);
+        } else if (position == 4) {
+            addStrengthWorkout(ExerciseType.LEGS, val_arr[0]);
         }
     }
 
     // add exName and time params
     private void addCardioWorkout(String name) {
-        WorkoutItem item = WorkoutItem.oldMethodByString(name);
+        WorkoutItem item = WorkoutItem.createNew(ExerciseType.CARDIO, name);
         item.setDistanceScheduled(2);
         item.setTimeScheduled(workoutItems.get(4).getTimeScheduled());
 
@@ -100,8 +105,8 @@ public class CalorieNegationActivity extends AppCompatActivity implements ListVi
     }
 
     // add exName and time params
-    private void addStrengthWorkout(String name) {
-        WorkoutItem item = WorkoutItem.oldMethodByString(name);
+    private void addStrengthWorkout(ExerciseType exerciseType, String name) {
+        WorkoutItem item = WorkoutItem.createNew(exerciseType, name);
         item.setRepsScheduled(12);
         item.setSetsScheduled(4);
         item.setWeightUsed(10);
@@ -116,7 +121,6 @@ public class CalorieNegationActivity extends AppCompatActivity implements ListVi
         ProfileItem profileItem = new ProfileItem(CalorieNegationActivity.this);
         ArrayList<String> workoutsArray = new ArrayList<>();
 
-        //TODO: Come up with a better way of creating METs values on-the-fly.
         double BMR = profileItem.getBMR();
 
         double cardio_light = 3.0;

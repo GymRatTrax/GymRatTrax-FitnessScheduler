@@ -3,7 +3,7 @@ package com.gymrattrax.scheduler.data;
 import android.provider.BaseColumns;
 
 public final class DatabaseContract {
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 4;
     public static final String DATABASE_NAME = "grt.db";
     private static final String TYPE_TEXT = " TEXT";
     private static final String TYPE_INTEGER = " INTEGER";
@@ -89,20 +89,20 @@ public final class DatabaseContract {
         public static final String DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
     }
 
-    public static abstract class ExerciseTable implements BaseColumns {
-        public static final String TABLE_NAME = "Exercise";
-        public static final String COL_TYPE = "Type";
-        public static final String COL_NAME = "Name";
-
-        public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + L_PAREN +
-                BaseColumns._ID + TYPE_INTEGER + PRIMARY_KEY_AUTO + COMMA_SEP +
-                COL_TYPE        + TYPE_TEXT    + NOT_NULL         + COMMA_SEP +
-                COL_NAME        + TYPE_TEXT    + NOT_NULL         + R_PAREN;
-        public static final String DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
-    }
+//    public static abstract class ExerciseTable implements BaseColumns {
+//        public static final String TABLE_NAME = "Exercise";
+//        public static final String COL_TYPE = "Type";
+//        public static final String COL_NAME = "Name";
+//
+//        public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + L_PAREN +
+//                BaseColumns._ID + TYPE_INTEGER + PRIMARY_KEY_AUTO + COMMA_SEP +
+//                COL_TYPE        + TYPE_TEXT    + NOT_NULL         + COMMA_SEP +
+//                COL_NAME        + TYPE_TEXT    + NOT_NULL         + R_PAREN;
+//        public static final String DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
+//    }
 
     //region Deprecated tables, no longer used.
-    public static abstract class ProfileTable implements BaseColumns {
+    static abstract class ProfileTable implements BaseColumns {
         public static final String TABLE_NAME = "profile";
         public static final String DELETE_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
     }

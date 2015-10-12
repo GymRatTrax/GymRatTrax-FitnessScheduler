@@ -2,8 +2,6 @@ package com.gymrattrax.scheduler.object;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 
@@ -48,16 +46,29 @@ public class WorkoutItem {
         this();
         this.exercise = exercise;
     }
-    @Deprecated
-    private WorkoutItem(String exerciseName) {
-        this();
-        Exercise exercise = setName(exerciseName);
-        this.exercise = exercise;
-    }
     //endregion
 
     //region Static factory methods
     public static WorkoutItem createNew(Exercise exercise) {
+        return new WorkoutItem(exercise);
+    }
+
+    public static WorkoutItem createNew(ExerciseType exerciseType, String exerciseName) {
+        Exercise exercise = null;
+        switch (exerciseType) {
+            case ARMS:
+                exercise = Exercises.Arms.fromString(exerciseName);
+                break;
+            case ABS:
+                exercise = Exercises.Abs.fromString(exerciseName);
+                break;
+            case CARDIO:
+                exercise = Exercises.Cardio.fromString(exerciseName);
+                break;
+            case LEGS:
+                exercise = Exercises.Legs.fromString(exerciseName);
+                break;
+        }
         return new WorkoutItem(exercise);
     }
 
@@ -66,11 +77,6 @@ public class WorkoutItem {
         WorkoutItem workoutItem = databaseHelper.getWorkoutById(databaseId);
         databaseHelper.close();
         return workoutItem;
-    }
-
-    @Deprecated
-    public static WorkoutItem oldMethodByString(String exerciseName) {
-        return new WorkoutItem(exerciseName);
     }
     //endregion
 
@@ -85,28 +91,6 @@ public class WorkoutItem {
 
     public ExerciseType getType() {
         return exercise.getType();
-    }
-
-    @Deprecated @Nullable
-    private Exercise setName(String name) {
-        if (Exercises.Abs.fromString(name) != null)
-            return Exercises.Abs.fromString(name);
-        else {
-            if (Exercises.Arms.fromString(name) != null)
-                return Exercises.Arms.fromString(name);
-            else {
-                if (Exercises.Cardio.fromString(name) != null)
-                    return Exercises.Cardio.fromString(name);
-                else {
-                    if (Exercises.Legs.fromString(name) != null)
-                        return Exercises.Legs.fromString(name);
-                    else {
-                        Log.e(TAG, "Unexpected workout name. No operation made.");
-                        return null;
-                    }
-                }
-            }
-        }
     }
 
     public int getID() {
