@@ -70,4 +70,23 @@ public class DateUtil {
         Date dat = cal.getTime();
         return convertDate(dat);
     }
+
+    /**
+     * Create a Date object based on a year, month, and day.
+     * @param year Integer value representing the year.
+     * @param month Integer value between 1 and 12.
+     * @param day Integer value between 1 and 31.
+     * @return Date object of the corresponding date.
+     */
+    public static Date createDate(int year, int month, int day) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month - 1);
+        calendar.set(Calendar.DAY_OF_MONTH, day);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
+    }
 }

@@ -43,9 +43,9 @@ public class ProfileSetupActivity extends AppCompatActivity
 
     //Data
     private ProfileItem mProfileItem;
-    private Date birthDate;
-    private float weight;
-    private float height;
+    private Date birthDate = DateUtil.createDate(1990, 2, 12);
+    private float weight = 170f;
+    private float height = 66f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -197,7 +197,7 @@ public class ProfileSetupActivity extends AppCompatActivity
         Button b1 = (Button) dialog.findViewById(R.id.decimal_button_set);
         Button b2 = (Button) dialog.findViewById(R.id.decimal_button_cancel);
         final DatePicker datePicker = (DatePicker) dialog.findViewById(R.id.datePicker1);
-        datePicker.init(year, month - 1, date, new DatePicker.OnDateChangedListener() {
+        datePicker.init(year, month, date, new DatePicker.OnDateChangedListener() {
             @Override
             public void onDateChanged(DatePicker datePicker, int i, int i2, int i3) {
                 saveAndShowDate(i, i2 + 1, i3);
@@ -245,15 +245,9 @@ public class ProfileSetupActivity extends AppCompatActivity
     }
 
     private void saveAndShowDate(int year, int month, int day) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.DAY_OF_MONTH, year);
-        calendar.set(Calendar.MONTH, month - 1);
-        calendar.set(Calendar.YEAR, day);
-        Date date = calendar.getTime();
-        birthDate = date;
-        birthDateEditText.setText(DateUtil.displayDate(ProfileSetupActivity.this, date));
+        birthDate = DateUtil.createDate(year, month, day);
+        birthDateEditText.setText(DateUtil.displayDate(ProfileSetupActivity.this, birthDate));
     }
-
 
     public void saveChanges(View view){
         // update database profile
@@ -328,6 +322,8 @@ public class ProfileSetupActivity extends AppCompatActivity
         double testDbl;
         //Name and body fat are optional, and sex forces input.
         //Test birth date
+        if (birthDateEditText.getText().length() == 0)
+            return "Birth date is required.";
         Calendar now = Calendar.getInstance();
         Calendar tempCalendar = Calendar.getInstance();
         tempCalendar.setTime(birthDate);
@@ -380,6 +376,11 @@ public class ProfileSetupActivity extends AppCompatActivity
             else if (testDbl > 100)
                 return "Body fat percentage cannot be over 100%.";
         }
+
+
+        if (!littleExercise.isChecked() && !lightExercise.isChecked() && !modExercise.isChecked() &&
+                !heavyExercise.isChecked())
+            return "Activity level is required.";
 
         return ""; //No errors found.
     }
