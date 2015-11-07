@@ -181,13 +181,13 @@ public class ProfileActivity extends AppCompatActivity {
         String lastUpdatedDate = mProfileItem.getLastWeightUpdate();
 
         if (weight > 0) {
-            mWeightEditText.setText(String.valueOf(weight));
-            mWeightTextView.setText(String.valueOf(weight));
+            mWeightEditText.setText(String.format("%.1f", weight));
+            mWeightTextView.setText(String.format("%.1f", weight));
         } else
             mWeightEditText.setText("");
         if (bodyFatPercentage > 0) {
-            mBodyFatPercentageEditText.setText(String.valueOf(bodyFatPercentage * 100));
-            mBodyFatPercentageTextView.setText(String.valueOf(bodyFatPercentage * 100));
+            mBodyFatPercentageEditText.setText(String.format("%.1f", bodyFatPercentage * 100));
+            mBodyFatPercentageTextView.setText(String.format("%.1f", bodyFatPercentage * 100));
         } else
             mBodyFatPercentageEditText.setText("");
         int activityLevelInt;

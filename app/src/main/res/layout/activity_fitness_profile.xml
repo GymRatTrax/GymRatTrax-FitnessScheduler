@@ -86,7 +86,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:id="@+id/profile_last_updated"
             android:layout_columnSpan="3"
-            android:text="Last"/>
+            android:text=""/>
     </GridLayout>
     <Button
         android:layout_width="wrap_content"
