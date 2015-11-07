@@ -5,8 +5,6 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -14,28 +12,25 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.RadioButton;
-import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseContract;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.R;
+import com.gymrattrax.scheduler.data.DateUtil;
+import com.gymrattrax.scheduler.object.ProfileItem;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
-import java.util.regex.Pattern;
 
 public class ProfileSetupActivity extends AppCompatActivity
         implements DatePickerDialog.OnDateSetListener, NumberPicker.OnValueChangeListener {
 
-    private EditText nameEditText;
+    //UI components
     private EditText birthDateEditText;
     private EditText weightEditText;
     private EditText heightEditText;
@@ -45,15 +40,20 @@ public class ProfileSetupActivity extends AppCompatActivity
     private RadioButton modExercise;
     private RadioButton heavyExercise;
     private Spinner profileSpinner;
-    private String dateFormat;
+
+    //Data
+    private ProfileItem mProfileItem;
+    private Date birthDate = DateUtil.createDate(1990, 2, 12);
+    private float weight = 170f;
+    private float height = 66f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_setup);
+        mProfileItem = new ProfileItem(this);
 
         Button doneButton = (Button) findViewById(R.id.DoneProfileButton);
-        nameEditText = (EditText) findViewById(R.id.profile_name);
         birthDateEditText = (EditText) findViewById(R.id.birth_date);
         birthDateEditText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,17 +76,12 @@ public class ProfileSetupActivity extends AppCompatActivity
                 showHeightDialog();
             }
         });
-        fatPercentageEditText = (EditText) findViewById(R.id.fat_percentage);
+        fatPercentageEditText = (EditText) findViewById(R.id.profile_body_fat);
         littleExercise = (RadioButton) findViewById(R.id.little_exercise);
         lightExercise = (RadioButton) findViewById(R.id.light_exercise);
         modExercise = (RadioButton) findViewById(R.id.mod_exercise);
         heavyExercise = (RadioButton) findViewById(R.id.heavy_exercise);
         profileSpinner = (Spinner) findViewById(R.id.profile_spinner);
-        TextView textViewDate = (TextView) findViewById(R.id.textViewDate);
-
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        dateFormat = sharedPref.getString(SettingsActivity.PREF_DATE_FORMAT, "MM/dd/yyyy");
-        textViewDate.setText("Birth date (" + dateFormat.toUpperCase() + ")");
 
         doneButton.setOnClickListener(new Button.OnClickListener() {
 
@@ -121,129 +116,110 @@ public class ProfileSetupActivity extends AppCompatActivity
     }
 
     private void showWeightDialog() {
-        final Dialog d = new Dialog(ProfileSetupActivity.this);
-        d.setTitle("Weight (in pounds)");
-        d.setContentView(R.layout.dialog_decimal);
-        Button b1 = (Button) d.findViewById(R.id.decimal_button_set);
-        Button b2 = (Button) d.findViewById(R.id.decimal_button_cancel);
-        String weight = weightEditText.getText().toString();
-        String[] div = weight.split(Pattern.quote("."), 2);
-        int weightInteger = 165;
-        int weightDecimal = 0;
-        try {
-            weightInteger = Integer.parseInt(div[0]);
-            weightDecimal = Integer.parseInt(div[1]);
-        } catch (NumberFormatException|ArrayIndexOutOfBoundsException ignored) {}
-        final NumberPicker np1 = (NumberPicker) d.findViewById(R.id.decimal_number_picker_integer);
-        np1.setMaxValue(1000);
-        np1.setMinValue(0);
-        np1.setValue(weightInteger);
-        np1.setWrapSelectorWheel(false);
-        np1.setOnValueChangedListener(this);
-        final NumberPicker np2 = (NumberPicker) d.findViewById(R.id.decimal_number_picker_fractional);
-        np2.setMaxValue(9);
-        np2.setMinValue(0);
-        np2.setValue(weightDecimal);
-        np2.setWrapSelectorWheel(false);
-        np2.setOnValueChangedListener(this);
-        b1.setOnClickListener(new View.OnClickListener() {
+        final Dialog dialog = new Dialog(ProfileSetupActivity.this);
+        dialog.setTitle("Weight (in pounds)");
+        dialog.setContentView(R.layout.dialog_decimal);
+        Button buttonSet = (Button) dialog.findViewById(R.id.decimal_button_set);
+        Button buttonCancel = (Button) dialog.findViewById(R.id.decimal_button_cancel);
+
+        int weightInteger = (int)weight;
+        int weightFractional = (int)((weight - weightInteger) * 10);
+
+        final NumberPicker numberPickerInteger = (NumberPicker)dialog.findViewById(
+                R.id.decimal_number_picker_integer);
+        numberPickerInteger.setMaxValue(1000);
+        numberPickerInteger.setMinValue(0);
+        numberPickerInteger.setValue(weightInteger);
+        numberPickerInteger.setWrapSelectorWheel(false);
+        numberPickerInteger.setOnValueChangedListener(this);
+        final NumberPicker numberPickerFractional = (NumberPicker)dialog.findViewById(
+                R.id.decimal_number_picker_fractional);
+        numberPickerFractional.setMaxValue(9);
+        numberPickerFractional.setMinValue(0);
+        numberPickerFractional.setValue(weightFractional);
+        numberPickerFractional.setWrapSelectorWheel(false);
+        numberPickerFractional.setOnValueChangedListener(this);
+        buttonSet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                weightEditText.setText(String.valueOf(np1.getValue()) + "." + String.valueOf(np2.getValue()));
-                d.dismiss();
+                weight = (float) (numberPickerInteger.getValue() +
+                        numberPickerFractional.getValue() / 10.0);
+                weightEditText.setText(String.format("%.1f", weight));
+                dialog.dismiss();
             }
         });
-        b2.setOnClickListener(new View.OnClickListener() {
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                d.dismiss();
+                dialog.dismiss();
             }
         });
-        d.show();
+        dialog.show();
     }
     private void showHeightDialog() {
-        final Dialog d = new Dialog(this);
-        d.setTitle("Height (in inches)");
-        d.setContentView(R.layout.dialog_integer);
-        Button b1 = (Button) d.findViewById(R.id.decimal_button_set);
-        Button b2 = (Button) d.findViewById(R.id.decimal_button_cancel);
-        final NumberPicker np = (NumberPicker) d.findViewById(R.id.decimal_number_picker_integer);
-        np.setMaxValue(100);
-        np.setMinValue(0);
-        String height = heightEditText.getText().toString();
-        double heightIntegerDouble = 65;
-        try {
-            heightIntegerDouble = Double.valueOf(height);
-        } catch (NumberFormatException ignored) {}
-        int heightInteger = (int)heightIntegerDouble;
-        np.setValue(heightInteger);
-        np.setWrapSelectorWheel(false);
-        np.setOnValueChangedListener(this);
-        b1.setOnClickListener(new View.OnClickListener() {
+        final Dialog dialog = new Dialog(this);
+        dialog.setTitle("Height (in inches)");
+        dialog.setContentView(R.layout.dialog_integer);
+        Button buttonSet = (Button) dialog.findViewById(R.id.decimal_button_set);
+        Button buttonCancel = (Button) dialog.findViewById(R.id.decimal_button_cancel);
+        final NumberPicker numberPicker = (NumberPicker) dialog.findViewById(R.id.decimal_number_picker_integer);
+        numberPicker.setMaxValue(100);
+        numberPicker.setMinValue(0);
+        numberPicker.setValue((int)height);
+        numberPicker.setWrapSelectorWheel(false);
+        numberPicker.setOnValueChangedListener(this);
+        buttonSet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                heightEditText.setText(String.valueOf(np.getValue()));
-                d.dismiss();
+                height = numberPicker.getValue();
+                heightEditText.setText(String.valueOf(height));
+                dialog.dismiss();
             }
         });
-        b2.setOnClickListener(new View.OnClickListener() {
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                d.dismiss();
+                dialog.dismiss();
             }
         });
-        d.show();
+        dialog.show();
     }
 
     private void showDateDialog() {
-        final Dialog d = new Dialog(ProfileSetupActivity.this);
-        d.setContentView(R.layout.dialog_date);
-        d.setTitle("Date of birth");
-        int year = 1995;
-        int month = 1;
-        int day = 1;
-        String bday = birthDateEditText.getText().toString();
-        String[] div = bday.split("/", 3);
-        try {
-            year = Integer.parseInt(div[2]);
-            if (dateFormat.equals("dd/MM/yyyy")) {
-                month = Integer.parseInt(div[1]);
-                day = Integer.parseInt(div[0]);
-            } else {
-                month = Integer.parseInt(div[0]);
-                day = Integer.parseInt(div[1]);
-            }
-        } catch (NumberFormatException|ArrayIndexOutOfBoundsException ignored) {}
-        Button b1 = (Button) d.findViewById(R.id.decimal_button_set);
-        Button b2 = (Button) d.findViewById(R.id.decimal_button_cancel);
-        final DatePicker dp = (DatePicker) d.findViewById(R.id.datePicker1);
-        dp.init(year, month-1, day, new DatePicker.OnDateChangedListener() {
+        final Dialog dialog = new Dialog(ProfileSetupActivity.this);
+        dialog.setContentView(R.layout.dialog_date);
+        dialog.setTitle("Date of birth");
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(birthDate);
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int date = cal.get(Calendar.DAY_OF_MONTH);
+        Button b1 = (Button) dialog.findViewById(R.id.decimal_button_set);
+        Button b2 = (Button) dialog.findViewById(R.id.decimal_button_cancel);
+        final DatePicker datePicker = (DatePicker) dialog.findViewById(R.id.datePicker1);
+        datePicker.init(year, month, date, new DatePicker.OnDateChangedListener() {
             @Override
             public void onDateChanged(DatePicker datePicker, int i, int i2, int i3) {
-                showDate(i, i2 + 1, i3);
+                saveAndShowDate(i, i2 + 1, i3);
             }
         });
 
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (dateFormat.equals("dd/MM/yyyy")) {
-                    birthDateEditText.setText(String.valueOf(dp.getDayOfMonth() + "/" +
-                            (dp.getMonth() + 1) + "/" + dp.getYear()));
-                } else {
-                    birthDateEditText.setText(String.valueOf((dp.getMonth() + 1) + "/" +
-                            dp.getDayOfMonth() + "/" + dp.getYear()));
-                }
-                d.dismiss();
+                saveAndShowDate(datePicker.getYear(),
+                        datePicker.getMonth() + 1,
+                        datePicker.getDayOfMonth());
+                dialog.dismiss();
             }
         });
         b2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                d.dismiss();
+                dialog.dismiss();
             }
         });
-        d.show();
+        dialog.show();
     }
 
     @Override
@@ -268,42 +244,22 @@ public class ProfileSetupActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private void showDate(int year, int month, int day) {
-        if (dateFormat.equals("dd/MM/yyyy")) {
-            birthDateEditText.setText(new StringBuilder().append(day).append("/").append(month)
-                    .append("/").append(year));
-        } else {
-            birthDateEditText.setText(new StringBuilder().append(month).append("/").append(day)
-                    .append("/").append(year));
-        }
+    private void saveAndShowDate(int year, int month, int day) {
+        birthDate = DateUtil.createDate(year, month, day);
+        birthDateEditText.setText(DateUtil.displayDate(ProfileSetupActivity.this, birthDate));
     }
-
 
     public void saveChanges(View view){
         // update database profile
         DatabaseHelper dbh = new DatabaseHelper(this);
-        dbh.setProfileInfo(DatabaseContract.ProfileTable.KEY_NAME, nameEditText.getText().toString());
-        dbh.setProfileInfo(DatabaseContract.ProfileTable.KEY_HEIGHT_INCHES, heightEditText.getText().toString());
+        mProfileItem.setHeight(height);
+        mProfileItem.setDateOfBirth(birthDate);
 
-        String date = birthDateEditText.getText().toString();
-        SimpleDateFormat inputFormat = new SimpleDateFormat(dateFormat, Locale.US);
-        Date d = null;
-        try {
-            d = inputFormat.parse(date);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        if (d != null) {
-            SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-            date = dbFormat.format(d) + " 00:00:00.000";
-            dbh.setProfileInfo(DatabaseContract.ProfileTable.KEY_BIRTH_DATE, date);
-        }
-
-        double bodyFat = -1;
+        float bodyFat = -1f;
         if (!fatPercentageEditText.getText().toString().trim().isEmpty())
-            bodyFat = Double.valueOf(fatPercentageEditText.getText().toString());
+            bodyFat = Float.valueOf(fatPercentageEditText.getText().toString());
 
-        double activityLevel = -1;
+        float activityLevel = -1;
 
         if (littleExercise.isChecked())
             activityLevel = DatabaseContract.WeightTable.ACT_LVL_LITTLE;
@@ -316,18 +272,18 @@ public class ProfileSetupActivity extends AppCompatActivity
         else
             System.out.println("No activity level checked");
 
-        dbh.addWeight(Double.valueOf(weightEditText.getText().toString()), bodyFat, activityLevel);
-
+        dbh.addWeight(weight, bodyFat, activityLevel);
+        mProfileItem.setWeight(weight);
+        mProfileItem.setBodyFatPercentage(bodyFat);
+        mProfileItem.setActivityLevel(activityLevel);
 
         switch (profileSpinner.getItemAtPosition(
                 profileSpinner.getSelectedItemPosition()).toString().toUpperCase().substring(0,1)) {
             case "M":
-                dbh.setProfileInfo(DatabaseContract.ProfileTable.KEY_SEX,
-                        DatabaseContract.ProfileTable.VAL_SEX_MALE);
+                mProfileItem.setGender('M');
                 break;
             case "F":
-                dbh.setProfileInfo(DatabaseContract.ProfileTable.KEY_SEX,
-                        DatabaseContract.ProfileTable.VAL_SEX_FEMALE);
+                mProfileItem.setGender('F');
                 break;
         }
 
@@ -366,24 +322,13 @@ public class ProfileSetupActivity extends AppCompatActivity
         double testDbl;
         //Name and body fat are optional, and sex forces input.
         //Test birth date
-        testVar = birthDateEditText.getText().toString();
-        SimpleDateFormat inputFormat = new SimpleDateFormat(dateFormat, Locale.US);
-        Date testDate;
-        try {
-            testDate = inputFormat.parse(testVar);
-        } catch (ParseException e) {
-            return "Date is in incorrect format";
-        }
-        if (testDate != null) {
-            Calendar now = Calendar.getInstance();
-            Calendar testCal = Calendar.getInstance();
-            testCal.setTime(testDate);
-            if (testCal.after(now)) {
-                return "Okay, Marty McFly, you weren't born in the future.";
-            }
-        }
-        else {
-            return "Date is in incorrect format";
+        if (birthDateEditText.getText().length() == 0)
+            return "Birth date is required.";
+        Calendar now = Calendar.getInstance();
+        Calendar tempCalendar = Calendar.getInstance();
+        tempCalendar.setTime(birthDate);
+        if (tempCalendar.after(now)) {
+            return "Okay, Marty McFly, you weren't born in the future.";
         }
 
         //Test weight
@@ -431,6 +376,11 @@ public class ProfileSetupActivity extends AppCompatActivity
             else if (testDbl > 100)
                 return "Body fat percentage cannot be over 100%.";
         }
+
+
+        if (!littleExercise.isChecked() && !lightExercise.isChecked() && !modExercise.isChecked() &&
+                !heavyExercise.isChecked())
+            return "Activity level is required.";
 
         return ""; //No errors found.
     }

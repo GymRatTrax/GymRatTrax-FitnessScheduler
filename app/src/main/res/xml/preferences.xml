@@ -75,13 +75,21 @@
         </PreferenceCategory>
     </PreferenceScreen>
     <ListPreference
-        android:key="pref_date_format"
-        android:title="Date format"
-        android:summary="Standard date format displayed"
-        android:dialogTitle="Select preferred date format"
-        android:entries="@array/date_format_array"
-        android:entryValues="@array/date_format_array"
-        android:defaultValue="MM/dd/yyyy" />
+        android:key="pref_unit_distance"
+        android:title="Distance unit"
+        android:summary="%s"
+        android:dialogTitle="Select preferred distance unit"
+        android:entries="@array/unit_distance_array_readable"
+        android:entryValues="@array/unit_distance_array"
+        android:defaultValue="mi" />
+    <ListPreference
+        android:key="pref_unit_weight"
+        android:title="Weight unit"
+        android:summary="%s"
+        android:dialogTitle="Select preferred weight unit"
+        android:entries="@array/unit_weight_array_readable"
+        android:entryValues="@array/unit_weight_array"
+        android:defaultValue="lb" />
     <!--<Preference-->
         <!--android:key="pref_sign_in"-->
         <!--android:title="Google account settings"-->

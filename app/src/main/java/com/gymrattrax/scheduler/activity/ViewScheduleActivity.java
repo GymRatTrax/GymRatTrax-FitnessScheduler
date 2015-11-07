@@ -14,7 +14,9 @@ import android.widget.ListView;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterEdit;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.WorkoutItem;
+import com.gymrattrax.scheduler.data.DateUtil;
+import com.gymrattrax.scheduler.object.ExerciseType;
+import com.gymrattrax.scheduler.object.WorkoutItem;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -153,24 +155,19 @@ public class ViewScheduleActivity extends AppCompatActivity implements ListViewA
     }
 
     public String[] getWorkoutsString() {
-        DatabaseHelper dbh = new DatabaseHelper(this);
         int i = 0;
-        Calendar cal = Calendar.getInstance();
-        Date start = cal.getTime();
-        cal.set(2020, 3, 14);
-        Date end = cal.getTime();
-        WorkoutItem[] workouts = dbh.getWorkoutsInRange(start, end);
+        Calendar calendar = Calendar.getInstance();
+        Date start = calendar.getTime();
+        calendar.set(2020, 3, 14);
+        Date end = calendar.getTime();
+        DatabaseHelper databaseHelper = new DatabaseHelper(this);
+        WorkoutItem[] workouts = databaseHelper.getWorkoutsInRange(start, end);
         String[] workoutsArray = new String[workouts.length];
 
         for (final WorkoutItem w : workouts) {
             workoutsArray[i] = w.getName();
             id = w.getID();
-            if (workoutsArray[i].equals("Walking")
-                    || workoutsArray[i].equals("Jogging")
-                    || workoutsArray[i].equals("Running")
-                    || workoutsArray[i].equals("Elliptical")
-                    || workoutsArray[i].equals("Biking"))
-            {
+            if (w.getType() == ExerciseType.CARDIO) {
                 double minutesDbl = w.getTimeScheduled();
                 int secondsTotal = (int) (minutesDbl * 60);
                 int seconds = secondsTotal % 60;
@@ -196,16 +193,16 @@ public class ViewScheduleActivity extends AppCompatActivity implements ListViewA
                 }
 
                 String time = "\n" + distanceStr + minString + secString;
-                time = dbh.displayDateTime(this, w.getDateScheduled()) + time;
-                String infoString = "" + id + ":" + w.getName() + ": \n" + time;
+                time = DateUtil.displayDateTime(this, w.getDateScheduled()) + time;
+                String infoString = String.format("%d:%s: \n%s", id, w.getName(), time);
                 workoutsArray[i] = infoString;
             } else {
                 String weightUsed = "" + w.getWeightUsed();
                 String reps = "" + w.getRepsScheduled();
                 String sets = "" + w.getSetsScheduled();
-                String dateTime = dbh.displayDateTime(this, w.getDateScheduled()) + "\n";
+                String dateTime = DateUtil.displayDateTime(this, w.getDateScheduled()) + "\n";
                 if (Double.parseDouble(weightUsed) == 1) {
-                    weightUsed = weightUsed + " lb x ";
+                    weightUsed = weightUsed + " pound x ";
                 } else {
                     weightUsed = weightUsed + " lbs x ";
                 }
@@ -219,7 +216,8 @@ public class ViewScheduleActivity extends AppCompatActivity implements ListViewA
                 } else {
                     reps = reps + " reps";
                 }
-                String infoString = "" + id + ":" + w.getName() + ":\n" + dateTime + weightUsed + sets + reps;
+                String infoString = String.format("%d:%s:\n%s%s%s%s",
+                        id, w.getName(), dateTime, weightUsed, sets, reps);
                 workoutsArray[i] = infoString;
             }
             i++;

@@ -1,15 +1,17 @@
-package com.gymrattrax.scheduler.model;
+package com.gymrattrax.scheduler.object;
 
+import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
+
+import com.gymrattrax.scheduler.data.DatabaseHelper;
 
 import java.util.Date;
 
 public class WorkoutItem {
     private static final String TAG = "WorkoutItem";
 
+    //region Instance variables
     private int ID;
-    private ExerciseItem exercise;
     private Date dateScheduled;
     private Date dateCompleted;
     private double caloriesBurned;
@@ -33,63 +35,62 @@ public class WorkoutItem {
     private double weightUsed;
     private Date dateModified;
 
-    /**
-     * This constructor is private because all WorkoutItem objects should be instantiated.
-     */
+    private Exercise exercise;
+    //endregion
+
+    //region Private constructors
     private WorkoutItem() {
         this.complete = false;
     }
-    public WorkoutItem(ExerciseItem exercise) {
+    private WorkoutItem(Exercise exercise) {
         this();
         this.exercise = exercise;
     }
+    //endregion
 
-    //TODO: This item was deprecated, but it is too widely used. Come back to this later.
-    public WorkoutItem(String exerciseName) {
-        this();
-        setName(exerciseName);
-    }
-
-    public WorkoutItem(ExerciseName.Abs abs) {
-        exercise = new ExerciseItem(abs);
-    }
-    public WorkoutItem(ExerciseName.Arms arms) {
-        exercise = new ExerciseItem(arms);
-    }
-    public WorkoutItem(ExerciseName.Cardio cardio) {
-        exercise = new ExerciseItem(cardio);
-    }
-    public WorkoutItem(ExerciseName.Legs legs) {
-        exercise = new ExerciseItem(legs);
+    //region Static factory methods
+    public static WorkoutItem createNew(Exercise exercise) {
+        return new WorkoutItem(exercise);
     }
 
+    public static WorkoutItem createNew(ExerciseType exerciseType, String exerciseName) {
+        Exercise exercise = null;
+        switch (exerciseType) {
+            case ARMS:
+                exercise = Exercises.Arms.fromString(exerciseName);
+                break;
+            case ABS:
+                exercise = Exercises.Abs.fromString(exerciseName);
+                break;
+            case CARDIO:
+                exercise = Exercises.Cardio.fromString(exerciseName);
+                break;
+            case LEGS:
+                exercise = Exercises.Legs.fromString(exerciseName);
+                break;
+        }
+        return new WorkoutItem(exercise);
+    }
+
+    public static WorkoutItem getById(Context context, long databaseId) {
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
+        WorkoutItem workoutItem = databaseHelper.getWorkoutById(databaseId);
+        databaseHelper.close();
+        return workoutItem;
+    }
+    //endregion
+
+    //region Getters and setters
     public String getName() {
-        return exercise.getName();
+        return exercise.toString();
+    }
+
+    public Exercise getExercise() {
+        return exercise;
     }
 
     public ExerciseType getType() {
         return exercise.getType();
-    }
-
-    //TODO: Come up with a better way.
-    public void setName(String name) {
-        if (ExerciseName.Abs.fromString(name) != null)
-            this.exercise = new ExerciseItem(ExerciseName.Abs.fromString(name));
-        else {
-            if (ExerciseName.Arms.fromString(name) != null)
-                this.exercise = new ExerciseItem(ExerciseName.Arms.fromString(name));
-            else {
-                if (ExerciseName.Cardio.fromString(name) != null)
-                    this.exercise = new ExerciseItem(ExerciseName.Cardio.fromString(name));
-                else {
-                    if (ExerciseName.Legs.fromString(name) != null)
-                        this.exercise = new ExerciseItem(ExerciseName.Legs.fromString(name));
-                    else {
-                        Log.e(TAG, "Unexpected workout name. No operation made.");
-                    }
-                }
-            }
-        }
     }
 
     public int getID() {
@@ -149,35 +150,29 @@ public class WorkoutItem {
     }
 
     public double calculateMETs() {
-        switch (exercise.getType()) {
-            case CARDIO:
-                switch (exercise.getCardio()) {
-                    case CYCLING:
-                    case ELLIPTICAL:
-                        if (exertionLevel < 2)
-                            return 5.5;
-                        else if (exertionLevel > 2)
-                            return 10.5;
-                        else
-                            return 7;
-                    case RUN:
-                    case JOG:
-                    case WALK:
-                    default:
-                        //miles per hour, multiplied by a factor of 1.6529
-                        if (getTimeSpent() > 0 && distanceCompleted > 0)
-                            return 1.6529 * distanceScheduled / (getTimeSpent() / 60);
-                        else
-                            return -1;
-                }
-            case ARMS:
-            case LEGS:
-            case ABS:
-                if (exertionLevel > 0 && exertionLevel <= 3)
-                    return (exertionLevel * 1.25) + 2.25;
+//        switch (exerciseType) {
+        if (exercise instanceof Exercises.Cardio) {
+            if (exercise == Exercises.Cardio.CYCLING || exercise == Exercises.Cardio.ELLIPTICAL) {
+                if (exertionLevel < 2)
+                    return 5.5;
+                else if (exertionLevel > 2)
+                    return 10.5;
+                else
+                    return 7;
+            } else { //RUN, JOG, WALK
+                //miles per hour, multiplied by a factor of 1.6529
+                if (getTimeSpent() > 0 && distanceCompleted > 0)
+                    return 1.6529 * distanceScheduled / (getTimeSpent() / 60);
                 else
                     return -1;
-            default:
+            }
+        } else if (exercise instanceof Exercises.Arms || exercise instanceof Exercises.Legs ||
+                exercise instanceof Exercises.Abs) {
+            if (exertionLevel > 0 && exertionLevel <= 3)
+                return (exertionLevel * 1.25) + 2.25;
+            else
+                return -1;
+        } else {
                 return -1;
         }
     }
@@ -292,4 +287,12 @@ public class WorkoutItem {
     public void setDateModified(Date dateModified) {
         this.dateModified = dateModified;
     }
+    //endregion
+
+    //region Data methods
+    public int save(Context context, boolean completeInFull) {
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
+        return databaseHelper.completeWorkout(this, completeInFull);
+    }
+    //endregion
 }

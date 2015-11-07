@@ -9,7 +9,7 @@ import android.widget.ListView;
 
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterAdd;
-import com.gymrattrax.scheduler.model.ExerciseName;
+import com.gymrattrax.scheduler.object.Exercises;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,12 +62,12 @@ public class AddWorkoutActivity extends AppCompatActivity implements com.gymratt
     }
 
     public String[] getAllWorkouts() {
-        return ExerciseName.getAllExerciseNames();
+        return Exercises.getAllExerciseNames();
     }
 
     @Override
     public void onButtonClickListener(int position, String value) {
-        if (ExerciseName.Cardio.fromString(value) != null)
+        if (Exercises.Cardio.fromString(value) != null)
             displayCardioDetails(value);
         else
             displayStrengthDetails(value);

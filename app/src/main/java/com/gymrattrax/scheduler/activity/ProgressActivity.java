@@ -1,5 +1,6 @@
 package com.gymrattrax.scheduler.activity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -7,25 +8,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
-
-import java.util.Map;
+import android.widget.Toast;
 
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
+import com.gymrattrax.scheduler.object.WorkoutItem;
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.ValueDependentColor;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
-import com.gymrattrax.scheduler.model.WorkoutItem;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
-import android.graphics.Color;
-import android.widget.Toast;
-
-import com.jjoe64.graphview.ValueDependentColor;
 
 public class ProgressActivity extends AppCompatActivity {
 

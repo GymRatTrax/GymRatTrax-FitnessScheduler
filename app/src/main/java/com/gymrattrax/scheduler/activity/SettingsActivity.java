@@ -13,7 +13,6 @@ import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
 public class SettingsActivity extends AppCompatActivity {
     public static final String TAG = "SettingsActivity";
-    public static final String PREF_DATE_FORMAT          = "pref_date_format";
     public static final String PREF_NOTIFY_ENABLED_ALL   = "pref_notify_enabled_all";
     public static final String PREF_NOTIFY_ENABLED       = "pref_notify_enabled";
     public static final String PREF_NOTIFY_VIBRATE       = "pref_notify_vibrate";
@@ -25,6 +24,8 @@ public class SettingsActivity extends AppCompatActivity {
     public static final String PREF_NOTIFY_WEIGH_INHERIT = "pref_notify_weigh_inherit";
     public static final String PREF_NOTIFY_WEIGH_VIBRATE = "pref_notify_weigh_vibrate";
     public static final String PREF_NOTIFY_WEIGH_TONE    = "pref_notify_weigh_tone";
+    public static final String PREF_UNIT_DISTANCE        = "pref_unit_distance";
+    public static final String PREF_UNIT_WEIGHT          = "pref_unit_weight";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

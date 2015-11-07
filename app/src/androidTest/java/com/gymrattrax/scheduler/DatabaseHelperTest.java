@@ -4,8 +4,9 @@ import android.test.AndroidTestCase;
 import android.test.RenamingDelegatingContext;
 
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.ExerciseName;
-import com.gymrattrax.scheduler.model.WorkoutItem;
+import com.gymrattrax.scheduler.data.DateUtil;
+import com.gymrattrax.scheduler.object.Exercises;
+import com.gymrattrax.scheduler.object.WorkoutItem;
 
 import java.text.ParseException;
 
@@ -28,9 +29,9 @@ public class DatabaseHelperTest extends AndroidTestCase {
     }
 
     private WorkoutItem getWorkout() {
-        WorkoutItem workout = new WorkoutItem(ExerciseName.Abs.CRUNCH);
+        WorkoutItem workout = WorkoutItem.createNew(Exercises.Abs.CRUNCH);
         try {
-            workout.setDateScheduled(dbh.convertDate("2015-03-20 15:00:00.000"));
+            workout.setDateScheduled(DateUtil.convertDate("2015-03-20 15:00:00.000"));
         } catch (ParseException e) {
             e.printStackTrace();
         }

@@ -9,247 +9,95 @@
     android:orientation="vertical"
     android:weightSum="1"
     android:focusable="false">
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="FITNESS PROFILE"
-        android:id="@+id/profile_title"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_row="0"
-        android:layout_column="0"
-        android:textAlignment="center"
-        android:textStyle="bold|italic"
-        android:gravity="center" />
-
-    <LinearLayout
-        android:orientation="horizontal"
+    <GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:weightSum="1"
-        android:paddingBottom="5dp">
-
+        android:rowCount="3"
+        android:columnCount="3"
+        android:orientation="horizontal"
+        android:id="@+id/fitness_profile_grid"
+        android:padding="5dp"
+        android:useDefaultMargins="true">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Name (optional)"
-            android:layout_weight="1" />
-
+            android:text="@string/profile_label_weight"
+            android:id="@+id/textView5"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/profile_weight_previous"/>
         <EditText
-            android:layout_width="126dp"
-            android:layout_height="wrap_content"
-            android:background="#ffffffff"
-            android:inputType="none"
-            android:id="@+id/profile_name"
-            />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:paddingBottom="5dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Birth Date"
-            android:id="@+id/textViewDate"
-            android:layout_weight="0.08" />
-
-        <EditText
-            android:layout_width="126dp"
-            android:layout_height="wrap_content"
-            android:background="#ffffffff"
-            android:inputType="none"
-            android:id="@+id/birth_date"
-            android:focusable="false"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:paddingBottom="5dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Sex"
-            android:id="@+id/profile_sex"
-            android:layout_weight="0.08" />
-
-        <Spinner
-            android:layout_width="127dp"
-            android:layout_height="24dp"
-            android:id="@+id/profile_spinner"
-            android:entries="@array/spinnerSexSelection"
-            android:spinnerMode="dropdown"
-            android:touchscreenBlocksFocus="false" />
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:paddingBottom="5dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Weight (in pounds)"
-            android:id="@+id/textView5"
-            android:layout_weight="0.08" />
-
-        <EditText
-            android:layout_width="126dp"
+            android:layout_width="75dp"
             android:layout_height="wrap_content"
             android:background="#ffffffff"
             android:inputType="none"
             android:id="@+id/profile_weight"
             android:focusable="false"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:paddingBottom="5dp">
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Height (in inches)"
-            android:id="@+id/textView7"
-            android:layout_weight="0.08" />
-
-        <EditText
-            android:layout_width="126dp"
-            android:layout_height="wrap_content"
-            android:background="#ffffffff"
-            android:id="@+id/profile_height"
-            android:inputType="none"
-            android:focusable="false"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:paddingBottom="5dp">
-
+            android:text="@string/profile_label_body_fat"
+            android:id="@+id/textView6"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Body Fat % (Optional)"
-            android:id="@+id/textView6"
-            android:layout_weight="0.08"
-            />
-
+            android:id="@+id/profile_body_fat_previous"/>
         <EditText
-            android:layout_width="126dp"
+            android:layout_width="75dp"
             android:layout_height="wrap_content"
             android:background="#ffffffff"
             android:inputType="none"
-            android:id="@+id/fat_percentage" />
-    </LinearLayout>
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Activity Level"
-        android:id="@+id/textView8" />
-    <RadioGroup
-        android:layout_width="318dp"
-        android:layout_height="wrap_content">
-
-        <RadioButton
+            android:id="@+id/profile_body_fat" />
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Little or No Exercise"
-            android:id="@+id/little_exercise"
-            android:layout_weight="0.08"
-            android:onClick="onRadioButtonClicked"
-            android:checked="false" />
-
-        <RadioButton
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/profile_label_activity_level"
+            android:id="@+id/textView8"
+            android:layout_rowSpan="2"/>
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Light Exercise"
-            android:id="@+id/light_exercise"
-            android:layout_weight="0.08"
-            android:onClick="onRadioButtonClicked"
-            android:checked="false" />
-
-
-        <RadioButton
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/profile_activity_level_previous"/>
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Moderate Exercise"
-            android:id="@+id/mod_exercise"
-            android:layout_weight="0.08"
-            android:onClick="onRadioButtonClicked"
-            android:checked="false" />
-
-        <RadioButton
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/profile_activity_level_new"/>
+        <SeekBar
+            android:layout_height="wrap_content"
+            android:id="@+id/profile_activity_level"
+            android:layout_gravity="center_horizontal"
+            android:max="3"
+            android:progress="1"
+            android:indeterminate="false"
+            android:layout_columnSpan="2"
+            android:layout_width="150sp"/>
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Heavy Exercise"
-            android:id="@+id/heavy_exercise"
-            android:layout_weight="0.08"
-            android:checked="false" />
-
-    </RadioGroup>
-
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/profile_last_updated"
+            android:layout_columnSpan="3"
+            android:text=""/>
+    </GridLayout>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="EDIT"
-        android:id="@+id/EditProfileButton"
+        android:text="@string/profile_label_update"
+        android:id="@+id/update_profile_button"
         android:clickable="true"
-        android:layout_below="@+id/add_workout_strength"
-        android:layout_centerHorizontal="true"
         android:textStyle="bold"
         android:textSize="25sp"
-        android:layout_row="1"
-        android:layout_column="0"
         android:background="@drawable/button_shp_rvrs_press"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="5dp" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="BACK"
-        android:id="@+id/BackProfileButton"
-        android:clickable="true"
-        android:layout_below="@+id/add_workout_strength"
-        android:layout_centerHorizontal="true"
-        android:textStyle="bold"
-        android:textSize="25sp"
-        android:layout_row="1"
-        android:layout_column="0"
-        android:background="@drawable/button_shp_rvrs_press"
-        android:layout_gravity="center_horizontal" />
-
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="10dp"/>
 </LinearLayout>

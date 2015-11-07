@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.WorkoutItem;
+import com.gymrattrax.scheduler.object.WorkoutItem;
 
 public class EditStrengthWorkoutActivity extends AppCompatActivity {
     final DatabaseHelper dbh = new DatabaseHelper(this);
@@ -49,7 +49,7 @@ public class EditStrengthWorkoutActivity extends AppCompatActivity {
         reps.setText("" + repsInt);
         String weightStr;
         if (weightD == 1) {
-            weightStr = "" + weightD + " lb x ";
+            weightStr = "" + weightD + " pound x ";
         } else {
             weightStr = weightD + " lbs x ";
         }

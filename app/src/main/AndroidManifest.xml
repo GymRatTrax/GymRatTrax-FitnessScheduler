@@ -32,21 +32,35 @@
         <meta-data android:name="com.google.android.backup.api_key"
             android:value="AEdPqrEAAAAIRMUjhfF6BPFGCojdMRPTFlwzvHjX9X2VCwoICA" />
         <activity
-            android:name=".activity.HomeScreenActivity"
+            android:name=".activity.LaunchScreenActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
+            android:name=".activity.HomeScreenActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
             android:name=".activity.AddCardioWorkoutActivity"
-            android:label="@string/add_workout_activity_add_cardio" >
+            android:label="@string/add_workout_activity_add_cardio"
+            android:parentActivityName=".activity.AddWorkoutActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.AddWorkoutActivity" />
         </activity>
         <activity
             android:name=".activity.AddStrengthWorkoutActivity"
-            android:label="@string/add_workout_activity_add_strength" >
+            android:label="@string/add_workout_activity_add_strength"
+            android:parentActivityName=".activity.AddWorkoutActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.AddWorkoutActivity" />
         </activity>
         <activity
             android:name=".activity.AddTemplatesActivity"
@@ -58,65 +72,117 @@
         </activity>
         <activity
             android:name=".activity.AddWorkoutActivity"
-            android:label="@string/add_workout_activity" >
+            android:label="@string/add_workout_activity"
+            android:parentActivityName=".activity.ViewScheduleActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.ViewScheduleActivity" />
         </activity>
         <activity
             android:name=".activity.CalorieNegationActivity"
             android:label="@string/title_activity_calorie_negation"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:parentActivityName=".activity.HomeScreenActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.HomeScreenActivity" />
         </activity>
         <activity
             android:name=".activity.CardioWorkoutActivity"
             android:label="@string/title_activity_cardio_workout"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:parentActivityName=".activity.HomeScreenActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.HomeScreenActivity" />
         </activity>
         <activity
             android:name=".activity.CurrentScheduleActivity"
             android:label="Current Schedule"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:parentActivityName=".activity.HomeScreenActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.HomeScreenActivity" />
         </activity>
         <activity
             android:name=".activity.DailyWorkoutActivity"
             android:label="@string/title_activity_daily_workout"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:parentActivityName=".activity.HomeScreenActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.HomeScreenActivity" />
         </activity>
         <activity
             android:name=".activity.DatabaseDebugActivity"
-            android:label="Database Debug" >
+            android:label="Database Debug"
+            android:parentActivityName=".activity.HomeScreenActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.HomeScreenActivity" />
         </activity>
         <activity
             android:name=".activity.HelpActivity"
-            android:label="Help">
+            android:label="Help"
+            android:parentActivityName=".activity.HomeScreenActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.HomeScreenActivity" />
         </activity>
         <activity
             android:name=".activity.EditCardioWorkoutActivity"
-            android:label="Edit Cardio Workout Activity" >
+            android:label="Edit Cardio Workout Activity"
+            android:parentActivityName=".activity.ViewScheduleActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.ViewScheduleActivity" />
         </activity>
         <activity
             android:name=".activity.EditStrengthWorkoutActivity"
-            android:label="Edit Strength Workout Activity" >
+            android:label="Edit Strength Workout Activity"
+            android:parentActivityName=".activity.ViewScheduleActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.ViewScheduleActivity" />
         </activity>
         <activity
             android:name=".activity.ProfileActivity"
             android:label="@string/title_activity_fitness_profile"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:parentActivityName=".activity.HomeScreenActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.HomeScreenActivity" />
         </activity>
         <activity
             android:name=".activity.ProfileSetupActivity"
-            android:label="@string/title_activity_profile_setup" >
+            android:label="@string/title_activity_profile_setup">
         </activity>
         <activity
             android:name=".activity.ProgressActivity"
             android:label="@string/title_activity_view_progress"
-            android:screenOrientation="landscape" >
+            android:screenOrientation="landscape"
+            android:parentActivityName=".activity.HomeScreenActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.HomeScreenActivity" />
         </activity>
         <activity
             android:name=".activity.SelectDateActivity"
-            android:label="@string/select_date_activity" >
+            android:label="@string/select_date_activity"
+            android:parentActivityName=".activity.ViewScheduleActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.ViewScheduleActivity" />
         </activity>
         <activity
             android:name=".activity.SelectTimeActivity"
-            android:label="@string/select_time_activity" >
+            android:label="@string/select_time_activity"
+            android:parentActivityName=".activity.SelectDateActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.SelectDateActivity" />
         </activity>
         <activity
             android:name=".activity.SettingsActivity"
@@ -129,13 +195,21 @@
         </activity>
         <activity
             android:name=".activity.StrengthWorkoutActivity"
-            android:label="@string/title_activity_strength_workout" >
+            android:label="@string/title_activity_strength_workout"
+            android:parentActivityName=".activity.HomeScreenActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.HomeScreenActivity" />
         </activity>
         <activity
             android:name=".activity.FitnessHistoryActivity"
             android:label="@string/title_activity_view_schedule"
             android:screenOrientation="portrait"
-            android:theme="@android:style/android:Theme.Holo.Panel">
+            android:theme="@android:style/android:Theme.Holo.Panel"
+            android:parentActivityName=".activity.HomeScreenActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.HomeScreenActivity" />
         </activity>
         <activity
             android:name=".activity.StatisticsActivity"
@@ -148,12 +222,20 @@
         <activity
             android:name=".activity.ViewScheduleActivity"
             android:label="@string/title_activity_view_schedule"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:parentActivityName=".activity.HomeScreenActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.HomeScreenActivity" />
         </activity>
         <activity
             android:name=".activity.SignInPrefActivity"
             android:label="Sign In Help"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:parentActivityName=".activity.HomeScreenActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.HomeScreenActivity" />
         </activity>
         <receiver android:name=".receiver.NotifyReceiver">
             <intent-filter>

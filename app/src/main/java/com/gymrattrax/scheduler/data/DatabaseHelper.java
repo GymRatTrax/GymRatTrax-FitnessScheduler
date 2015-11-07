@@ -2,22 +2,20 @@ package com.gymrattrax.scheduler.data;
 
 import android.app.backup.BackupManager;
 import android.content.ContentValues;
-import android.content.SharedPreferences;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.content.Context;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.R;
-import com.gymrattrax.scheduler.model.ExerciseName;
-import com.gymrattrax.scheduler.model.WorkoutItem;
-import com.gymrattrax.scheduler.activity.SettingsActivity;
+import com.gymrattrax.scheduler.object.ExerciseType;
+import com.gymrattrax.scheduler.object.ProfileItem;
+import com.gymrattrax.scheduler.object.WorkoutItem;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -46,9 +44,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(DatabaseContract.ProfileTable.CREATE_TABLE);
         db.execSQL(DatabaseContract.WeightTable.CREATE_TABLE);
         db.execSQL(DatabaseContract.WorkoutTable.CREATE_TABLE);
+//        db.execSQL(DatabaseContract.ExerciseTable.CREATE_TABLE);
     }
 
     /**
@@ -63,7 +61,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         for (int i = oldVersion + 1; i <= newVersion; i++) {
             Toast text = Toast.makeText(mContext, "Upgrading database to version " + i + ".",
                     Toast.LENGTH_SHORT);
-            text.show();
+            if (BuildConfig.DEBUG_MODE) text.show();
             switch (i) {
                 case 2:
                     db.execSQL(DatabaseContract.ProfileTable.DELETE_TABLE);
@@ -75,105 +73,58 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     text = Toast.makeText(mContext, "Upgrading database to version 3.", Toast.LENGTH_SHORT);
                     text.show();
                     db.execSQL("ALTER TABLE " + DatabaseContract.WorkoutTable.TABLE_NAME +
-                            " ADD COLUMN " + DatabaseContract.WorkoutTable.COLUMN_NAME_COMPLETE +
+                            " ADD COLUMN " + DatabaseContract.WorkoutTable.COL_COMPLETE +
                             " INTEGER NOT NULL DEFAULT 0");
                     db.execSQL("ALTER TABLE " + DatabaseContract.WorkoutTable.TABLE_NAME +
-                            " ADD COLUMN " +
-                            DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE +
+                            " ADD COLUMN " + DatabaseContract.WorkoutTable.COL_EXERCISE_TYPE +
                             " TEXT NOT NULL DEFAULT 0");
                     db.execSQL("UPDATE " + DatabaseContract.WorkoutTable.TABLE_NAME +
-                            " SET " + DatabaseContract.WorkoutTable.COLUMN_NAME_COMPLETE +
+                            " SET " + DatabaseContract.WorkoutTable.COL_COMPLETE +
                             " = 1 WHERE " +
-                            DatabaseContract.WorkoutTable.COLUMN_NAME_CALORIES_BURNED + " > 0");
+                            DatabaseContract.WorkoutTable.COL_CALORIES_BURNED + " > 0");
                     db.execSQL("ALTER TABLE " + DatabaseContract.WorkoutTable.TABLE_NAME +
-                            " ADD COLUMN " +
-                            DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_MODIFIED +
+                            " ADD COLUMN " + DatabaseContract.WorkoutTable.COL_DATE_MODIFIED +
                             " TEXT NOT NULL DEFAULT 0");
                     db.execSQL("UPDATE " + DatabaseContract.WorkoutTable.TABLE_NAME +
-                            " SET " + DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_MODIFIED +
-                            " = " + DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_SCHEDULED);
+                            " SET " + DatabaseContract.WorkoutTable.COL_DATE_MODIFIED +
+                            " = " + DatabaseContract.WorkoutTable.COL_DATE_SCHEDULED);
                     db.execSQL("UPDATE " + DatabaseContract.WorkoutTable.TABLE_NAME +
-                            " SET " + DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_MODIFIED +
-                            " = " + DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_COMPLETED +
-                            " WHERE " + DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_COMPLETED +
-                            " > " + DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_SCHEDULED);
+                            " SET " + DatabaseContract.WorkoutTable.COL_DATE_MODIFIED +
+                            " = " + DatabaseContract.WorkoutTable.COL_DATE_COMPLETED +
+                            " WHERE " + DatabaseContract.WorkoutTable.COL_DATE_COMPLETED +
+                            " > " + DatabaseContract.WorkoutTable.COL_DATE_SCHEDULED);
                     break;
+                case 4:
+                    ProfileItem profileItem = new ProfileItem(mContext);
+                    Cursor cursor4 = db.rawQuery(
+                            "SELECT * FROM profile WHERE key = \"BIRTH_DATE\"", null);
+                    if (cursor4.moveToFirst())
+                        try {
+                            profileItem.setDateOfBirth(DateUtil.convertDate(cursor4.getString(1)));
+                        } catch (ParseException ignored){}
+                    cursor4 = db.rawQuery("SELECT * FROM profile WHERE key = \"SEX\"", null);
+                    if (cursor4.moveToFirst())
+                        profileItem.setGender(cursor4.getString(1).toUpperCase().charAt(0));
+                    cursor4 = db.rawQuery("SELECT * FROM profile WHERE key = \"HEIGHT\"", null);
+                    if (cursor4.moveToFirst())
+                        profileItem.setHeight(Float.valueOf(cursor4.getString(1)));
+                    cursor4 = db.rawQuery(
+                            "SELECT * FROM profile WHERE key = \"LAST_NOTIFY_WORKOUT\"", null);
+                    if (cursor4.moveToFirst())
+                        profileItem.setLastWorkoutNotification(cursor4.getString(1));
+                    cursor4 = db.rawQuery(
+                            "SELECT * FROM profile WHERE key = \"LAST_NOTIFY_WEIGHT\"", null);
+                    if (cursor4.moveToFirst())
+                        profileItem.setLastWeightNotification(cursor4.getString(1));
+                    db.execSQL(DatabaseContract.ProfileTable.DELETE_TABLE);
+                    cursor4.close();
+                    double[] weightArray = getLatestWeight();
+                    profileItem.setWeight((float)weightArray[0]);
+                    if (weightArray[1] > 0)
+                        profileItem.setBodyFatPercentage((float)weightArray[1]);
+                    profileItem.setActivityLevel((float)weightArray[2]);
             }
         }
-    }
-
-    /**
-     * Returns the stored value associated with a given key in the Profile table.
-     * @param key A String variable of a key in the Profile table. Use
-     *            DatabaseContract.ProfileTable.KEY_<...>.
-     * @return The value in the database that corresponds to the provided key String. If the
-     * provided key is not available in the Profile table, an empty String is returned.
-     */
-    public String getProfileInfo(String key) {
-        String query = "SELECT * FROM " + DatabaseContract.ProfileTable.TABLE_NAME + " WHERE " +
-                DatabaseContract.ProfileTable.COLUMN_NAME_KEY + " =  \"" + key + "\"";
-
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.rawQuery(query, null);
-
-        String value = "";
-        if (cursor.moveToFirst())
-            value = cursor.getString(1);
-        cursor.close();
-        db.close();
-        return value;
-    }
-
-    /**
-     * Sets the value associated with a given key in the Profile table.
-     * @param key A String variable of a key in the Profile table. Use
-     *            DatabaseContract.ProfileTable.KEY_<...>.
-     * @param value The String value to replace the current value for the provided key. If the key
-     *              is not currently in the table, the record will be inserted. If the key does
-     *              exist but contains different data, the record will be updated. If the key does
-     *              exist and contains the same data, no action will be taken. If the key does exist
-     *              and the value is an empty String, the record will be deleted.
-     */
-    public void setProfileInfo(String key, String value) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String query = "SELECT * FROM " + DatabaseContract.ProfileTable.TABLE_NAME + " WHERE " +
-                DatabaseContract.ProfileTable.COLUMN_NAME_KEY + " =  \"" + key + "\"";
-        Cursor cursor = db.rawQuery(query, null);
-        //If the value is empty, we delete the whole record.
-        if (value.trim().isEmpty()) {
-            //Some settings values may be blocked from being deleted.
-            if (cursor.moveToFirst()) {
-                String[] args = new String[1];
-                args[0] = key;
-                db.delete(DatabaseContract.ProfileTable.TABLE_NAME,
-                        DatabaseContract.ProfileTable.COLUMN_NAME_KEY + " = ?", args);
-            }
-        }
-        else {
-            //If we have both a key and a value, then we check to see if the key already exists.
-            ContentValues values = new ContentValues();
-            //If the key DOES already exist, then we update the existing record.
-            if (cursor.moveToFirst()) {
-                //If the key already contains the same value, skip the update operation.
-                if (!value.equals(cursor.getString(1))) {
-                    String[] args = new String[1];
-                    args[0] = key;
-                    values.put(DatabaseContract.ProfileTable.COLUMN_NAME_VALUE, value);
-                    db.update(DatabaseContract.ProfileTable.TABLE_NAME, values,
-                            DatabaseContract.ProfileTable.COLUMN_NAME_KEY + "=?", args);
-                }
-            }
-            //If the key does not exist, then an entirely new record must be created.
-            else {
-                values.put(DatabaseContract.ProfileTable.COLUMN_NAME_KEY, key);
-                values.put(DatabaseContract.ProfileTable.COLUMN_NAME_VALUE, value);
-
-                db.insert(DatabaseContract.ProfileTable.TABLE_NAME, null, values);
-            }
-        }
-        cursor.close();
-        db.close();
     }
 
     /**
@@ -183,7 +134,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     public double[] getLatestWeight() {
         String query = "SELECT * FROM " + DatabaseContract.WeightTable.TABLE_NAME + " ORDER BY " +
-                DatabaseContract.WeightTable.COLUMN_NAME_DATE + " DESC";
+                DatabaseContract.WeightTable.COL_DATE + " DESC";
 
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -219,9 +170,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String toStr = dateFormat.format(to) + " 23:59:59.999";
 
         String query = "SELECT * FROM " + DatabaseContract.WeightTable.TABLE_NAME + " WHERE " +
-                DatabaseContract.WeightTable.COLUMN_NAME_DATE + " >=  \"" + fromStr + "\" AND " +
-                DatabaseContract.WeightTable.COLUMN_NAME_DATE + " <=  \"" + toStr + "\" ORDER BY " +
-                DatabaseContract.WeightTable.COLUMN_NAME_DATE;
+                DatabaseContract.WeightTable.COL_DATE + " >=  \"" + fromStr + "\" AND " +
+                DatabaseContract.WeightTable.COL_DATE + " <=  \"" + toStr + "\" ORDER BY " +
+                DatabaseContract.WeightTable.COL_DATE;
 
         SQLiteDatabase db = this.getReadableDatabase();
 
@@ -231,7 +182,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         while (cursor.moveToNext()) {
             Date d1;
             try {
-                d1 = convertDate(cursor.getString(0));
+                d1 = DateUtil.convertDate(cursor.getString(0));
             } catch (ParseException e) {
                 Calendar cal = new GregorianCalendar();
                 d1 = cal.getTime();
@@ -243,29 +194,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return values;
     }
 
-    public void addWeight(double weight, double bodyFat, double activityLevel) {
+    /**
+     * Add a new weight set to the database
+     * @param weight The current weight value in pounds.
+     * @param bodyFat The current body fat percentage. Pass in -1 if not provided.
+     * @param activityLevel The value of the current activity level.
+     * @return The timestamp of the updated record. An empty string is returned if no database
+     * update was conducted.
+     */
+    public String addWeight(double weight, double bodyFat, double activityLevel) {
         /*
         bodyFat is optional. To make bodyFat NULL, pass in a non-positive value.
          */
         double[] old = getLatestWeight();
+        String timestamp = "";
         if (weight != old[0] || bodyFat != old[1] || activityLevel != old[2]) {
-            String timestamp = now();
+            timestamp = DateUtil.now();
             SQLiteDatabase db = this.getWritableDatabase();
 
             ContentValues values = new ContentValues();
-            values.put(DatabaseContract.WeightTable.COLUMN_NAME_DATE, timestamp);
-            values.put(DatabaseContract.WeightTable.COLUMN_NAME_WEIGHT, weight);
+            values.put(DatabaseContract.WeightTable.COL_DATE, timestamp);
+            values.put(DatabaseContract.WeightTable.COL_WEIGHT, weight);
             if (bodyFat > 0)
-                values.put(DatabaseContract.WeightTable.COLUMN_NAME_BODY_FAT_PERCENTAGE, bodyFat);
+                values.put(DatabaseContract.WeightTable.COL_BODY_FAT_PERCENTAGE, bodyFat);
             else
-                values.putNull(DatabaseContract.WeightTable.COLUMN_NAME_BODY_FAT_PERCENTAGE);
-            values.put(DatabaseContract.WeightTable.COLUMN_NAME_ACTIVITY_LEVEL, activityLevel);
+                values.putNull(DatabaseContract.WeightTable.COL_BODY_FAT_PERCENTAGE);
+            values.put(DatabaseContract.WeightTable.COL_ACTIVITY_LEVEL, activityLevel);
 
-            db.insert(DatabaseContract.WeightTable.TABLE_NAME, null, values);
+            long result = db.insert(DatabaseContract.WeightTable.TABLE_NAME, null, values);
+            if (result < 0)
+                timestamp = "";
 
             db.close();
         }
         requestBackup();
+        return timestamp;
     }
 
     /**
@@ -281,69 +244,69 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
 
-        values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_NAME, workoutItem.getName());
-        values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE,
+        values.put(DatabaseContract.WorkoutTable.COL_EXERCISE_NAME, workoutItem.getName());
+        values.put(DatabaseContract.WorkoutTable.COL_EXERCISE_TYPE,
                 workoutItem.getType().getChar());
         if (workoutItem.isComplete())
-            values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_COMPLETE, 1);
+            values.put(DatabaseContract.WorkoutTable.COL_COMPLETE, 1);
         else
-            values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_COMPLETE, 0);
-        values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_SCHEDULED,
-                convertDate(workoutItem.getDateScheduled()));
+            values.put(DatabaseContract.WorkoutTable.COL_COMPLETE, 0);
+        values.put(DatabaseContract.WorkoutTable.COL_DATE_SCHEDULED,
+                DateUtil.convertDate(workoutItem.getDateScheduled()));
         Calendar now = Calendar.getInstance();
-        values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_MODIFIED,
-                convertDate(now.getTime()));
+        values.put(DatabaseContract.WorkoutTable.COL_DATE_MODIFIED,
+                DateUtil.convertDate(now.getTime()));
 
         switch (workoutItem.getType()) {
             case CARDIO:
-                values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_CARDIO_DISTANCE_SCHEDULED,
+                values.put(DatabaseContract.WorkoutTable.COL_CARDIO_DISTANCE_SCHEDULED,
                         workoutItem.getDistanceScheduled());
-                values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_CARDIO_DISTANCE_COMPLETED,
+                values.put(DatabaseContract.WorkoutTable.COL_CARDIO_DISTANCE_COMPLETED,
                         workoutItem.getDistanceCompleted());
                 break;
             case ABS:
             case ARMS:
             case LEGS:
-                values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_REPS_SCHEDULED,
+                values.put(DatabaseContract.WorkoutTable.COL_STRENGTH_REPS_SCHEDULED,
                         workoutItem.getRepsScheduled());
-                values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_SETS_SCHEDULED,
+                values.put(DatabaseContract.WorkoutTable.COL_STRENGTH_SETS_SCHEDULED,
                         workoutItem.getSetsScheduled());
-                values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_REPS_COMPLETED,
+                values.put(DatabaseContract.WorkoutTable.COL_STRENGTH_REPS_COMPLETED,
                         workoutItem.getRepsCompleted());
-                values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_SETS_COMPLETED,
+                values.put(DatabaseContract.WorkoutTable.COL_STRENGTH_SETS_COMPLETED,
                         workoutItem.getSetsCompleted());
-                values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_WEIGHT,
+                values.put(DatabaseContract.WorkoutTable.COL_STRENGTH_WEIGHT,
                         workoutItem.getWeightUsed());
                 break;
         }
-        values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_TIME_SCHEDULED,
+        values.put(DatabaseContract.WorkoutTable.COL_TIME_SCHEDULED,
                 workoutItem.getTimeScheduled());
-        values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_TIME_SPENT, workoutItem.getTimeSpent());
+        values.put(DatabaseContract.WorkoutTable.COL_TIME_SPENT, workoutItem.getTimeSpent());
 
         if (workoutItem.isNotificationDefault()) {
-            values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_DEFAULT, 1);
-            values.putNull(DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_ENABLED);
-            values.putNull(DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_VIBRATE);
-            values.putNull(DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_ADVANCE);
-            values.putNull(DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_TONE);
+            values.put(DatabaseContract.WorkoutTable.COL_NOTIFY_DEFAULT, 1);
+            values.putNull(DatabaseContract.WorkoutTable.COL_NOTIFY_ENABLED);
+            values.putNull(DatabaseContract.WorkoutTable.COL_NOTIFY_VIBRATE);
+            values.putNull(DatabaseContract.WorkoutTable.COL_NOTIFY_ADVANCE);
+            values.putNull(DatabaseContract.WorkoutTable.COL_NOTIFY_TONE);
         }
         else {
-            values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_DEFAULT, 0);
+            values.put(DatabaseContract.WorkoutTable.COL_NOTIFY_DEFAULT, 0);
             if (workoutItem.isNotificationEnabled())
-                values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_ENABLED, 1);
+                values.put(DatabaseContract.WorkoutTable.COL_NOTIFY_ENABLED, 1);
             else
-                values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_ENABLED, 0);
+                values.put(DatabaseContract.WorkoutTable.COL_NOTIFY_ENABLED, 0);
             if (workoutItem.isNotificationVibrate())
-                values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_VIBRATE, 1);
+                values.put(DatabaseContract.WorkoutTable.COL_NOTIFY_VIBRATE, 1);
             else
-                values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_VIBRATE, 0);
-            values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_ADVANCE,
+                values.put(DatabaseContract.WorkoutTable.COL_NOTIFY_VIBRATE, 0);
+            values.put(DatabaseContract.WorkoutTable.COL_NOTIFY_ADVANCE,
                     workoutItem.getNotificationMinutesInAdvance());
             if (workoutItem.getNotificationTone() != null) {
-                values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_TONE,
+                values.put(DatabaseContract.WorkoutTable.COL_NOTIFY_TONE,
                         workoutItem.getNotificationTone().toString());
             } else {
-                values.putNull(DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_TONE);
+                values.putNull(DatabaseContract.WorkoutTable.COL_NOTIFY_TONE);
             }
         }
 
@@ -387,7 +350,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public WorkoutItem[] getWorkoutsForToday() {
         Calendar cal = new GregorianCalendar();
-        return getWorkoutsInRange(cal.getTime(),cal.getTime());
+        return getWorkoutsInRange(cal.getTime(), cal.getTime());
     }
 
     /**
@@ -406,9 +369,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String endStr = dateFormat.format(end) + " 23:59:59.999";
 
         String query = "SELECT * FROM " + DatabaseContract.WorkoutTable.TABLE_NAME + " WHERE " +
-                DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_SCHEDULED + " >=  \"" + startStr + "\" AND " +
-                DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_SCHEDULED + " <=  \"" + endStr + "\" ORDER BY " +
-                DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_SCHEDULED;
+                DatabaseContract.WorkoutTable.COL_DATE_SCHEDULED + " >=  \"" + startStr + "\" AND " +
+                DatabaseContract.WorkoutTable.COL_DATE_SCHEDULED + " <=  \"" + endStr + "\" ORDER BY " +
+                DatabaseContract.WorkoutTable.COL_DATE_SCHEDULED;
 
         return storeWorkouts(query);
     }
@@ -439,15 +402,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return null;
     }
 
-    /**
-     * @deprecated Synonym for
-     * {@link com.gymrattrax.scheduler.data.DatabaseHelper#completeWorkout(com.gymrattrax.scheduler.model.WorkoutItem, boolean)}
-     * where {@code completeInFull} is set to {@code true}.
-     */
-    @Deprecated
-    public int completeWorkout(WorkoutItem workout) {
-        return completeWorkout(workout, true);
-    }
     public int completeWorkout(WorkoutItem workout, boolean completeInFull) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -455,35 +409,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Calendar cal = Calendar.getInstance();
         Date date = cal.getTime();
-        String dateStr = convertDate(date);
+        String dateStr = DateUtil.convertDate(date);
         workout.setDateCompleted(date);
         if (completeInFull) {
             workout.setComplete(true);
-            values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_COMPLETE, 1);
+            values.put(DatabaseContract.WorkoutTable.COL_COMPLETE, 1);
         }
-        values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_COMPLETED, dateStr);
-        values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_CALORIES_BURNED,
+        values.put(DatabaseContract.WorkoutTable.COL_DATE_COMPLETED, dateStr);
+        values.put(DatabaseContract.WorkoutTable.COL_CALORIES_BURNED,
                 String.valueOf(workout.getCaloriesBurned()));
 
         switch (workout.getType()) {
             case CARDIO:
-                values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_CARDIO_DISTANCE_COMPLETED,
+                values.put(DatabaseContract.WorkoutTable.COL_CARDIO_DISTANCE_COMPLETED,
                         workout.getDistanceScheduled());
                 break;
             case ABS:
             case ARMS:
             case LEGS:
-                values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_REPS_COMPLETED,
+                values.put(DatabaseContract.WorkoutTable.COL_STRENGTH_REPS_COMPLETED,
                         workout.getRepsCompleted());
-                values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_SETS_COMPLETED,
+                values.put(DatabaseContract.WorkoutTable.COL_STRENGTH_SETS_COMPLETED,
                         workout.getSetsCompleted());
                 break;
         }
-        values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_TIME_SCHEDULED,
+        values.put(DatabaseContract.WorkoutTable.COL_TIME_SCHEDULED,
                 String.valueOf(workout.getTimeScheduled()));
-        values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_TIME_SPENT,
+        values.put(DatabaseContract.WorkoutTable.COL_TIME_SPENT,
                 String.valueOf(workout.getTimeSpent()));
-        values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_EXERTION_LEVEL,
+        values.put(DatabaseContract.WorkoutTable.COL_EXERTION_LEVEL,
                 String.valueOf(workout.getExertionLevel()));
 
         String[] args = new String[1];
@@ -502,28 +456,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
 
-        values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_CALORIES_BURNED,
+        values.put(DatabaseContract.WorkoutTable.COL_CALORIES_BURNED,
                 String.valueOf(workout.getCaloriesBurned()));
 
         switch (workout.getType()) {
             case CARDIO:
-                values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_CARDIO_DISTANCE_COMPLETED,
+                values.put(DatabaseContract.WorkoutTable.COL_CARDIO_DISTANCE_COMPLETED,
                         workout.getDistanceScheduled());
                 break;
             case ABS:
             case ARMS:
             case LEGS:
-                values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_REPS_COMPLETED,
+                values.put(DatabaseContract.WorkoutTable.COL_STRENGTH_REPS_COMPLETED,
                         workout.getRepsCompleted());
-                values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_SETS_COMPLETED,
+                values.put(DatabaseContract.WorkoutTable.COL_STRENGTH_SETS_COMPLETED,
                         workout.getSetsCompleted());
                 break;
         }
-        values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_TIME_SCHEDULED,
+        values.put(DatabaseContract.WorkoutTable.COL_TIME_SCHEDULED,
                 String.valueOf(workout.getTimeScheduled()));
-        values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_TIME_SPENT,
+        values.put(DatabaseContract.WorkoutTable.COL_TIME_SPENT,
                 String.valueOf(workout.getTimeSpent()));
-        values.put(DatabaseContract.WorkoutTable.COLUMN_NAME_EXERTION_LEVEL,
+        values.put(DatabaseContract.WorkoutTable.COL_EXERTION_LEVEL,
                 String.valueOf(workout.getExertionLevel()));
 
         String[] args = new String[1];
@@ -535,56 +489,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
 
         return result;
-    }
-
-    public Date convertDate(String d) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
-        return sdf.parse(d);
-    }
-    public String convertDate(Date d) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
-        return sdf.format(d);
-    }
-
-    /**
-     * Displays a passed in Date value (date only) according to the preferred date format.
-     * @param context The Context that will be passed into the getDefaultSharedPreferences routine.
-     * @param date The Date that will be displayed.
-     * @return A String value that represents the passed in date according to the preferred format.
-     * @see DatabaseHelper#displayDateTime(android.content.Context,
-     * java.util.Date) displayDateTime returns a formatted string that includes the time value.
-     */
-    public String displayDate(Context context, Date date) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        String dateFormat = sharedPref.getString(SettingsActivity.PREF_DATE_FORMAT, "");
-        if (dateFormat.trim().isEmpty())
-            dateFormat = "MM/dd/yyyy";
-        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat, Locale.US);
-        return sdf.format(date);
-    }
-
-    /**
-     * Displays a passed in Date value (date with time) according to the preferred date format.
-     * @param context The Context that will be passed into the getDefaultSharedPreferences routine.
-     * @param date The Date that will be displayed.
-     * @return A String value that represents the passed in date (Date with time) according to the
-     * preferred format.
-     * @see DatabaseHelper#displayDate(android.content.Context, java.util.Date)
-     * displayDate returns a formatted string that does not also include any time value.
-     */
-    public String displayDateTime(Context context, Date date) {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
-        String dateFormat = sharedPref.getString(SettingsActivity.PREF_DATE_FORMAT, "");
-        if (dateFormat.trim().isEmpty())
-            dateFormat = "MM/dd/yyyy";
-        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat + " hh:mm a", Locale.US);
-        return sdf.format(date);
-    }
-
-    public String now() {
-        Calendar cal = new GregorianCalendar();
-        Date dat = cal.getTime();
-        return convertDate(dat);
     }
 
     public String[][] debugRawQuery(String table) {
@@ -632,86 +536,63 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         while (cursor.moveToNext()) {
             //initialize, parameters
             switch (cursor.getString(cursor.getColumnIndex(
-                    DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE))) {
+                    DatabaseContract.WorkoutTable.COL_EXERCISE_TYPE))) {
                 case "A":
-                    workouts[i] = new WorkoutItem(ExerciseName.Arms.fromString(
+                    workouts[i] = WorkoutItem.createNew(ExerciseType.ARMS,
                             cursor.getString(cursor.getColumnIndex(
-                                    DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_NAME))));
+                                    DatabaseContract.WorkoutTable.COL_EXERCISE_NAME)));
                     workouts[i].setRepsScheduled(cursor.getInt(cursor.getColumnIndex(
-                            DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_REPS_SCHEDULED)));
+                            DatabaseContract.WorkoutTable.COL_STRENGTH_REPS_SCHEDULED)));
                     workouts[i].setRepsCompleted(cursor.getInt(cursor.getColumnIndex(
-                            DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_REPS_COMPLETED)));
+                            DatabaseContract.WorkoutTable.COL_STRENGTH_REPS_COMPLETED)));
                     workouts[i].setSetsScheduled(cursor.getInt(cursor.getColumnIndex(
-                            DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_SETS_SCHEDULED)));
+                            DatabaseContract.WorkoutTable.COL_STRENGTH_SETS_SCHEDULED)));
                     workouts[i].setSetsCompleted(cursor.getInt(cursor.getColumnIndex(
-                            DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_SETS_COMPLETED)));
+                            DatabaseContract.WorkoutTable.COL_STRENGTH_SETS_COMPLETED)));
                     workouts[i].setWeightUsed(cursor.getDouble(cursor.getColumnIndex(
-                            DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_WEIGHT)));
+                            DatabaseContract.WorkoutTable.COL_STRENGTH_WEIGHT)));
                     break;
                 case "B":
-                    workouts[i] = new WorkoutItem(ExerciseName.Abs.fromString(
+                    workouts[i] = WorkoutItem.createNew(ExerciseType.ABS,
                             cursor.getString(cursor.getColumnIndex(
-                                    DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_NAME))));
+                                    DatabaseContract.WorkoutTable.COL_EXERCISE_NAME)));
                     workouts[i].setRepsScheduled(cursor.getInt(cursor.getColumnIndex(
-                            DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_REPS_SCHEDULED)));
+                            DatabaseContract.WorkoutTable.COL_STRENGTH_REPS_SCHEDULED)));
                     workouts[i].setRepsCompleted(cursor.getInt(cursor.getColumnIndex(
-                            DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_REPS_COMPLETED)));
+                            DatabaseContract.WorkoutTable.COL_STRENGTH_REPS_COMPLETED)));
                     workouts[i].setSetsScheduled(cursor.getInt(cursor.getColumnIndex(
-                            DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_SETS_SCHEDULED)));
+                            DatabaseContract.WorkoutTable.COL_STRENGTH_SETS_SCHEDULED)));
                     workouts[i].setSetsCompleted(cursor.getInt(cursor.getColumnIndex(
-                            DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_SETS_COMPLETED)));
+                            DatabaseContract.WorkoutTable.COL_STRENGTH_SETS_COMPLETED)));
                     workouts[i].setWeightUsed(cursor.getDouble(cursor.getColumnIndex(
-                            DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_WEIGHT)));
+                            DatabaseContract.WorkoutTable.COL_STRENGTH_WEIGHT)));
                     break;
                 case "C":
-                    workouts[i] = new WorkoutItem(ExerciseName.Cardio.fromString(
+                    workouts[i] = WorkoutItem.createNew(ExerciseType.CARDIO,
                             cursor.getString(cursor.getColumnIndex(
-                                    DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_NAME))));
+                                    DatabaseContract.WorkoutTable.COL_EXERCISE_NAME)));
                     workouts[i].setDistanceScheduled(cursor.getDouble(cursor.getColumnIndex(
-                            DatabaseContract.WorkoutTable.COLUMN_NAME_CARDIO_DISTANCE_SCHEDULED)));
+                            DatabaseContract.WorkoutTable.COL_CARDIO_DISTANCE_SCHEDULED)));
                     workouts[i].setDistanceCompleted(cursor.getDouble(cursor.getColumnIndex(
-                            DatabaseContract.WorkoutTable.COLUMN_NAME_CARDIO_DISTANCE_COMPLETED)));
+                            DatabaseContract.WorkoutTable.COL_CARDIO_DISTANCE_COMPLETED)));
                     break;
                 case "L":
-                    workouts[i] = new WorkoutItem(ExerciseName.Legs.fromString(
+                    workouts[i] = WorkoutItem.createNew(ExerciseType.LEGS,
                             cursor.getString(cursor.getColumnIndex(
-                                    DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_NAME))));
+                                    DatabaseContract.WorkoutTable.COL_EXERCISE_NAME)));
                     workouts[i].setRepsScheduled(cursor.getInt(cursor.getColumnIndex(
-                            DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_REPS_SCHEDULED)));
+                            DatabaseContract.WorkoutTable.COL_STRENGTH_REPS_SCHEDULED)));
                     workouts[i].setRepsCompleted(cursor.getInt(cursor.getColumnIndex(
-                            DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_REPS_COMPLETED)));
+                            DatabaseContract.WorkoutTable.COL_STRENGTH_REPS_COMPLETED)));
                     workouts[i].setSetsScheduled(cursor.getInt(cursor.getColumnIndex(
-                            DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_SETS_SCHEDULED)));
+                            DatabaseContract.WorkoutTable.COL_STRENGTH_SETS_SCHEDULED)));
                     workouts[i].setSetsCompleted(cursor.getInt(cursor.getColumnIndex(
-                            DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_SETS_COMPLETED)));
+                            DatabaseContract.WorkoutTable.COL_STRENGTH_SETS_COMPLETED)));
                     workouts[i].setWeightUsed(cursor.getDouble(cursor.getColumnIndex(
-                            DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_WEIGHT)));
+                            DatabaseContract.WorkoutTable.COL_STRENGTH_WEIGHT)));
                     break;
                 default:
-                    workouts[i] = new WorkoutItem(cursor.getString(cursor.getColumnIndex(
-                            DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_NAME)));
-                    switch (workouts[i].getType()) {
-                        case CARDIO:
-                            workouts[i].setDistanceScheduled(cursor.getDouble(cursor.getColumnIndex(
-                                    DatabaseContract.WorkoutTable.COLUMN_NAME_CARDIO_DISTANCE_SCHEDULED)));
-                            workouts[i].setDistanceCompleted(cursor.getDouble(cursor.getColumnIndex(
-                                    DatabaseContract.WorkoutTable.COLUMN_NAME_CARDIO_DISTANCE_COMPLETED)));
-                            break;
-                        case ARMS:
-                        case ABS:
-                        case LEGS:
-                            workouts[i].setRepsScheduled(cursor.getInt(cursor.getColumnIndex(
-                                    DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_REPS_SCHEDULED)));
-                            workouts[i].setRepsCompleted(cursor.getInt(cursor.getColumnIndex(
-                                    DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_REPS_COMPLETED)));
-                            workouts[i].setSetsScheduled(cursor.getInt(cursor.getColumnIndex(
-                                    DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_SETS_SCHEDULED)));
-                            workouts[i].setSetsCompleted(cursor.getInt(cursor.getColumnIndex(
-                                    DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_SETS_COMPLETED)));
-                            workouts[i].setWeightUsed(cursor.getDouble(cursor.getColumnIndex(
-                                    DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_WEIGHT)));
-                            break;
-                    }
+                    workouts[i] = null;
                     Log.e(TAG, "In storeWorkouts, deprecated procedure is being used. Workout " +
                             "should be updated with updateWorkout to avoid potential future " +
                             "compatibility issues.");
@@ -719,26 +600,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             //id
             workouts[i].setID(cursor.getInt(cursor.getColumnIndex(DatabaseContract.WorkoutTable._ID)));
-            workouts[i].setComplete(cursor.getInt(cursor.getColumnIndex(DatabaseContract.WorkoutTable.COLUMN_NAME_COMPLETE)) == 1);
+            workouts[i].setComplete(cursor.getInt(cursor.getColumnIndex(DatabaseContract.WorkoutTable.COL_COMPLETE)) == 1);
 
             //date
             try {
-                workouts[i].setDateScheduled(convertDate(cursor.getString(cursor.getColumnIndex(
-                        DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_SCHEDULED))));
+                workouts[i].setDateScheduled(DateUtil.convertDate(cursor.getString(cursor.getColumnIndex(
+                        DatabaseContract.WorkoutTable.COL_DATE_SCHEDULED))));
             } catch (ParseException e) {
                 Calendar cal = Calendar.getInstance();
                 workouts[i].setDateScheduled(cal.getTime());
             } try {
-                workouts[i].setDateModified(convertDate(cursor.getString(cursor.getColumnIndex(
-                        DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_MODIFIED))));
+                workouts[i].setDateModified(DateUtil.convertDate(cursor.getString(cursor.getColumnIndex(
+                        DatabaseContract.WorkoutTable.COL_DATE_MODIFIED))));
             } catch (ParseException e) {
                 Calendar cal = Calendar.getInstance();
                 workouts[i].setDateModified(cal.getTime());
             } try {
                 if (!cursor.isNull(cursor.getColumnIndex(
-                        DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_COMPLETED))) {
-                    workouts[i].setDateCompleted(convertDate(cursor.getString(cursor.getColumnIndex(
-                            DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_COMPLETED))));
+                        DatabaseContract.WorkoutTable.COL_DATE_COMPLETED))) {
+                    workouts[i].setDateCompleted(DateUtil.convertDate(cursor.getString(cursor.getColumnIndex(
+                            DatabaseContract.WorkoutTable.COL_DATE_COMPLETED))));
                 }
             } catch (ParseException e) {
                 workouts[i].setDateCompleted(null);
@@ -746,29 +627,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             //calories
             workouts[i].setCaloriesBurned(cursor.getDouble(cursor.getColumnIndex(
-                    DatabaseContract.WorkoutTable.COLUMN_NAME_CALORIES_BURNED)));
+                    DatabaseContract.WorkoutTable.COL_CALORIES_BURNED)));
             //time
             workouts[i].setTimeScheduled(cursor.getDouble(cursor.getColumnIndex(
-                    DatabaseContract.WorkoutTable.COLUMN_NAME_TIME_SCHEDULED)));
+                    DatabaseContract.WorkoutTable.COL_TIME_SCHEDULED)));
             workouts[i].setTimeSpent(cursor.getDouble(cursor.getColumnIndex(
-                    DatabaseContract.WorkoutTable.COLUMN_NAME_TIME_SPENT)));
+                    DatabaseContract.WorkoutTable.COL_TIME_SPENT)));
             workouts[i].setExertionLevel(cursor.getInt(cursor.getColumnIndex(
-                    DatabaseContract.WorkoutTable.COLUMN_NAME_EXERTION_LEVEL)));
+                    DatabaseContract.WorkoutTable.COL_EXERTION_LEVEL)));
 
 
             if (cursor.getInt(cursor.getColumnIndex(
-                    DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_DEFAULT)) > 0) {
+                    DatabaseContract.WorkoutTable.COL_NOTIFY_DEFAULT)) > 0) {
                 workouts[i].setNotificationDefault(true);
             } else {
                 workouts[i].setNotificationDefault(true);
                 workouts[i].setNotificationEnabled(cursor.getInt(cursor.getColumnIndex(
-                        DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_ENABLED)) == 1);
+                        DatabaseContract.WorkoutTable.COL_NOTIFY_ENABLED)) == 1);
                 workouts[i].setNotificationVibrate(cursor.getInt(cursor.getColumnIndex(
-                        DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_VIBRATE)) == 1);
+                        DatabaseContract.WorkoutTable.COL_NOTIFY_VIBRATE)) == 1);
                 workouts[i].setNotificationMinutesInAdvance(cursor.getInt(cursor.getColumnIndex(
-                        DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_ADVANCE)));
+                        DatabaseContract.WorkoutTable.COL_NOTIFY_ADVANCE)));
                 String uriString = (cursor.getString(cursor.getColumnIndex(
-                        DatabaseContract.WorkoutTable.COLUMN_NAME_NOTIFY_TONE)));
+                        DatabaseContract.WorkoutTable.COL_NOTIFY_TONE)));
                 try {
                     workouts[i].setNotificationTone(Uri.parse(uriString));
                 } catch (NullPointerException ex) {
@@ -798,11 +679,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String startStr = dateFormat.format(lastWk) + " 00:00:00.000";
         String endStr = dateFormat.format(now) + " 23:59:59.999";
 
-        String query = "SELECT " + DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE + ", COUNT(*)" +
+        String query = "SELECT " + DatabaseContract.WorkoutTable.COL_EXERCISE_TYPE + ", COUNT(*)" +
                 " FROM " + DatabaseContract.WorkoutTable.TABLE_NAME +
-                " WHERE " + DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_SCHEDULED + " >=  \"" + startStr +
-                "\" AND " + DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_SCHEDULED + " <=  \"" + endStr +
-                "\" GROUP BY " + DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE;
+                " WHERE " + DatabaseContract.WorkoutTable.COL_DATE_SCHEDULED + " >=  \"" + startStr +
+                "\" AND " + DatabaseContract.WorkoutTable.COL_DATE_SCHEDULED + " <=  \"" + endStr +
+                "\" GROUP BY " + DatabaseContract.WorkoutTable.COL_EXERCISE_TYPE;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
@@ -836,6 +717,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return achievements;
     }
 
+    //TODO: Fix this method
     public Map<String,String> getStatistics() {
         Map<String,String> statistics = new HashMap<>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
@@ -846,10 +728,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         //complete
-        String query = "SELECT " + DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE + ", COUNT(*)" +
+        String query = "SELECT " + DatabaseContract.WorkoutTable.COL_EXERCISE_TYPE + ", COUNT(*)" +
                 " FROM " + DatabaseContract.WorkoutTable.TABLE_NAME +
-                " WHERE " + DatabaseContract.WorkoutTable.COLUMN_NAME_COMPLETE + " =  1 GROUP BY " +
-                DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE;
+                " WHERE " + DatabaseContract.WorkoutTable.COL_COMPLETE + " =  1 GROUP BY " +
+                DatabaseContract.WorkoutTable.COL_EXERCISE_TYPE;
         Cursor cursor = db.rawQuery(query, null);
         int completed = 0;
         int completedAbs = 0;
@@ -890,11 +772,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         statistics.put("stats_overall_percent", decimalFormat.format((double) completed / completed));
 
         //proposed & commitment
-        query = "SELECT " + DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE + ", COUNT(*)" +
+        query = "SELECT " + DatabaseContract.WorkoutTable.COL_EXERCISE_TYPE + ", COUNT(*)" +
                 " FROM " + DatabaseContract.WorkoutTable.TABLE_NAME +
-                " WHERE " + DatabaseContract.WorkoutTable.COLUMN_NAME_DATE_SCHEDULED + " <=  \"" +
-                endStr + "\" AND " + DatabaseContract.WorkoutTable.COLUMN_NAME_COMPLETE +
-                " =  0 GROUP BY " + DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE;
+                " WHERE " + DatabaseContract.WorkoutTable.COL_DATE_SCHEDULED + " <=  \"" +
+                endStr + "\" AND " + DatabaseContract.WorkoutTable.COL_COMPLETE +
+                " =  0 GROUP BY " + DatabaseContract.WorkoutTable.COL_EXERCISE_TYPE;
         cursor = db.rawQuery(query, null);
         int proposed = completed;
         int proposedAbs = completedAbs;
@@ -955,17 +837,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         //parameters
-        query = "SELECT " + DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE + ", SUM(" +
-                DatabaseContract.WorkoutTable.COLUMN_NAME_CARDIO_DISTANCE_SCHEDULED + "),SUM(" +
-                DatabaseContract.WorkoutTable.COLUMN_NAME_CARDIO_DISTANCE_COMPLETED + "),AVG(" +
-                DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_WEIGHT + "),SUM(" +
-                DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_REPS_SCHEDULED + "),SUM(" +
-                DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_REPS_COMPLETED + "),SUM(" +
-                DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_SETS_SCHEDULED + "),SUM(" +
-                DatabaseContract.WorkoutTable.COLUMN_NAME_STRENGTH_SETS_COMPLETED + ")" +
+        query = "SELECT " + DatabaseContract.WorkoutTable.COL_EXERCISE_TYPE + ", SUM(" +
+                DatabaseContract.WorkoutTable.COL_CARDIO_DISTANCE_SCHEDULED + "),SUM(" +
+                DatabaseContract.WorkoutTable.COL_CARDIO_DISTANCE_COMPLETED + "),AVG(" +
+                DatabaseContract.WorkoutTable.COL_STRENGTH_WEIGHT + "),SUM(" +
+                DatabaseContract.WorkoutTable.COL_STRENGTH_REPS_SCHEDULED + "),SUM(" +
+                DatabaseContract.WorkoutTable.COL_STRENGTH_REPS_COMPLETED + "),SUM(" +
+                DatabaseContract.WorkoutTable.COL_STRENGTH_SETS_SCHEDULED + "),SUM(" +
+                DatabaseContract.WorkoutTable.COL_STRENGTH_SETS_COMPLETED + ")" +
                 " FROM " + DatabaseContract.WorkoutTable.TABLE_NAME + " WHERE " +
-                DatabaseContract.WorkoutTable.COLUMN_NAME_COMPLETE + " =  1 GROUP BY " +
-                DatabaseContract.WorkoutTable.COLUMN_NAME_EXERCISE_TYPE;
+                DatabaseContract.WorkoutTable.COL_COMPLETE + " =  1 GROUP BY " +
+                DatabaseContract.WorkoutTable.COL_EXERCISE_TYPE;
         cursor = db.rawQuery(query, null);
         double distanceScheduled = 0;
         double distanceCompleted = 0;

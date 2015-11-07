@@ -5,7 +5,7 @@ import android.test.RenamingDelegatingContext;
 
 import com.gymrattrax.scheduler.data.DatabaseContract;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.ProfileItem;
+import com.gymrattrax.scheduler.object.ProfileItem;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -73,6 +73,5 @@ public class WeightsTest extends AndroidTestCase {
         dbh.addWeight(weight, -1, DatabaseContract.WeightTable.ACT_LVL_MOD);
         Map<Date, Double> weightsNew = dbh.getWeights(lastWeek.getTime(), today.getTime());
         assertEquals (weights.size(), weightsNew.size());
-
    }
 }

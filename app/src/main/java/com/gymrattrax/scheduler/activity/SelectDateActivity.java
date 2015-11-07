@@ -10,7 +10,7 @@ import android.widget.CalendarView;
 import android.widget.TextView;
 
 import com.gymrattrax.scheduler.R;
-import com.gymrattrax.scheduler.model.ExerciseName;
+import com.gymrattrax.scheduler.object.Exercises;
 
 import java.util.Calendar;
 
@@ -46,7 +46,7 @@ public class SelectDateActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             name = extras.getString("name");
-            if (ExerciseName.Cardio.fromString(name) != null) {
+            if (Exercises.Cardio.fromString(name) != null) {
                 distance = extras.getString("distance");
                 duration = extras.getString("duration");
             } else {
@@ -56,7 +56,7 @@ public class SelectDateActivity extends AppCompatActivity {
             }
             // Display cardio details in text view
             String newDetails = "";
-            if (ExerciseName.Cardio.fromString(name) != null) {
+            if (Exercises.Cardio.fromString(name) != null) {
                 String distanceString;
                 if (Double.parseDouble(distance) == 1) {
                     distanceString = distance + " mile";
@@ -70,7 +70,7 @@ public class SelectDateActivity extends AppCompatActivity {
                     timeString = " in " + duration + " minutes";
                 }
                 newDetails = (distanceString + timeString);
-                exName.setText(name + " ");
+                exName.setText(String.format("%s ", name));
                 exDetails.setText(newDetails);
             } else
             // Display strength details
@@ -83,7 +83,7 @@ public class SelectDateActivity extends AppCompatActivity {
                 reps = extras.getString("reps");
                 if (weight != null && sets != null && reps != null) {
                     if (Double.parseDouble(weight) == 1) {
-                        wString = weight + " lb ";
+                        wString = weight + " pound ";
                     } else {
                         wString = weight + " lbs x ";
                     }
@@ -99,7 +99,7 @@ public class SelectDateActivity extends AppCompatActivity {
                     }
                     newDetails = ("" + wString + setsStr + repsStr);
                 }
-                exName.setText(name + " ");
+                exName.setText(String.format("%s ", name));
                 exDetails.setText(newDetails);
 
             }
@@ -125,7 +125,7 @@ public class SelectDateActivity extends AppCompatActivity {
         String dateStr =  dateText.getText().toString();
         extras.putString("date", dateStr);
         extras.putString("name", name);
-        if (ExerciseName.Cardio.fromString(name) != null) {
+        if (Exercises.Cardio.fromString(name) != null) {
             extras.putString("distance", distance);
             extras.putString("duration", duration);
         } else {

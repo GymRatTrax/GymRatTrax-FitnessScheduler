@@ -20,8 +20,8 @@ import android.widget.Toast;
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.ExerciseName;
-import com.gymrattrax.scheduler.model.WorkoutItem;
+import com.gymrattrax.scheduler.object.Exercises;
+import com.gymrattrax.scheduler.object.WorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
 import java.util.Calendar;
@@ -148,39 +148,39 @@ public class AddTemplatesActivity extends AppCompatActivity {
                         case 1:
                         case 3:
                         case 4:
-                            workoutItems[i] = new WorkoutItem(ExerciseName.Cardio.WALK);
+                            workoutItems[i] = WorkoutItem.createNew(Exercises.Cardio.WALK);
                             workoutItems[i].setDistanceScheduled(1);
                             workoutItems[i].setTimeScheduled(20);
                             break;
                         case 2:
-                            workoutItems[i] = new WorkoutItem(ExerciseName.Cardio.JOG);
+                            workoutItems[i] = WorkoutItem.createNew(Exercises.Cardio.JOG);
                             workoutItems[i].setDistanceScheduled(2);
                             workoutItems[i].setTimeScheduled(15);
                             break;
                         case 5:
                         case 6:
-                            workoutItems[i] = new WorkoutItem(ExerciseName.Cardio.JOG);
+                            workoutItems[i] = WorkoutItem.createNew(Exercises.Cardio.JOG);
                             workoutItems[i].setDistanceScheduled(2);
                             workoutItems[i].setTimeScheduled(20);
                             break;
                         case 7:
-                            workoutItems[i] = new WorkoutItem(ExerciseName.Cardio.WALK);
+                            workoutItems[i] = WorkoutItem.createNew(Exercises.Cardio.WALK);
                             workoutItems[i].setDistanceScheduled(1.5);
                             workoutItems[i].setTimeScheduled(30);
                             break;
                         case 8:
-                            workoutItems[i] = new WorkoutItem(ExerciseName.Cardio.RUN);
+                            workoutItems[i] = WorkoutItem.createNew(Exercises.Cardio.RUN);
                             workoutItems[i].setDistanceScheduled(1.5);
                             workoutItems[i].setTimeScheduled(20);
                             break;
                         case 9:
                         case 10:
-                            workoutItems[i] = new WorkoutItem(ExerciseName.Cardio.JOG);
+                            workoutItems[i] = WorkoutItem.createNew(Exercises.Cardio.JOG);
                             workoutItems[i].setDistanceScheduled(2);
                             workoutItems[i].setTimeScheduled(30);
                             break;
                         case 11:
-                            workoutItems[i] = new WorkoutItem(ExerciseName.Cardio.RUN);
+                            workoutItems[i] = WorkoutItem.createNew(Exercises.Cardio.RUN);
                             workoutItems[i].setDistanceScheduled(3.1);
                             workoutItems[i].setTimeScheduled(35);
                             break;
@@ -237,13 +237,13 @@ public class AddTemplatesActivity extends AppCompatActivity {
                     int time = 0;
                     switch (i % 4) {
                         case 0:
-                            workoutItems[i] = new WorkoutItem(ExerciseName.Cardio.getRandom());
+                            workoutItems[i] = WorkoutItem.createNew(Exercises.Cardio.getRandom());
                             workoutItems[i].setDistanceScheduled(2);
                             time = ((int)(Math.random() * 5)) * 5 + 20;
                             workoutItems[i].setTimeScheduled(15);
                             break;
                         case 1:
-                            workoutItems[i] = new WorkoutItem(ExerciseName.Abs.getRandom());
+                            workoutItems[i] = WorkoutItem.createNew(Exercises.Abs.getRandom());
                             workoutItems[i].setRepsScheduled(10);
                             workoutItems[i].setSetsScheduled(3);
                             workoutItems[i].setWeightUsed(15);
@@ -251,7 +251,7 @@ public class AddTemplatesActivity extends AppCompatActivity {
                             workoutItems[i].setTimeScheduled(15);
                             break;
                         case 2:
-                            workoutItems[i] = new WorkoutItem(ExerciseName.Arms.getRandom());
+                            workoutItems[i] = WorkoutItem.createNew(Exercises.Arms.getRandom());
                             workoutItems[i].setRepsScheduled(10);
                             workoutItems[i].setSetsScheduled(3);
                             workoutItems[i].setWeightUsed(15);
@@ -259,7 +259,7 @@ public class AddTemplatesActivity extends AppCompatActivity {
                             workoutItems[i].setTimeScheduled(15);
                             break;
                         case 3:
-                            workoutItems[i] = new WorkoutItem(ExerciseName.Legs.getRandom());
+                            workoutItems[i] = WorkoutItem.createNew(Exercises.Legs.getRandom());
                             workoutItems[i].setRepsScheduled(10);
                             workoutItems[i].setSetsScheduled(3);
                             workoutItems[i].setWeightUsed(15);

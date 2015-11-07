@@ -11,11 +11,12 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.gymrattrax.scheduler.BuildConfig;
-import com.gymrattrax.scheduler.data.DatabaseContract;
-import com.gymrattrax.scheduler.service.NotifyService;
 import com.gymrattrax.scheduler.activity.SettingsActivity;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.WorkoutItem;
+import com.gymrattrax.scheduler.data.DateUtil;
+import com.gymrattrax.scheduler.data.PreferenceKeys;
+import com.gymrattrax.scheduler.object.WorkoutItem;
+import com.gymrattrax.scheduler.service.NotifyService;
 
 import java.text.ParseException;
 import java.util.Calendar;
@@ -26,6 +27,7 @@ import java.util.Date;
  */
 public class NotifyReceiver extends BroadcastReceiver {
     public static final String TAG = "NotifyReceiver";
+    private static final int ID_WEIGH = 999;
 
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "Broadcast received.");
@@ -42,9 +44,8 @@ public class NotifyReceiver extends BroadcastReceiver {
         if (sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_ENABLED_ALL, true)) {
             Calendar lastWorkoutNotify = Calendar.getInstance();
             try {
-                String dateString = dbh.getProfileInfo(
-                        DatabaseContract.ProfileTable.KEY_LAST_NOTIFY_WORKOUT);
-                Date lastWorkoutNotifyDate = dbh.convertDate(dateString);
+                String dateString = sharedPref.getString(PreferenceKeys.LAST_NOTIFY_WORKOUT, "");
+                Date lastWorkoutNotifyDate = DateUtil.convertDate(dateString);
                 if (BuildConfig.DEBUG_MODE)
                     Log.d(TAG, "The latest workout notification was on " + dateString + ".");
                 lastWorkoutNotify.setTime(lastWorkoutNotifyDate);
@@ -54,9 +55,8 @@ public class NotifyReceiver extends BroadcastReceiver {
             }
             Calendar lastWeightNotify = Calendar.getInstance();
             try {
-                String dateString = dbh.getProfileInfo(
-                        DatabaseContract.ProfileTable.KEY_LAST_NOTIFY_WEIGHT);
-                Date lastWeightNotifyDate = dbh.convertDate(dateString);
+                String dateString = sharedPref.getString(PreferenceKeys.LAST_NOTIFY_WEIGHT, "");
+                Date lastWeightNotifyDate = DateUtil.convertDate(dateString);
                 if (BuildConfig.DEBUG_MODE)
                     Log.d(TAG, "The latest weight notification was on " + dateString + ".");
                 lastWeightNotify.setTime(lastWeightNotifyDate);
@@ -130,10 +130,10 @@ public class NotifyReceiver extends BroadcastReceiver {
                     calendar.add(Calendar.DAY_OF_MONTH, 1);
                 PendingIntent pIntent;
                 if (sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_WEIGH_INHERIT, true)) {
-                    pIntent = createPendingIntent(context, 999, "Time to weigh-in", calendar,
+                    pIntent = createPendingIntent(context, ID_WEIGH, "Time to weigh-in", calendar,
                             defaultVibrate, defaultTone);
                 } else {
-                    pIntent = createPendingIntent(context, 999, "Time to weigh-in", calendar,
+                    pIntent = createPendingIntent(context, ID_WEIGH, "Time to weigh-in", calendar,
                             sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_WEIGH_VIBRATE, true),
                             Uri.parse(sharedPref.getString(
                                     SettingsActivity.PREF_NOTIFY_WEIGH_TONE, "")));
@@ -202,7 +202,7 @@ public class NotifyReceiver extends BroadcastReceiver {
     /**
      * Create a PendingIntent for the NotifyService. For a WorkoutItem, use
      * {@link com.gymrattrax.scheduler.receiver.NotifyReceiver#createPendingIntent(
-     * android.content.Context, com.gymrattrax.scheduler.model.WorkoutItem)} instead.
+     * android.content.Context, com.gymrattrax.scheduler.object.WorkoutItem)} instead.
      * @param context A Context of the application package implementing this class.
      * @param id Sets the int {@link com.gymrattrax.scheduler.service.NotifyService#ID} field.
      * @param name Sets the String {@link com.gymrattrax.scheduler.service.NotifyService#NAME}
@@ -221,8 +221,6 @@ public class NotifyReceiver extends BroadcastReceiver {
         Intent intent = new Intent(context, NotifyService.class);
         intent.putExtra(NotifyService.ID, id);
         intent.putExtra(NotifyService.NAME, name);
-        intent.putExtra(NotifyService.HOUR, calendar.get(Calendar.HOUR_OF_DAY));
-        intent.putExtra(NotifyService.MINUTE, calendar.get(Calendar.MINUTE));
         intent.putExtra(NotifyService.VIBRATE, vibrate);
         intent.putExtra(NotifyService.TONE, tone.toString());
         return PendingIntent.getService(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);

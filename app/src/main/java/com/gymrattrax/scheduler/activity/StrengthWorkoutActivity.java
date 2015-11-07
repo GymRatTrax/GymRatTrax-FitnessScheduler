@@ -35,8 +35,8 @@ import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.data.SendToGoogleFitHistory;
-import com.gymrattrax.scheduler.model.ProfileItem;
-import com.gymrattrax.scheduler.model.WorkoutItem;
+import com.gymrattrax.scheduler.object.ProfileItem;
+import com.gymrattrax.scheduler.object.WorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
 import java.util.Calendar;
@@ -72,8 +72,7 @@ public class StrengthWorkoutActivity extends LoginActivity {
         Bundle b = getIntent().getExtras();
         ID = b.getInt("ID");
 
-        DatabaseHelper dbh = new DatabaseHelper(this);
-        workoutItem = dbh.getWorkoutById(ID);
+        workoutItem = WorkoutItem.getById(this, ID);
         title.setText(workoutItem.getName());
         sets = workoutItem.getSetsScheduled();
         reps = workoutItem.getRepsScheduled();
@@ -84,9 +83,8 @@ public class StrengthWorkoutActivity extends LoginActivity {
             status.setText(String.format("You have logged this workout. Calories burned: %f", workoutItem.getCaloriesBurned()));
         }
 
-        setsCompleted.setText("Completed Sets: " + Integer.toString(counter));
+        setsCompleted.setText(String.format("Completed Sets: %d", counter));
 
-        dbh.close();
         displaySets();
 
         link.setOnClickListener(new View.OnClickListener() {
@@ -193,9 +191,9 @@ public class StrengthWorkoutActivity extends LoginActivity {
 
         });
 
-        strengthSets.setText("Reps: "+ Integer.toString(reps));
-        strengthReps.setText("Sets: " + Integer.toString(sets));
-        weightUsed.setText("Weight: " + Double.toString(weight));
+        strengthSets.setText(String.format("Reps: %d", reps));
+        strengthReps.setText(String.format("Sets: %d", sets));
+        weightUsed.setText(String.format("Weight: %f", weight));
 
         //radio buttons that user can select that describes difficulty of exercise.  this will be "easy" "moderate" "hard"
         //EditText that user may input amount of time taken to complete workout
@@ -263,7 +261,7 @@ public class StrengthWorkoutActivity extends LoginActivity {
             main.setOrientation(LinearLayout.HORIZONTAL);
             stack.setOrientation(LinearLayout.VERTICAL);
 
-            viewSet.setText("Set: " + (i + 1) + "\n");
+            viewSet.setText(String.format("Set: %d\n", i + 1));
 
             ViewGroup.LayoutParams stackParams = new LinearLayout.LayoutParams(600,
                     ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -285,21 +283,21 @@ public class StrengthWorkoutActivity extends LoginActivity {
                     @Override
                     public void onClick(View v) {
                         //check to see if all sets have been completed
-                        final Dialog d = new Dialog(StrengthWorkoutActivity.this);
+                        final Dialog dialog = new Dialog(StrengthWorkoutActivity.this);
                         //TODO: #67 Continue manual testing on virtual devices
                         //TODO: 1.0.1 Figure out why no titles display on virtual device.
-                        d.setTitle("Seconds taken to complete this set");
-                        d.setContentView(R.layout.dialog_integer);
-                        Button b1 = (Button) d.findViewById(R.id.decimal_button_set);
-                        Button b2 = (Button) d.findViewById(R.id.decimal_button_cancel);
-                        final NumberPicker np = (NumberPicker) d.findViewById(R.id.decimal_number_picker_integer);
-                        np.setMaxValue(300);
-                        np.setMinValue(0);
+                        dialog.setTitle("Seconds taken to complete this set");
+                        dialog.setContentView(R.layout.dialog_integer);
+                        Button buttonSet = (Button) dialog.findViewById(R.id.decimal_button_set);
+                        Button buttonCancel = (Button) dialog.findViewById(R.id.decimal_button_cancel);
+                        final NumberPicker numberPicker = (NumberPicker) dialog.findViewById(R.id.decimal_number_picker_integer);
+                        numberPicker.setMaxValue(300);
+                        numberPicker.setMinValue(0);
                         //TODO: Consider pre-filling in this value with an average of their previous workouts.
-                        np.setValue(0);
-                        np.setWrapSelectorWheel(false);
-//                        np.setOnValueChangedListener(this);
-                        b1.setOnClickListener(new View.OnClickListener() {
+                        numberPicker.setValue(0);
+                        numberPicker.setWrapSelectorWheel(false);
+//                        numberPicker.setOnValueChangedListener(this);
+                        buttonSet.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 counter += 1;
@@ -309,29 +307,27 @@ public class StrengthWorkoutActivity extends LoginActivity {
 
                                 // Error Check EditText Input *************************
                                 // add time spent to existing value
-                                double timeInMinutes = (double)(np.getValue()) / 60.0;
+                                double timeInMinutes = (double) (numberPicker.getValue()) / 60.0;
                                 workoutItem.setTimeSpent(workoutItem.getTimeSpent() + timeInMinutes);
 
                                 workoutItem.setSetsCompleted(counter);
                                 workoutItem.setRepsCompleted(counter * reps);
                                 //setRepsCompleted
 
-                                setsCompleted.setText("Sets Completed: " +
-                                        Integer.toString(workoutItem.getSetsCompleted()));
+                                setsCompleted.setText(String.format("Sets Completed: %dialog",
+                                        workoutItem.getSetsCompleted()));
 
-                                DatabaseHelper dbh = new DatabaseHelper(StrengthWorkoutActivity.this);
-                                dbh.completeWorkout(workoutItem, false);
-                                dbh.close();
-                                d.dismiss();
+                                workoutItem.save(StrengthWorkoutActivity.this, false);
+                                dialog.dismiss();
                             }
                         });
-                        b2.setOnClickListener(new View.OnClickListener() {
+                        buttonCancel.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                d.dismiss();
+                                dialog.dismiss();
                             }
                         });
-                        d.show();
+                        dialog.show();
                     }
                 });
             }
@@ -369,8 +365,8 @@ public class StrengthWorkoutActivity extends LoginActivity {
         double caloriesBurned = METs * (profileItem.getBMR() / 24) * (totalTimeInMinutes / 60);
         workoutItem.setCaloriesBurned(caloriesBurned);
 
+        workoutItem.save(this, true);
         DatabaseHelper dbh = new DatabaseHelper(StrengthWorkoutActivity.this);
-        dbh.completeWorkout(workoutItem, true);
         List<String> achievementsUnlocked = dbh.checkForAchievements();
         dbh.close();
         if (mGoogleApiClient != null) {

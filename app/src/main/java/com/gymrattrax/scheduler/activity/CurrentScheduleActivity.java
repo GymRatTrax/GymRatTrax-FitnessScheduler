@@ -13,7 +13,8 @@ import android.widget.TextView;
 
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.WorkoutItem;
+import com.gymrattrax.scheduler.data.DateUtil;
+import com.gymrattrax.scheduler.object.WorkoutItem;
 
 public class CurrentScheduleActivity extends AppCompatActivity {
 
@@ -38,7 +39,7 @@ public class CurrentScheduleActivity extends AppCompatActivity {
         //Linear
         linearContainer.addView(a);
 
-        textDateRange.setText("Current week");
+        textDateRange.setText(R.string.current_week);
 
         int i = 0;
         for (WorkoutItem w : workouts) {
@@ -80,7 +81,7 @@ public class CurrentScheduleActivity extends AppCompatActivity {
             String time = minutes + " minutes, " + seconds + " seconds";
 
 
-            time = dbh.displayDateTime(this, w.getDateScheduled()) + ": " + time;
+            time = DateUtil.displayDateTime(this, w.getDateScheduled()) + ": " + time;
 
 
             viewTime.setText(time);

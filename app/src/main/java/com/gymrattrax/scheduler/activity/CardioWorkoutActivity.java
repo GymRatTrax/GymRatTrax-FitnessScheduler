@@ -1,19 +1,20 @@
 package com.gymrattrax.scheduler.activity;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.NumberPicker;
-import android.widget.TextView;
-import android.widget.Button;
 import android.widget.RadioButton;
-import android.content.*;
-import android.os.*;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.PendingResult;
@@ -33,13 +34,13 @@ import com.google.android.gms.fitness.request.SessionInsertRequest;
 import com.google.android.gms.fitness.result.ListSubscriptionsResult;
 import com.google.android.gms.games.Games;
 import com.gymrattrax.scheduler.BuildConfig;
-import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.R;
+import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.data.SendToGoogleFitHistory;
 import com.gymrattrax.scheduler.data.UnitUtil;
-import com.gymrattrax.scheduler.model.ExerciseName;
-import com.gymrattrax.scheduler.model.ProfileItem;
-import com.gymrattrax.scheduler.model.WorkoutItem;
+import com.gymrattrax.scheduler.object.Exercises;
+import com.gymrattrax.scheduler.object.ProfileItem;
+import com.gymrattrax.scheduler.object.WorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
 import java.util.Calendar;
@@ -131,8 +132,7 @@ public class CardioWorkoutActivity extends LoginActivity {
 
         Bundle bundle = getIntent().getExtras();
         ID = bundle.getInt("ID");
-        DatabaseHelper dbh = new DatabaseHelper(this);
-        workoutItem = dbh.getWorkoutById(ID);
+        workoutItem = WorkoutItem.getById(this, ID);
         Log.d(TAG, "ID = " + ID);
 
         String name = workoutItem.getName();
@@ -212,7 +212,7 @@ public class CardioWorkoutActivity extends LoginActivity {
             // 2. Create a session object
             // (provide a name, identifier, description and start time)
             String activity = FitnessActivities.RUNNING;
-            switch (ExerciseName.Cardio.fromString(workoutItem.getName())) {
+            switch (Exercises.Cardio.fromString(workoutItem.getName())) {
                 case WALK:
                     activity = FitnessActivities.WALKING;
                     break;
@@ -298,16 +298,18 @@ public class CardioWorkoutActivity extends LoginActivity {
         ProfileItem profileItem = new ProfileItem(this);
         double caloriesBurned = METs * (profileItem.getBMR() / 24) * (timeRecordedInMinutes / 60);
         workoutItem.setCaloriesBurned(caloriesBurned);
-        DatabaseHelper dbh = new DatabaseHelper(CardioWorkoutActivity.this);
-        dbh.completeWorkout(workoutItem, true);
+
+        workoutItem.save(this, true);
+        DatabaseHelper dbh = new DatabaseHelper(this);
         List<String> achievementsUnlocked = dbh.checkForAchievements();
         dbh.close();
         if (mGoogleApiClient != null) {
             insertIntoGoogleFitHistory(
                     (long)(timeRecordedInMinutes*60*1000),
                     (float)caloriesBurned,
-                    (float)UnitUtil.mileToMeter(
-                            Double.valueOf(editTextDistanceComplete.getText().toString())));
+                    (float)UnitUtil.convert(
+                            Double.valueOf(editTextDistanceComplete.getText().toString()),
+                            UnitUtil.DistanceUnit.mile, UnitUtil.DistanceUnit.meter));
             unlockGooglePlayGamesAchievements((int)timeRecordedInMinutes, achievementsUnlocked);
         } else {
             Log.e(TAG, "Could not connect to Google APIs.");
@@ -445,7 +447,7 @@ public class CardioWorkoutActivity extends LoginActivity {
         // 2. Create a session object
         // (provide a name, identifier, description and start time)
         String activity = FitnessActivities.RUNNING;
-        switch (ExerciseName.Cardio.fromString(workoutItem.getName())) {
+        switch (Exercises.Cardio.fromString(workoutItem.getName())) {
             case WALK:
                 activity = FitnessActivities.WALKING;
                 break;

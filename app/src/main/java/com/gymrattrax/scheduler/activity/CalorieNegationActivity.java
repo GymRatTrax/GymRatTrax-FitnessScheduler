@@ -12,13 +12,14 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterAddNegation;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.model.ExerciseName;
+import com.gymrattrax.scheduler.object.ExerciseType;
+import com.gymrattrax.scheduler.object.Exercises;
+import com.gymrattrax.scheduler.object.ProfileItem;
+import com.gymrattrax.scheduler.object.WorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
-import com.gymrattrax.scheduler.model.ProfileItem;
-import com.gymrattrax.scheduler.R;
-import com.gymrattrax.scheduler.model.WorkoutItem;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -41,7 +42,7 @@ public class CalorieNegationActivity extends AppCompatActivity implements ListVi
         SuggestWorkoutButton = (Button) findViewById(R.id.negate_cal_button);
         NegateEditText = (EditText) findViewById(R.id.negate_calories);
 //        times = new double[5];
-//        exName = new ExerciseName.Cardio[5];
+//        exName = new Exercise.Cardio[5];
     }
 
     private void displayWorkouts(int caloriesToNegate) {
@@ -84,14 +85,18 @@ public class CalorieNegationActivity extends AppCompatActivity implements ListVi
 
         if (position <= 1) {
             addCardioWorkout(val_arr[0]);
-        } else {
-            addStrengthWorkout(val_arr[0]);
+        } else if (position == 2) {
+            addStrengthWorkout(ExerciseType.ABS, val_arr[0]);
+        } else if (position == 3) {
+            addStrengthWorkout(ExerciseType.ARMS, val_arr[0]);
+        } else if (position == 4) {
+            addStrengthWorkout(ExerciseType.LEGS, val_arr[0]);
         }
     }
 
     // add exName and time params
     private void addCardioWorkout(String name) {
-        WorkoutItem item = new WorkoutItem(name);
+        WorkoutItem item = WorkoutItem.createNew(ExerciseType.CARDIO, name);
         item.setDistanceScheduled(2);
         item.setTimeScheduled(workoutItems.get(4).getTimeScheduled());
 
@@ -100,8 +105,8 @@ public class CalorieNegationActivity extends AppCompatActivity implements ListVi
     }
 
     // add exName and time params
-    private void addStrengthWorkout(String name) {
-        WorkoutItem item = new WorkoutItem(name);
+    private void addStrengthWorkout(ExerciseType exerciseType, String name) {
+        WorkoutItem item = WorkoutItem.createNew(exerciseType, name);
         item.setRepsScheduled(12);
         item.setSetsScheduled(4);
         item.setWeightUsed(10);
@@ -116,7 +121,6 @@ public class CalorieNegationActivity extends AppCompatActivity implements ListVi
         ProfileItem profileItem = new ProfileItem(CalorieNegationActivity.this);
         ArrayList<String> workoutsArray = new ArrayList<>();
 
-        //TODO: Come up with a better way of creating METs values on-the-fly.
         double BMR = profileItem.getBMR();
 
         double cardio_light = 3.0;
@@ -136,13 +140,13 @@ public class CalorieNegationActivity extends AppCompatActivity implements ListVi
 
             WorkoutItem workoutItem = null;
             if (i <= 1) {
-                workoutItem = new WorkoutItem(ExerciseName.Cardio.getRandom());
+                workoutItem = WorkoutItem.createNew(Exercises.Cardio.getRandom());
             } else if (i == 2) {
-                workoutItem = new WorkoutItem(ExerciseName.Abs.getRandom());
+                workoutItem = WorkoutItem.createNew(Exercises.Abs.getRandom());
             } else if (i == 3) {
-                workoutItem = new WorkoutItem(ExerciseName.Arms.getRandom());
+                workoutItem = WorkoutItem.createNew(Exercises.Arms.getRandom());
             } else if (i == 4) {
-                workoutItem = new WorkoutItem(ExerciseName.Legs.getRandom());
+                workoutItem = WorkoutItem.createNew(Exercises.Legs.getRandom());
             }
             String details;
             String time = minutes + " minutes, " + seconds + " seconds";
@@ -151,11 +155,11 @@ public class CalorieNegationActivity extends AppCompatActivity implements ListVi
             } else if (i == 2) {
                 time = time.replaceAll("minutes", "mins");
                 time = time.replaceAll("seconds", "secs");
-                details = "12 reps, 4 sets, 10 lb weights";
+                details = "12 reps, 4 sets, 10 pound weights";
             } else {
                 time = time.replaceAll("minutes", "mins");
                 time = time.replaceAll("seconds", "secs");
-                details = "20 reps, 6 sets, 20 lb weights";
+                details = "20 reps, 6 sets, 20 pound weights";
             }
 
             if (workoutItem != null) {

@@ -2,9 +2,11 @@ package com.gymrattrax.scheduler.data;
 
 import android.os.AsyncTask;
 import android.util.Log;
+
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.fitness.Fitness;
 import com.google.android.gms.fitness.data.DataSet;
+
 import java.util.concurrent.TimeUnit;
 
 public class SendToGoogleFitHistory extends AsyncTask<String, Void, Void> {
