@@ -28,7 +28,7 @@ public class ProfileItem {
         mSharedPreferences.edit().putString(PreferenceKeys.GENDER, String.valueOf(gender)).apply();
     }
 
-    public Date getDOB() {
+    public Date getDateOfBirth() {
         String dobString = mSharedPreferences.getString(PreferenceKeys.BIRTH_DATE, "");
         Date dobDate = null;
         if (!dobString.trim().isEmpty()) {
@@ -41,7 +41,7 @@ public class ProfileItem {
         return dobDate;
     }
 
-    public void setDOB(Date dob) {
+    public void setDateOfBirth(Date dob) {
         SimpleDateFormat dbFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         String date = dbFormat.format(dob) + " 00:00:00.000";
         mSharedPreferences.edit().putString(PreferenceKeys.BIRTH_DATE, date).apply();
@@ -49,7 +49,7 @@ public class ProfileItem {
 
     public int getAge() {
         int age;
-        Date dobDate = getDOB();
+        Date dobDate = getDateOfBirth();
         if (dobDate != null) {
             Calendar now = Calendar.getInstance();
             Calendar dob = Calendar.getInstance();

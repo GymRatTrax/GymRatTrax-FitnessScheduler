@@ -20,6 +20,14 @@ public class TimePreference extends DialogPreference {
     private Calendar calendar;
     private TimePicker picker = null;
 
+    public TimePreference(Context context) {
+        this(context, null);
+    }
+
+    public TimePreference(Context context, AttributeSet attributes) {
+        this(context, attributes, android.R.attr.dialogPreferenceStyle);
+    }
+
     public TimePreference(Context context, AttributeSet attributes, int defaultStyle) {
         super(context, attributes, defaultStyle);
 

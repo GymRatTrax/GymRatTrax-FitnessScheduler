@@ -61,7 +61,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         for (int i = oldVersion + 1; i <= newVersion; i++) {
             Toast text = Toast.makeText(mContext, "Upgrading database to version " + i + ".",
                     Toast.LENGTH_SHORT);
-            text.show();
+            if (BuildConfig.DEBUG_MODE) text.show();
             switch (i) {
                 case 2:
                     db.execSQL(DatabaseContract.ProfileTable.DELETE_TABLE);
@@ -96,87 +96,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     break;
                 case 4:
                     ProfileItem profileItem = new ProfileItem(mContext);
-//                    profileItem.setActivityLevel(db.execSQL(););
+                    Cursor cursor4 = db.rawQuery(
+                            "SELECT * FROM profile WHERE key = \"BIRTH_DATE\"", null);
+                    if (cursor4.moveToFirst())
+                        try {
+                            profileItem.setDateOfBirth(DateUtil.convertDate(cursor4.getString(1)));
+                        } catch (ParseException ignored){}
+                    cursor4 = db.rawQuery("SELECT * FROM profile WHERE key = \"SEX\"", null);
+                    if (cursor4.moveToFirst())
+                        profileItem.setGender(cursor4.getString(1).toUpperCase().charAt(0));
+                    cursor4 = db.rawQuery("SELECT * FROM profile WHERE key = \"HEIGHT\"", null);
+                    if (cursor4.moveToFirst())
+                        profileItem.setHeight(Float.valueOf(cursor4.getString(1)));
+                    cursor4 = db.rawQuery(
+                            "SELECT * FROM profile WHERE key = \"LAST_NOTIFY_WORKOUT\"", null);
+                    if (cursor4.moveToFirst())
+                        profileItem.setLastWorkoutNotification(cursor4.getString(1));
+                    cursor4 = db.rawQuery(
+                            "SELECT * FROM profile WHERE key = \"LAST_NOTIFY_WEIGHT\"", null);
+                    if (cursor4.moveToFirst())
+                        profileItem.setLastWeightNotification(cursor4.getString(1));
                     db.execSQL(DatabaseContract.ProfileTable.DELETE_TABLE);
-//                    db.execSQL(DatabaseContract.ExerciseTable.CREATE_TABLE);
+                    cursor4.close();
+                    double[] weightArray = getLatestWeight();
+                    profileItem.setWeight((float)weightArray[0]);
+                    if (weightArray[1] > 0)
+                        profileItem.setBodyFatPercentage((float)weightArray[1]);
+                    profileItem.setActivityLevel((float)weightArray[2]);
             }
         }
     }
-
-//    /**
-//     * Returns the stored value associated with a given key in the Profile table.
-//     * @param key A String variable of a key in the Profile table. Use
-//     *            DatabaseContract.ProfileTable.KEY_<...>.
-//     * @return The value in the database that corresponds to the provided key String. If the
-//     * provided key is not available in the Profile table, an empty String is returned.
-//     */
-//    @Deprecated
-//    private String getProfileInfo(String key) {
-//        String query = "SELECT * FROM " + DatabaseContract.ProfileTable.TABLE_NAME + " WHERE " +
-//                DatabaseContract.ProfileTable.COLUMN_NAME_KEY + " =  \"" + key + "\"";
-//
-//        SQLiteDatabase db = this.getReadableDatabase();
-//
-//        Cursor cursor = db.rawQuery(query, null);
-//
-//        String value = "";
-//        if (cursor.moveToFirst())
-//            value = cursor.getString(1);
-//        cursor.close();
-//        db.close();
-//        return value;
-//    }
-
-//    /**
-//     * Sets the value associated with a given key in the Profile table.
-//     * @param key A String variable of a key in the Profile table. Use
-//     *            DatabaseContract.ProfileTable.KEY_<...>.
-//     * @param value The String value to replace the current value for the provided key. If the key
-//     *              is not currently in the table, the record will be inserted. If the key does
-//     *              exist but contains different data, the record will be updated. If the key does
-//     *              exist and contains the same data, no action will be taken. If the key does exist
-//     *              and the value is an empty String, the record will be deleted.
-//     */
-//    public void setProfileInfo(String key, String value) {
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        String query = "SELECT * FROM " + DatabaseContract.ProfileTable.TABLE_NAME + " WHERE " +
-//                DatabaseContract.ProfileTable.COLUMN_NAME_KEY + " =  \"" + key + "\"";
-//        Cursor cursor = db.rawQuery(query, null);
-//        //If the value is empty, we delete the whole record.
-//        if (value.trim().isEmpty()) {
-//            //Some settings values may be blocked from being deleted.
-//            if (cursor.moveToFirst()) {
-//                String[] args = new String[1];
-//                args[0] = key;
-//                db.delete(DatabaseContract.ProfileTable.TABLE_NAME,
-//                        DatabaseContract.ProfileTable.COLUMN_NAME_KEY + " = ?", args);
-//            }
-//        }
-//        else {
-//            //If we have both a key and a value, then we check to see if the key already exists.
-//            ContentValues values = new ContentValues();
-//            //If the key DOES already exist, then we update the existing record.
-//            if (cursor.moveToFirst()) {
-//                //If the key already contains the same value, skip the update operation.
-//                if (!value.equals(cursor.getString(1))) {
-//                    String[] args = new String[1];
-//                    args[0] = key;
-//                    values.put(DatabaseContract.ProfileTable.COLUMN_NAME_VALUE, value);
-//                    db.update(DatabaseContract.ProfileTable.TABLE_NAME, values,
-//                            DatabaseContract.ProfileTable.COLUMN_NAME_KEY + "=?", args);
-//                }
-//            }
-//            //If the key does not exist, then an entirely new record must be created.
-//            else {
-//                values.put(DatabaseContract.ProfileTable.COLUMN_NAME_KEY, key);
-//                values.put(DatabaseContract.ProfileTable.COLUMN_NAME_VALUE, value);
-//
-//                db.insert(DatabaseContract.ProfileTable.TABLE_NAME, null, values);
-//            }
-//        }
-//        cursor.close();
-//        db.close();
-//    }
 
     /**
      * Returns the latest weight-related values from the Weight table.

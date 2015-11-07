@@ -180,4 +180,5 @@
     <string name="profile_label_update">Update</string>
     <string name="current_week">Current week</string>
     <string name="profile_birth_date_label">Birth date</string>
+    <string name="app_name_full">GymRatTrax Fitness Scheduler</string>
 </resources>

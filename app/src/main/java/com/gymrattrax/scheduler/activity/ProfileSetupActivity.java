@@ -253,7 +253,7 @@ public class ProfileSetupActivity extends AppCompatActivity
         // update database profile
         DatabaseHelper dbh = new DatabaseHelper(this);
         mProfileItem.setHeight(height);
-        mProfileItem.setDOB(birthDate);
+        mProfileItem.setDateOfBirth(birthDate);
 
         float bodyFat = -1f;
         if (!fatPercentageEditText.getText().toString().trim().isEmpty())
