@@ -113,6 +113,12 @@ public class ProfileSetupActivity extends AppCompatActivity
                 }
             }
         });
+
+        Toast toast = Toast.makeText(getApplicationContext(),
+                "Welcome to GymRatTrax!\n" +
+                        "Please set up your personal fitness profile.", Toast.LENGTH_LONG);
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.show();
     }
 
     private void showWeightDialog() {

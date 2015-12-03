@@ -17,7 +17,6 @@ import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.data.DateUtil;
 import com.gymrattrax.scheduler.object.ProfileItem;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -203,19 +202,15 @@ public class ProfileActivity extends AppCompatActivity {
         mActivityLevelTextViewOld.setText(activityLevelFromInt(activityLevelInt));
         mActivityLevelTextViewNew.setText(activityLevelFromInt(activityLevelInt));
 
-        try {
-            Date lastUpdated = DateUtil.convertDate(lastUpdatedDate);
-            Date now = Calendar.getInstance().getTime();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.US);
-            String updateText;
-            if (sdf.format(lastUpdated).equals(sdf.format(now)))
-                updateText = android.text.format.DateFormat.getTimeFormat(this).format(lastUpdated);
-            else
-                updateText = android.text.format.DateFormat.getDateFormat(this).format(lastUpdated);
-            mLastUpdateTextView.setText(String.format("Last update: %s", updateText));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        Date lastUpdated = DateUtil.convertDate(lastUpdatedDate);
+        Date now = Calendar.getInstance().getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd", Locale.US);
+        String updateText;
+        if (sdf.format(lastUpdated).equals(sdf.format(now)))
+            updateText = android.text.format.DateFormat.getTimeFormat(this).format(lastUpdated);
+        else
+            updateText = android.text.format.DateFormat.getDateFormat(this).format(lastUpdated);
+        mLastUpdateTextView.setText(String.format("Last update: %s", updateText));
     }
     private String validateInput() {
         String testVar;

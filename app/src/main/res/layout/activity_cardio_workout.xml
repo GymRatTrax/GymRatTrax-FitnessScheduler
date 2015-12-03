@@ -118,8 +118,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="@string/cardio_workout_units_miles"
-                    android:id="@+id/textView20"/>
+                    android:id="@+id/cardio_workout_unit_distance"/>
             </LinearLayout>
             <RadioGroup
                 android:layout_width="match_parent"

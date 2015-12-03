@@ -13,12 +13,10 @@ import android.util.Log;
 import com.gymrattrax.scheduler.BuildConfig;
 import com.gymrattrax.scheduler.activity.SettingsActivity;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.data.DateUtil;
-import com.gymrattrax.scheduler.data.PreferenceKeys;
+import com.gymrattrax.scheduler.object.ProfileItem;
 import com.gymrattrax.scheduler.object.WorkoutItem;
 import com.gymrattrax.scheduler.service.NotifyService;
 
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -40,30 +38,22 @@ public class NotifyReceiver extends BroadcastReceiver {
 
         DatabaseHelper dbh = new DatabaseHelper(context);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        ProfileItem profileItem = new ProfileItem(context);
 
         if (sharedPref.getBoolean(SettingsActivity.PREF_NOTIFY_ENABLED_ALL, true)) {
             Calendar lastWorkoutNotify = Calendar.getInstance();
-            try {
-                String dateString = sharedPref.getString(PreferenceKeys.LAST_NOTIFY_WORKOUT, "");
-                Date lastWorkoutNotifyDate = DateUtil.convertDate(dateString);
-                if (BuildConfig.DEBUG_MODE)
-                    Log.d(TAG, "The latest workout notification was on " + dateString + ".");
-                lastWorkoutNotify.setTime(lastWorkoutNotifyDate);
-            } catch (ParseException e) {
-                Log.d(TAG, "Date parsing failed. Something unexpected has happened. " +
-                        "You should have a date if notifications are on. Resetting to today.");
-            }
+            Date lastWorkoutNotifyDate = profileItem.getLastWorkoutNotification();
+            if (BuildConfig.DEBUG_MODE)
+                Log.d(TAG, "The latest workout notification was on " +
+                        lastWorkoutNotifyDate.toString() + ".");
+            lastWorkoutNotify.setTime(lastWorkoutNotifyDate);
+
             Calendar lastWeightNotify = Calendar.getInstance();
-            try {
-                String dateString = sharedPref.getString(PreferenceKeys.LAST_NOTIFY_WEIGHT, "");
-                Date lastWeightNotifyDate = DateUtil.convertDate(dateString);
-                if (BuildConfig.DEBUG_MODE)
-                    Log.d(TAG, "The latest weight notification was on " + dateString + ".");
-                lastWeightNotify.setTime(lastWeightNotifyDate);
-            } catch (ParseException e) {
-                Log.d(TAG, "Date parsing failed. Something unexpected has happened. " +
-                        "You should have a date if notifications are on. Resetting to today.");
-            }
+            Date lastWeightNotifyDate = profileItem.getLastWeightNotification();
+            lastWeightNotify.setTime(lastWeightNotifyDate);
+            if (BuildConfig.DEBUG_MODE)
+                Log.d(TAG, "The latest weight notification was on " +
+                        lastWeightNotifyDate.toString() + ".");
 
             boolean defaultEnabled = sharedPref.getBoolean(
                     SettingsActivity.PREF_NOTIFY_ENABLED, true);

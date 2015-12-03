@@ -1,6 +1,7 @@
 package com.gymrattrax.scheduler.data;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,15 +11,24 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 
 public class DateUtil {
+    private static final String TAG = "DateUtil";
     /**
      * Convert a String representation of a date from the database or preferences to a Java Date
      * object.
      * @param date A {@link String} representation of a date.
      * @return A {@link java.util.Date} object corresponding to that date.
      */
-    public static Date convertDate(String date) throws ParseException {
+    public static Date convertDate(String date) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.US);
-        return sdf.parse(date);
+        Date dateValue;
+        try {
+            dateValue = sdf.parse(date);
+        } catch (ParseException e) {
+            // Date parsing failed, but this is so unexpected, that it should not break down.
+            dateValue = new Date();
+            Log.e(TAG, "Conversion of String date to Date Object failed.");
+        }
+        return dateValue;
     }
 
     /**

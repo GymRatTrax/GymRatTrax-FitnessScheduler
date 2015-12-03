@@ -10,11 +10,13 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterAddNegation;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
+import com.gymrattrax.scheduler.data.UnitUtil;
 import com.gymrattrax.scheduler.object.ExerciseType;
 import com.gymrattrax.scheduler.object.Exercises;
 import com.gymrattrax.scheduler.object.ProfileItem;
@@ -32,6 +34,10 @@ public class CalorieNegationActivity extends AppCompatActivity implements ListVi
     Button SuggestWorkoutButton;
     EditText NegateEditText;
     private List<WorkoutItem> workoutItems = new ArrayList<>();
+    private double bmr;
+    private UnitUtil.DistanceUnit unitDistance;
+    private UnitUtil.EnergyUnit unitEnergy;
+    private UnitUtil.WeightUnit unitWeight;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,13 +47,24 @@ public class CalorieNegationActivity extends AppCompatActivity implements ListVi
 
         SuggestWorkoutButton = (Button) findViewById(R.id.negate_cal_button);
         NegateEditText = (EditText) findViewById(R.id.negate_calories);
-//        times = new double[5];
-//        exName = new Exercise.Cardio[5];
+
+        ProfileItem profileItem = new ProfileItem(CalorieNegationActivity.this);
+        bmr = profileItem.getBMR();
+        unitEnergy = profileItem.getUnitEnergy();
+        unitDistance = profileItem.getUnitDistance();
+        unitWeight = profileItem.getUnitWeight();
+
+        TextView calorieNegationTextView = (TextView) findViewById(
+                R.id.calorie_negation_instruction_textview);
+        if (unitEnergy == UnitUtil.EnergyUnit.kilojoule) {
+            calorieNegationTextView.setText(R.string.kilojoule_negation_instruction);
+            setTitle(R.string.title_activity_kilojoule_negation);
+        }
     }
 
-    private void displayWorkouts(int caloriesToNegate) {
+    private void displayWorkouts(int energyUnitsToNegate) {
 
-        ArrayList<String> workoutStrings = getWorkoutsToNegate(caloriesToNegate);
+        ArrayList<String> workoutStrings = getWorkoutsToNegate(energyUnitsToNegate);
 
         ListView listView = (ListView) findViewById(R.id.calorie_list);
 
@@ -116,12 +133,12 @@ public class CalorieNegationActivity extends AppCompatActivity implements ListVi
         finish(); //exit to home screen
     }
 
-    public ArrayList<String> getWorkoutsToNegate(int caloriesToNegate) {
-
-        ProfileItem profileItem = new ProfileItem(CalorieNegationActivity.this);
+    public ArrayList<String> getWorkoutsToNegate(int energyUnitsToNegate) {
         ArrayList<String> workoutsArray = new ArrayList<>();
 
-        double BMR = profileItem.getBMR();
+        // Convert energyUnitsToNegate to calories in case user is entering kilojoules.
+        int caloriesToNegate = (int)UnitUtil.convert(energyUnitsToNegate, unitEnergy,
+                UnitUtil.EnergyUnit.calorie);
 
         double cardio_light = 3.0;
         double cardio_moderate = 7.0;
@@ -133,7 +150,8 @@ public class CalorieNegationActivity extends AppCompatActivity implements ListVi
                 cardio_light, cardio_moderate, cardio_vigorous};
 
         for (int i = 0; i < METsValues.length; i++) {
-            double minutesRequiredPerWorkout = ((60 * 24 * caloriesToNegate) / (METsValues[i] * BMR));
+            double minutesRequiredPerWorkout = ((60 * 24 * caloriesToNegate) /
+                    (METsValues[i] * bmr));
             int secondsTotal = (int) (minutesRequiredPerWorkout * 60);
             int seconds = secondsTotal % 60;
             int minutes = (secondsTotal - seconds) / 60;
@@ -150,16 +168,22 @@ public class CalorieNegationActivity extends AppCompatActivity implements ListVi
             }
             String details;
             String time = minutes + " minutes, " + seconds + " seconds";
+            double tempConversionValue;
             if (i <= 1) {
-                details = "2 miles";
+                tempConversionValue = UnitUtil.convert(2, UnitUtil.DistanceUnit.mile, unitDistance);
+                details = String.format("%.1f %ss", tempConversionValue, unitDistance.toString());
             } else if (i == 2) {
                 time = time.replaceAll("minutes", "mins");
                 time = time.replaceAll("seconds", "secs");
-                details = "12 reps, 4 sets, 10 pound weights";
+                tempConversionValue = UnitUtil.convert(10, UnitUtil.WeightUnit.pound, unitWeight);
+                details = String.format("12 reps, 4 sets, %d %s weights", (int)tempConversionValue,
+                        unitWeight.toString());
             } else {
                 time = time.replaceAll("minutes", "mins");
                 time = time.replaceAll("seconds", "secs");
-                details = "20 reps, 6 sets, 20 pound weights";
+                tempConversionValue = UnitUtil.convert(20, UnitUtil.WeightUnit.pound, unitWeight);
+                details = String.format("20 reps, 6 sets, %d %s weights", (int)tempConversionValue,
+                        unitWeight.toString());
             }
 
             if (workoutItem != null) {
@@ -182,32 +206,32 @@ public class CalorieNegationActivity extends AppCompatActivity implements ListVi
             inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
                     InputMethodManager.HIDE_NOT_ALWAYS);
 
-        int caloriesToNegate;
+        int energyUnitsToNegate;
         try {
-            caloriesToNegate = Integer.parseInt(NegateEditText.getText().toString());
+            energyUnitsToNegate = Integer.parseInt(NegateEditText.getText().toString());
         } catch (NumberFormatException e) {
             Toast t = Toast.makeText(getApplicationContext(), "Invalid input.",
                     Toast.LENGTH_SHORT);
             t.show();
             return;
         }
-        if (caloriesToNegate > 400) {
+        if (energyUnitsToNegate > 400) {
             Toast t = Toast.makeText(getApplicationContext(),
                     "Do not use this feature to 'work off' an entire meal. " +
                             "Try a smaller number.",
                     Toast.LENGTH_SHORT);
             t.show();
-        } else if (caloriesToNegate < 0) {
+        } else if (energyUnitsToNegate < 0) {
             Toast t = Toast.makeText(getApplicationContext(), "Calories must be positive.",
                     Toast.LENGTH_SHORT);
             t.show();
-        } else if (caloriesToNegate == 0) {
+        } else if (energyUnitsToNegate == 0) {
             Toast t = Toast.makeText(getApplicationContext(),
                     "Zero calories? No workout needed!",
                     Toast.LENGTH_SHORT);
             t.show();
         } else {
-            displayWorkouts(caloriesToNegate);
+            displayWorkouts(energyUnitsToNegate);
         }
     }
 }

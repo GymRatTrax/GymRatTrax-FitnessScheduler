@@ -75,7 +75,7 @@
         </PreferenceCategory>
     </PreferenceScreen>
     <ListPreference
-        android:key="pref_unit_distance"
+        android:key="UnitDistance"
         android:title="Distance unit"
         android:summary="%s"
         android:dialogTitle="Select preferred distance unit"
@@ -83,12 +83,20 @@
         android:entryValues="@array/unit_distance_array"
         android:defaultValue="mi" />
     <ListPreference
-        android:key="pref_unit_weight"
+        android:key="UnitWeight"
         android:title="Weight unit"
         android:summary="%s"
         android:dialogTitle="Select preferred weight unit"
         android:entries="@array/unit_weight_array_readable"
         android:entryValues="@array/unit_weight_array"
+        android:defaultValue="lb" />
+    <ListPreference
+        android:key="UnitEnergy"
+        android:title="Energy unit"
+        android:summary="%s"
+        android:dialogTitle="Select preferred energy unit"
+        android:entries="@array/unit_energy_array_readable"
+        android:entryValues="@array/unit_energy_array"
         android:defaultValue="lb" />
     <!--<Preference-->
         <!--android:key="pref_sign_in"-->

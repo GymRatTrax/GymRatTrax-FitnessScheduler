@@ -8,8 +8,6 @@ import com.gymrattrax.scheduler.data.DateUtil;
 import com.gymrattrax.scheduler.object.Exercises;
 import com.gymrattrax.scheduler.object.WorkoutItem;
 
-import java.text.ParseException;
-
 public class DatabaseHelperTest extends AndroidTestCase {
 
     DatabaseHelper dbh;
@@ -30,11 +28,7 @@ public class DatabaseHelperTest extends AndroidTestCase {
 
     private WorkoutItem getWorkout() {
         WorkoutItem workout = WorkoutItem.createNew(Exercises.Abs.CRUNCH);
-        try {
-            workout.setDateScheduled(DateUtil.convertDate("2015-03-20 15:00:00.000"));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        workout.setDateScheduled(DateUtil.convertDate("2015-03-20 15:00:00.000"));
         workout.setTimeScheduled(30);
         workout.setWeightUsed(15);
         workout.setRepsScheduled(12);

@@ -15,7 +15,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.android.gms.games.Games;
 import com.gymrattrax.scheduler.BuildConfig;
@@ -23,6 +22,7 @@ import com.gymrattrax.scheduler.R;
 import com.gymrattrax.scheduler.adapter.ListViewAdapterView;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
 import com.gymrattrax.scheduler.data.DateUtil;
+import com.gymrattrax.scheduler.data.UnitUtil;
 import com.gymrattrax.scheduler.object.ExerciseType;
 import com.gymrattrax.scheduler.object.ProfileItem;
 import com.gymrattrax.scheduler.object.WorkoutItem;
@@ -30,8 +30,6 @@ import com.gymrattrax.scheduler.object.WorkoutItem;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-//import android.os.Handler;
 
 public class HomeScreenActivity extends LoginActivity {
     private static final String TAG = "HomeScreenActivity";
@@ -44,15 +42,11 @@ public class HomeScreenActivity extends LoginActivity {
         super.onCreate(savedInstanceState);
         getSupportActionBar();
 
-        //initiate tutorial/profile creation if there is no ProfileItem ID in database
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-        ProfileItem create = new ProfileItem(this);
-        if (!create.isComplete()) {
-            initiateNewUserProfileSetup();
-        }
         setContentView(R.layout.activity_home_screen);
 
         displayUpcomingWorkouts();
+
 
         final Animation animTranslate = AnimationUtils.loadAnimation(this, R.anim.anim_rotate);
 
@@ -159,6 +153,22 @@ public class HomeScreenActivity extends LoginActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Button calorieNegationButton = (Button) findViewById(R.id.CalorieNegationButton);
+        ProfileItem profileItem = new ProfileItem(this);
+        UnitUtil.EnergyUnit unitEnergy = profileItem.getUnitEnergy();
+        switch (unitEnergy) {
+            case calorie:
+                calorieNegationButton.setText(R.string.title_activity_calorie_negation);
+                break;
+            case kilojoule:
+                calorieNegationButton.setText(R.string.title_activity_kilojoule_negation);
+                break;
+        }
+    }
+
 //    private Boolean exit = false;
     @Override
     public void onBackPressed() {
@@ -233,16 +243,6 @@ public class HomeScreenActivity extends LoginActivity {
         ListView listView = (ListView) findViewById(R.id.schedule_upcoming_workouts);
         ListViewAdapterView adapter = new ListViewAdapterView(this, workoutItems);
         listView.setAdapter(adapter);
-    }
-
-    private void initiateNewUserProfileSetup() {
-        Toast toast = Toast.makeText(getApplicationContext(),
-                "Welcome to GymRatTrax!\n" +
-                        "Please set up your personal fitness profile.", Toast.LENGTH_LONG);
-        toast.setDuration(Toast.LENGTH_LONG);
-        toast.show();
-        loadActivity(ProfileSetupActivity.class);
-        finish();
     }
 
     public String[] getWorkoutsString() {

@@ -18,7 +18,6 @@ import com.gymrattrax.scheduler.object.ProfileItem;
 import com.gymrattrax.scheduler.object.WorkoutItem;
 
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -64,7 +63,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             if (BuildConfig.DEBUG_MODE) text.show();
             switch (i) {
                 case 2:
-                    db.execSQL(DatabaseContract.ProfileTable.DELETE_TABLE);
                     db.execSQL(DatabaseContract.WeightTable.DELETE_TABLE);
                     db.execSQL(DatabaseContract.WorkoutTable.DELETE_TABLE);
                     onCreate(db);
@@ -99,9 +97,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     Cursor cursor4 = db.rawQuery(
                             "SELECT * FROM profile WHERE key = \"BIRTH_DATE\"", null);
                     if (cursor4.moveToFirst())
-                        try {
-                            profileItem.setDateOfBirth(DateUtil.convertDate(cursor4.getString(1)));
-                        } catch (ParseException ignored){}
+                        profileItem.setDateOfBirth(DateUtil.convertDate(cursor4.getString(1)));
                     cursor4 = db.rawQuery("SELECT * FROM profile WHERE key = \"SEX\"", null);
                     if (cursor4.moveToFirst())
                         profileItem.setGender(cursor4.getString(1).toUpperCase().charAt(0));
@@ -111,12 +107,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     cursor4 = db.rawQuery(
                             "SELECT * FROM profile WHERE key = \"LAST_NOTIFY_WORKOUT\"", null);
                     if (cursor4.moveToFirst())
-                        profileItem.setLastWorkoutNotification(cursor4.getString(1));
+                        profileItem.setLastWorkoutNotification(
+                                DateUtil.convertDate(cursor4.getString(1)));
                     cursor4 = db.rawQuery(
                             "SELECT * FROM profile WHERE key = \"LAST_NOTIFY_WEIGHT\"", null);
                     if (cursor4.moveToFirst())
-                        profileItem.setLastWeightNotification(cursor4.getString(1));
-                    db.execSQL(DatabaseContract.ProfileTable.DELETE_TABLE);
+                            profileItem.setLastWorkoutNotification(
+                                    DateUtil.convertDate(cursor4.getString(1)));
+                    db.execSQL("DROP TABLE IF EXISTS profile");
                     cursor4.close();
                     double[] weightArray = getLatestWeight();
                     profileItem.setWeight((float)weightArray[0]);
@@ -181,12 +179,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Map<Date,Double> values = new HashMap<>();
         while (cursor.moveToNext()) {
             Date d1;
-            try {
-                d1 = DateUtil.convertDate(cursor.getString(0));
-            } catch (ParseException e) {
-                Calendar cal = new GregorianCalendar();
-                d1 = cal.getTime();
-            }
+            d1 = DateUtil.convertDate(cursor.getString(0));
             values.put(d1, cursor.getDouble(1));
         }
         cursor.close();
@@ -494,9 +487,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public String[][] debugRawQuery(String table) {
         if (BuildConfig.DEBUG_MODE) {
             switch (table) {
-                case "Profile":
-                    table = DatabaseContract.ProfileTable.TABLE_NAME;
-                    break;
                 case "Weight":
                     table = DatabaseContract.WeightTable.TABLE_NAME;
                     break;
@@ -603,26 +593,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             workouts[i].setComplete(cursor.getInt(cursor.getColumnIndex(DatabaseContract.WorkoutTable.COL_COMPLETE)) == 1);
 
             //date
-            try {
-                workouts[i].setDateScheduled(DateUtil.convertDate(cursor.getString(cursor.getColumnIndex(
-                        DatabaseContract.WorkoutTable.COL_DATE_SCHEDULED))));
-            } catch (ParseException e) {
-                Calendar cal = Calendar.getInstance();
-                workouts[i].setDateScheduled(cal.getTime());
-            } try {
-                workouts[i].setDateModified(DateUtil.convertDate(cursor.getString(cursor.getColumnIndex(
-                        DatabaseContract.WorkoutTable.COL_DATE_MODIFIED))));
-            } catch (ParseException e) {
-                Calendar cal = Calendar.getInstance();
-                workouts[i].setDateModified(cal.getTime());
-            } try {
-                if (!cursor.isNull(cursor.getColumnIndex(
-                        DatabaseContract.WorkoutTable.COL_DATE_COMPLETED))) {
-                    workouts[i].setDateCompleted(DateUtil.convertDate(cursor.getString(cursor.getColumnIndex(
-                            DatabaseContract.WorkoutTable.COL_DATE_COMPLETED))));
-                }
-            } catch (ParseException e) {
-                workouts[i].setDateCompleted(null);
+            workouts[i].setDateScheduled(DateUtil.convertDate(cursor.getString(cursor.getColumnIndex(
+                    DatabaseContract.WorkoutTable.COL_DATE_SCHEDULED))));
+            workouts[i].setDateModified(DateUtil.convertDate(cursor.getString(cursor.getColumnIndex(
+                    DatabaseContract.WorkoutTable.COL_DATE_MODIFIED))));
+            if (!cursor.isNull(cursor.getColumnIndex(
+                    DatabaseContract.WorkoutTable.COL_DATE_COMPLETED))) {
+                workouts[i].setDateCompleted(DateUtil.convertDate(cursor.getString(cursor.getColumnIndex(
+                        DatabaseContract.WorkoutTable.COL_DATE_COMPLETED))));
             }
 
             //calories

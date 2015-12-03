@@ -66,6 +66,7 @@ public class CardioWorkoutActivity extends LoginActivity {
     private EditText editTextDistanceComplete;
     private Button buttonStart;
     private Button buttonStop;
+    private UnitUtil.DistanceUnit unitDistance;
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle savedInstanceState){
@@ -87,6 +88,7 @@ public class CardioWorkoutActivity extends LoginActivity {
         buttonStart = (Button) findViewById(R.id.start_cardio);
         buttonStop = (Button) findViewById(R.id.stop_cardio);
         editTextDistanceComplete = (EditText)findViewById(R.id.edit_text_distance_completed);
+        TextView textViewDistanceComplete = (TextView) findViewById(R.id.cardio_workout_unit_distance);
         ImageButton buttonYouTube = (ImageButton) findViewById(R.id.youtube_cardio);
 
         buttonStop.setEnabled(false);
@@ -142,10 +144,14 @@ public class CardioWorkoutActivity extends LoginActivity {
         int minutes = (secondsTotal - seconds) / 60;
         String timeString = String.format("%02d", minutes) + ":" + String.format("%02d", seconds);
 
-        textViewGoalTime.setText("Scheduled Time: " + timeString);
+        textViewGoalTime.setText(String.format("Scheduled Time: %s", timeString));
         textViewTitle.setText(name);
 
-        editTextDistanceComplete.setText(String.valueOf(workoutItem.getDistanceScheduled()));
+        ProfileItem profileItem = new ProfileItem(this);
+        unitDistance = profileItem.getUnitDistance();
+        editTextDistanceComplete.setText(String.format("%.2f",
+                workoutItem.getDistanceScheduled(unitDistance)));
+        textViewDistanceComplete.setText(String.format("%ss", unitDistance.toString()));
 
         buttonCompleteWorkout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,7 +161,8 @@ public class CardioWorkoutActivity extends LoginActivity {
                 timeSpentInMilliseconds = chronometer.getBase() - SystemClock.elapsedRealtime();
                 chronometer.stop();
 
-                textViewCompletedTime.setText("Logged Time: " + chronometer.getText().toString());
+                textViewCompletedTime.setText(String.format("Logged Time: %s",
+                        chronometer.getText().toString()));
 
                 // calculate minutes from total seconds
                 double timeForCalculation = getSecondsFromDurationString(chronometer.getText().toString()) / 60;
@@ -292,7 +299,8 @@ public class CardioWorkoutActivity extends LoginActivity {
         double seconds = getSecondsFromDurationString(chronometer.getText().toString());
         double timeRecordedInMinutes = seconds/60;
         workoutItem.setTimeSpent(timeRecordedInMinutes);
-        workoutItem.setDistanceCompleted(Double.valueOf(editTextDistanceComplete.getText().toString()));
+        workoutItem.setDistanceCompleted(
+                Double.valueOf(editTextDistanceComplete.getText().toString()), unitDistance);
         double METs = workoutItem.calculateMETs();
 
         ProfileItem profileItem = new ProfileItem(this);
@@ -309,7 +317,7 @@ public class CardioWorkoutActivity extends LoginActivity {
                     (float)caloriesBurned,
                     (float)UnitUtil.convert(
                             Double.valueOf(editTextDistanceComplete.getText().toString()),
-                            UnitUtil.DistanceUnit.mile, UnitUtil.DistanceUnit.meter));
+                            unitDistance, UnitUtil.DistanceUnit.meter));
             unlockGooglePlayGamesAchievements((int)timeRecordedInMinutes, achievementsUnlocked);
         } else {
             Log.e(TAG, "Could not connect to Google APIs.");
@@ -318,8 +326,16 @@ public class CardioWorkoutActivity extends LoginActivity {
         // Closing ongoing notification, if applicable
         NotifyReceiver.cancelOngoing(this, ID);
 
-        textViewCompletedTime.setText(String.format("You have logged this workout. Time Spent: %s\nCalories Burned: %f", chronometer.getText().toString(),
-                workoutItem.getCaloriesBurned()));
+        textViewCompletedTime.setText(String.format(
+                "You have logged this workout.\nTime Spent: %s\n%ss burned: %f",
+                chronometer.getText().toString(),
+                profileItem.getUnitEnergy().toString().substring(0, 1).toUpperCase() +
+                profileItem.getUnitEnergy().toString().substring(1),
+                UnitUtil.convert(workoutItem.getCaloriesBurned(),
+                        UnitUtil.EnergyUnit.calorie,
+                        profileItem.getUnitEnergy()
+                )
+        ));
     }
 
     public static int getSecondsFromDurationString(String value){

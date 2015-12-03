@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/calorie_negation_instruction"
-        android:id="@+id/textView9"
+        android:id="@+id/calorie_negation_instruction_textview"
         android:layout_gravity="center"
         android:textAlignment="center"
         android:textSize="20sp"

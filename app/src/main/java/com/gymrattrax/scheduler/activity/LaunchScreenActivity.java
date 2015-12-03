@@ -5,10 +5,12 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.gymrattrax.scheduler.R;
+import com.gymrattrax.scheduler.object.ProfileItem;
 
 public class LaunchScreenActivity extends AppCompatActivity {
 
@@ -19,7 +21,7 @@ public class LaunchScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
 
-//        Transparent Status Bar
+        // Transparent status bar
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -40,7 +42,13 @@ public class LaunchScreenActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
 
-            intent = new Intent(LaunchScreenActivity.this, HomeScreenActivity.class);
+            PreferenceManager.setDefaultValues(LaunchScreenActivity.this, R.xml.preferences, false);
+            ProfileItem profileItem = new ProfileItem(LaunchScreenActivity.this);
+            if (profileItem.isComplete()) {
+                intent = new Intent(LaunchScreenActivity.this, HomeScreenActivity.class);
+            } else {
+                intent = new Intent(LaunchScreenActivity.this, ProfileSetupActivity.class);
+            }
         }
 
         @Override

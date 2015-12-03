@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 
 import com.gymrattrax.scheduler.data.DatabaseHelper;
+import com.gymrattrax.scheduler.data.UnitUtil;
 
 import java.util.Date;
 
@@ -221,6 +222,10 @@ public class WorkoutItem {
         return distanceScheduled;
     }
 
+    public double getDistanceScheduled(UnitUtil.DistanceUnit unit) {
+        return UnitUtil.convert(distanceScheduled, UnitUtil.DistanceUnit.mile, unit);
+    }
+
     public void setDistanceScheduled(double distanceScheduled) {
         this.distanceScheduled = distanceScheduled;
     }
@@ -232,6 +237,11 @@ public class WorkoutItem {
     public void setDistanceCompleted(double distance) {
         this.distanceCompleted += distance;
     }
+
+    public void setDistanceCompleted(double distance, UnitUtil.DistanceUnit unit) {
+        this.distanceCompleted += UnitUtil.convert(distance, unit, UnitUtil.DistanceUnit.mile);
+    }
+
     public int getSetsScheduled() {
         return setsScheduled;
     }
@@ -250,6 +260,10 @@ public class WorkoutItem {
 
     public double getWeightUsed() {
         return weightUsed;
+    }
+
+    public double getWeightUsed(UnitUtil.WeightUnit unit) {
+        return UnitUtil.convert(weightUsed, UnitUtil.WeightUnit.pound, unit);
     }
 
     public void setWeightUsed(double weightUsed) {

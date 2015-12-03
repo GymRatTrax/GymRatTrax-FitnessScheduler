@@ -5,7 +5,6 @@
         <item>Female</item>
     </string-array>
     <string-array name="debug_array">
-        <item>Profile</item>
         <item>Weight</item>
         <item>Workout</item>
     </string-array>
@@ -23,9 +22,9 @@
         <item>m - Meters</item>
     </string-array>
     <string-array name="unit_distance_array">
-        <item>mi</item>
-        <item>km</item>
-        <item>m</item>
+        <item>mile</item>
+        <item>kilometer</item>
+        <item>meter</item>
     </string-array>
 
     <string-array name="unit_weight_array_readable">
@@ -33,8 +32,17 @@
         <item>kg - Kilograms</item>
     </string-array>
     <string-array name="unit_weight_array">
-        <item>lb</item>
-        <item>kg</item>
+        <item>pound</item>
+        <item>kilogram</item>
+    </string-array>
+
+    <string-array name="unit_energy_array_readable">
+        <item>cal - Calories</item>
+        <item>kJ - Kilojoules</item>
+    </string-array>
+    <string-array name="unit_energy_array">
+        <item>calorie</item>
+        <item>kilojoule</item>
     </string-array>
 
     <string-array name="progress_array">

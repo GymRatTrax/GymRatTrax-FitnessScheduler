@@ -76,7 +76,9 @@ public class StrengthWorkoutActivity extends LoginActivity {
         title.setText(workoutItem.getName());
         sets = workoutItem.getSetsScheduled();
         reps = workoutItem.getRepsScheduled();
-        double weight = workoutItem.getWeightUsed();
+
+        ProfileItem profileItem = new ProfileItem(this);
+        double weight = workoutItem.getWeightUsed(profileItem.getUnitWeight());
         counter = workoutItem.getSetsCompleted();
 
         if (workoutItem.getCaloriesBurned() > 0){
@@ -193,7 +195,8 @@ public class StrengthWorkoutActivity extends LoginActivity {
 
         strengthSets.setText(String.format("Reps: %d", reps));
         strengthReps.setText(String.format("Sets: %d", sets));
-        weightUsed.setText(String.format("Weight: %f", weight));
+        weightUsed.setText(String.format("Weight: %.1f %ss", weight,
+                profileItem.getUnitWeight().toString()));
 
         //radio buttons that user can select that describes difficulty of exercise.  this will be "easy" "moderate" "hard"
         //EditText that user may input amount of time taken to complete workout

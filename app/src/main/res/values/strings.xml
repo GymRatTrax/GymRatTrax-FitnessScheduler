@@ -11,6 +11,7 @@
     <string name="title_activity_strength_exercise">Strength Exercise</string>
     <string name="title_activity_daily_workout">Daily Workout</string>
     <string name="title_activity_calorie_negation">Calorie Negation</string>
+    <string name="title_activity_kilojoule_negation">Kilojoule Negation</string>
     <string name="title_activity_fitness_profile">Fitness Profile</string>
     <string name="title_activity_schedule">View Schedule</string>
 
@@ -163,12 +164,13 @@
     <string name="cardio_workout_button_stop">STOP</string>
     <string name="cardio_workout_distance_completed">Distance completed</string>
     <string name="cardio_workout_exertion_level">Exertion level</string>
-    <string name="cardio_workout_units_miles">miles</string>
+    <string name="cardio_workout_unit_miles">miles</string>
     <string name="cardio_workout_exertion_level_easy">Easy</string>
     <string name="cardio_workout_exertion_level_moderate">Moderate</string>
     <string name="cardio_workout_exertion_level_hard">Hard</string>
     <string name="cardio_workout_button_complete">COMPLETE</string>
     <string name="calorie_negation_instruction">Enter Number of Calories to Negate:</string>
+    <string name="kilojoule_negation_instruction">Enter Number of Kilojoules to Negate:</string>
     <string name="calorie_negation_button">SUGGEST WORKOUTS</string>
     <string name="sign_in_with_google">Sign in with Google</string>
     <string name="gymrat_name">GymRatTrax</string>

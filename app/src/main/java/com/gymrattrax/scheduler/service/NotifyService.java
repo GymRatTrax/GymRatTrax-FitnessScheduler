@@ -25,8 +25,7 @@ import com.gymrattrax.scheduler.activity.ProfileActivity;
 import com.gymrattrax.scheduler.activity.SettingsActivity;
 import com.gymrattrax.scheduler.activity.StrengthWorkoutActivity;
 import com.gymrattrax.scheduler.data.DatabaseHelper;
-import com.gymrattrax.scheduler.data.DateUtil;
-import com.gymrattrax.scheduler.data.PreferenceKeys;
+import com.gymrattrax.scheduler.object.ProfileItem;
 import com.gymrattrax.scheduler.object.WorkoutItem;
 import com.gymrattrax.scheduler.receiver.NotifyReceiver;
 
@@ -214,12 +213,11 @@ public class NotifyService extends Service {
         DatabaseHelper dbh = new DatabaseHelper(this);
         Calendar now = Calendar.getInstance();
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        ProfileItem profileItem = new ProfileItem(this);
         if (workoutItem != null) {
-            sharedPref.edit().putString(PreferenceKeys.LAST_NOTIFY_WORKOUT,
-                    DateUtil.convertDate(now.getTime())).apply();
+            profileItem.setLastWorkoutNotification(now.getTime());
         } else if (name.toLowerCase().contains("weigh")) {
-            sharedPref.edit().putString(PreferenceKeys.LAST_NOTIFY_WEIGHT,
-                    DateUtil.convertDate(now.getTime())).apply();
+            profileItem.setLastWeightNotification(now.getTime());
         }
         dbh.close();
 
