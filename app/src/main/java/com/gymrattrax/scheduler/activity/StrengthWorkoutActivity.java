@@ -289,8 +289,8 @@ public class StrengthWorkoutActivity extends LoginActivity {
                         final Dialog dialog = new Dialog(StrengthWorkoutActivity.this);
                         //TODO: #67 Continue manual testing on virtual devices
                         //TODO: 1.0.1 Figure out why no titles display on virtual device.
-                        dialog.setTitle("Seconds taken to complete this set");
                         dialog.setContentView(R.layout.dialog_integer);
+                        dialog.setTitle("Seconds taken to complete this set");
                         Button buttonSet = (Button) dialog.findViewById(R.id.decimal_button_set);
                         Button buttonCancel = (Button) dialog.findViewById(R.id.decimal_button_cancel);
                         final NumberPicker numberPicker = (NumberPicker) dialog.findViewById(R.id.decimal_number_picker_integer);

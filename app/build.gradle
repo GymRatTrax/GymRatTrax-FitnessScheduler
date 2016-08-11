@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 24
     buildToolsVersion "23.0.2"
     defaultConfig {
         applicationId "com.gymrattrax.scheduler"
         minSdkVersion 15
-        targetSdkVersion 23
-        versionCode 8
-        versionName "1.0.1"
+        targetSdkVersion 24
+        versionCode 9
+        versionName "1.1.0"
     }
     buildTypes {
         release {
@@ -33,13 +33,13 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.jjoe64:graphview:4.0.0'
     compile('com.google.apis:google-api-services-calendar:v3-rev125-1.20.0') {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
     }
-    compile 'com.google.android.gms:play-services-fitness:8.3.0'
-    compile 'com.google.android.gms:play-services-games:8.3.0'
+    compile 'com.google.android.gms:play-services-fitness:9.4.0'
+    compile 'com.google.android.gms:play-services-games:9.4.0'
 
     compile 'com.google.code.gson:gson:2.4'
 }
