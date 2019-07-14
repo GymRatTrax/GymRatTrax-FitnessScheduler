@@ -1,6 +1,7 @@
 package com.gymrattrax.scheduler.activity;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -54,7 +55,7 @@ public class FitnessHistoryActivity extends LoginActivity {
         pendingResult.setResultCallback(
                 new ResultCallback<DataReadResult>() {
                     @Override
-                    public void onResult(DataReadResult readDataResult) {
+                    public void onResult(@NonNull DataReadResult readDataResult) {
                         if (readDataResult.getBuckets().size() > 0) {
                             Log.d(TAG, "Size of readDataResult.getBuckets() in onResume: " + readDataResult.getBuckets().size());
                             for (Bucket bucket : readDataResult.getBuckets()) {

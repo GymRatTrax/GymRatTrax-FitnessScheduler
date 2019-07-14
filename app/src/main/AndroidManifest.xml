@@ -204,7 +204,6 @@
             android:name=".activity.FitnessHistoryActivity"
             android:label="@string/title_activity_view_schedule"
             android:screenOrientation="portrait"
-            android:theme="@android:style/android:Theme.Holo.Panel"
             android:parentActivityName=".activity.HomeScreenActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
